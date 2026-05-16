@@ -44,3 +44,17 @@ export function thresholdClass(value: unknown, t: Threshold | undefined): string
   const good = okMin && okMax;
   return colorClasses(good ? t.goodColor : t.badColor, 'text') + ' font-medium';
 }
+
+/** 阈值"胶囊"样式：文本色 + 软背景色，用于在单元格里包一层 inline pill。 */
+export function thresholdPillClass(value: unknown, t: Threshold | undefined): string {
+  if (!t) return '';
+  const n = parseNumeric(value);
+  if (n === null) return '';
+  const okMin = t.min === undefined || n >= t.min;
+  const okMax = t.max === undefined || n <= t.max;
+  const good = okMin && okMax;
+  const token = good ? t.goodColor : t.badColor;
+  const text = colorClasses(token, 'text');
+  const bg = colorClasses(token, 'bg');
+  return `${text} ${bg} ring-1 ring-current/10`;
+}
