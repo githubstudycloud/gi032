@@ -141,7 +141,9 @@ function onRowDetail(row: Record<string, unknown>): void {
           <code class="ml-1 px-1 py-0.5 rounded bg-ink-100 text-ink-800 text-[11.5px]">##METRICS</code>
           <code class="ml-1 px-1 py-0.5 rounded bg-ink-100 text-ink-800 text-[11.5px]">##COLUMNS</code>
           <code class="ml-1 px-1 py-0.5 rounded bg-ink-100 text-ink-800 text-[11.5px]">##ROWS</code>
-          。Excel 编辑后请用「另存为 → CSV UTF-8」保存；或直接编辑 CSV 文件后拖入下方区域。
+          。<code class="px-1 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[11.5px]">##COLUMNS</code>
+          段加 <code class="px-1 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[11.5px]">parent</code> 列可生成二级表头（先定义父列、再让子列引用其 key）。
+          Excel 编辑后请用「另存为 → CSV UTF-8」保存；或直接编辑 CSV 文件后拖入下方区域。
         </p>
       </section>
 

@@ -185,7 +185,7 @@ export function parsePageCsv(text: string): ParseResult {
     footnote: meta.footnote ?? '数据来源：本地 CSV 导入',
   };
 
-  /* COLUMNS */
+  /* COLUMNS — 支持多级表头：通过 parent 列引用父列 key */
   const colsRows = sections.COLUMNS ?? [];
   const columns: TableColumn[] = [];
   if (colsRows.length > 0) {
@@ -193,24 +193,51 @@ export function parsePageCsv(text: string): ParseResult {
     const ch = header!.cells.map(c => c.toLowerCase());
     const iK = ch.indexOf('key');
     const iL = ch.indexOf('label');
+    const iP = ch.indexOf('parent');
     const iW = ch.indexOf('width');
     const iA = ch.indexOf('align');
     const iH = ch.indexOf('highlight');
+    const iS = ch.indexOf('sortable');
     if (iK < 0 || iL < 0) {
       issues.push({ section: 'COLUMNS', line: header!.lineNo, message: '缺少必需列 key/label' });
     } else {
+      const colMap = new Map<string, TableColumn>();
+      const hasChild = new Set<string>();
+      // 先扫一遍标记哪些 key 是父
+      if (iP >= 0) {
+        for (const row of rest) {
+          const p = row.cells[iP];
+          if (p && p.trim()) hasChild.add(p.trim());
+        }
+      }
       for (const row of rest) {
         const c = row.cells;
         const k = c[iK] ?? '';
         if (!k) continue;
-        columns.push({
+        const parentKey = iP >= 0 ? (c[iP] ?? '').trim() : '';
+        const isParent = hasChild.has(k);
+        const col: TableColumn = {
           key: k,
           label: c[iL] ?? k,
-          rowspan: 2,
           width: iW >= 0 ? nonEmpty(c[iW]) : undefined,
           align: toAlign(iA >= 0 ? c[iA] : undefined),
-          highlight: iH >= 0 ? (c[iH] === '1' || (c[iH] ?? '').toLowerCase() === 'true') : undefined,
-        });
+          highlight: !isParent && iH >= 0 ? (c[iH] === '1' || (c[iH] ?? '').toLowerCase() === 'true') : undefined,
+          sortable: !isParent && iS >= 0 ? (c[iS] === '1' || (c[iS] ?? '').toLowerCase() === 'true') : undefined,
+        };
+        // 根级叶子需要 rowspan=2 跨两行表头
+        if (!isParent && !parentKey) col.rowspan = 2;
+        colMap.set(k, col);
+        if (parentKey) {
+          const parent = colMap.get(parentKey);
+          if (!parent) {
+            issues.push({ section: 'COLUMNS', line: row.lineNo, message: `parent="${parentKey}" 不存在或未在本行之前定义` });
+            columns.push(col);
+            continue;
+          }
+          (parent.children ??= []).push(col);
+        } else {
+          columns.push(col);
+        }
       }
     }
   }
@@ -254,11 +281,11 @@ export function parsePageCsv(text: string): ParseResult {
   };
 }
 
-/* —— 模板 —— */
+/* —— 模板（多级表头示例） —— */
 export const SAMPLE_CSV: string = `##META
 key,value
-title,AI 辅助测试覆盖度（示例）
-subtitle,来自 CSV 导入演示，每段以 ## 段名 开头
+title,AI 辅助测试覆盖度（多级表头示例）
+subtitle,COLUMNS 段加 parent 列即可生成二级表头；同一 parent 下的列会合并成一组
 footnote,数据仅作示例，全部可在 Excel/CSV 中修改
 
 ##METRICS
@@ -271,18 +298,27 @@ capability,能力指标,adoption-rate,采纳率,62.8%,,-1.2pp,down,AI 采纳用�
 capability,能力指标,avg-interactions,平均交互次数,4.6,,-0.3,down,每个需求的平均交互轮数
 
 ##COLUMNS
-key,label,width,align,highlight
-industry,产业,120px,left,0
-owner,接口人,90px,left,0
-coverage,设计覆盖人数,,center,0
-adoption,采纳率,,center,1
-new-cases,新增用例,,right,0
-defects,发现缺陷,,right,0
+key,label,parent,width,align,highlight,sortable
+industry,产业,,120px,left,0,0
+owner,接口人,,90px,left,0,0
+design,测试设计阶段,,,center,0,0
+design-coverage,覆盖人数,design,,center,0,1
+design-landed,落地需求,design,,center,0,1
+design-adoption,采纳率,design,,center,1,1
+exec,测试执行阶段,,,center,0,0
+exec-cases,执行用例,exec,,center,0,1
+exec-passrate,通过率,exec,,center,1,1
+exec-defects,发现缺陷,exec,,right,0,1
+result,缺陷分析,,,center,0,0
+result-ai,AI识别,result,,center,0,1
+result-manual,人工补充,result,,center,0,1
 
 ##ROWS
-industry,owner,coverage,adoption,new-cases,defects
-智能汽车,张三,42,68%,420,52
-云计算,李四,38,72%,380,41
-工业互联,王五,29,55%,265,27
-智能终端,赵六,55,64%,512,63
+industry,owner,design-coverage,design-landed,design-adoption,exec-cases,exec-passrate,exec-defects,result-ai,result-manual
+智能汽车,张三,42,18,68%,1280,92.4%,52,38,14
+云计算,李四,38,15,72%,1120,94.1%,41,31,10
+工业互联,王五,29,11,55%,820,88.7%,27,16,11
+智能终端,赵六,55,22,64%,1560,91.2%,63,47,16
+网络产品,孙七,33,14,70%,980,93.8%,35,26,9
 `;
+
