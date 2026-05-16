@@ -21,7 +21,7 @@
         "key": "user",
         "label": "用户指标",
         "items": [
-          { "key": "ai-user-count", "label": "AI用户数", "value": "1,284", "mom": "+12.3%", "trend": "up", "description": "本月使用过 AI 测试运营任意功能的活跃用户数。" }
+          { "key": "ai-user-count", "label": "AI用户数", "value": "1,284", "mom": "+12.3%", "trend": "up", "description": "本月使用过 AI 测试运营任意功能的活跃用户数。\n口径：月内至少一次发起 AI 调用。\n环比：上月。" }
         ]
       },
       {
@@ -30,10 +30,12 @@
         "items": [
           { "key": "ai-requirements",    "label": "AI需求数",                  "value": "186",   "mom": "+8.1%",  "trend": "up",   "description": "本月接入 AI 测试设计 / 脚本生成的需求总数。" },
           { "key": "total-requirements", "label": "需求数",                    "value": "412",   "mom": "+3.2%",  "trend": "up",   "description": "本月所有进入测试环节的需求总数。" },
-          { "key": "design-coverage",    "label": "AI测试设计需求覆盖率",      "value": "62.4%", "mom": "+4.8pp", "trend": "up",   "description": "AI 需求 / 需求总数。" },
+          { "key": "design-coverage",    "label": "AI测试设计需求覆盖率",      "value": "62.4%", "mom": "+4.8pp", "trend": "up",   "description": "公式：AI 需求数 ÷ 需求数 × 100%。\n反映 AI 能力在设计阶段的渗透广度。\n参考阈值：≥ 60% 为达标。",
+            "threshold": { "min": 60, "goodColor": "emerald", "badColor": "rose" } },
           { "key": "valid-ai-cases",     "label": "AI生成的有效用例数",        "value": "2,148", "mom": "+18.6%", "trend": "up",   "description": "AI 生成且被采纳的用例总数。" },
           { "key": "total-cases",        "label": "用例数",                    "value": "3,560", "mom": "+9.4%",  "trend": "up",   "description": "本月新增的测试用例总数。" },
-          { "key": "ai-case-ratio",      "label": "AI生成测试用例占比",        "value": "60.3%", "mom": "+5.2pp", "trend": "up",   "description": "AI 生成有效用例数 / 用例总数。" },
+          { "key": "ai-case-ratio",      "label": "AI生成测试用例占比",        "value": "60.3%", "mom": "+5.2pp", "trend": "up",   "description": "公式：AI 生成有效用例数 ÷ 用例总数。\n反映 AI 对用例资产的贡献占比。",
+            "threshold": { "min": 50, "goodColor": "emerald", "badColor": "amber" } },
           { "key": "ai-defect-ratio",    "label": "AI生成用例发现缺陷占比",    "value": "52.8%", "mom": "+3.1pp", "trend": "up",   "description": "AI 生成用例发现缺陷数 / 全部用例发现缺陷数。" }
         ]
       },
@@ -43,7 +45,8 @@
         "items": [
           { "key": "ai-cases-generated", "label": "AI生成用例数",       "value": "3,420", "mom": "+22.5%", "trend": "up",   "description": "AI 系统本月生成的全部候选用例（含未采纳）。" },
           { "key": "ai-cases-adopted",   "label": "AI生成采纳用例数",   "value": "2,148", "mom": "+18.6%", "trend": "up",   "description": "AI 生成且落入正式用例库的数量。" },
-          { "key": "adoption-rate",      "label": "AI生成用例采纳率",   "value": "62.8%", "mom": "-1.2pp", "trend": "down", "description": "AI 生成采纳用例数 / AI 生成用例数。" },
+          { "key": "adoption-rate",      "label": "AI生成用例采纳率",   "value": "62.8%", "mom": "-1.2pp", "trend": "down", "description": "公式：AI 采纳用例数 ÷ AI 生成用例数。\n下降可能源于模型质量或评审口径变化。",
+            "threshold": { "min": 65, "goodColor": "emerald", "badColor": "rose" } },
           { "key": "avg-interactions",   "label": "平均每需求交互次数", "value": "4.6",   "mom": "-0.3",   "trend": "down", "description": "每个需求的 AI 平均交互轮数。" }
         ]
       }
@@ -57,9 +60,10 @@
         "key": "industry-detail",
         "label": "产业试点进展明细",
         "columns": [
-          { "key": "industry", "label": "产业",                "width": "90px" },
-          { "key": "owner",    "label": "接口人",              "width": "80px" },
-          { "key": "e2e-eff",  "label": "端到端效率提升预估",  "width": "130px" },
+          { "key": "industry", "label": "产业",                "width": "90px", "filterable": true },
+          { "key": "owner",    "label": "接口人",              "width": "80px", "filterable": true },
+          { "key": "e2e-eff",  "label": "端到端效率提升预估",  "width": "130px", "sortable": true, "highlight": true,
+            "threshold": { "min": 20, "goodColor": "emerald", "badColor": "amber" } },
           {
             "key": "sdv",
             "label": "SDV测试Agent",
@@ -70,7 +74,8 @@
                 "children": [
                   { "key": "sdv-design-coverage", "label": "覆盖人数" },
                   { "key": "sdv-design-landed",   "label": "落地需求个数" },
-                  { "key": "sdv-design-adoption", "label": "用例采纳率" },
+                  { "key": "sdv-design-adoption", "label": "用例采纳率", "sortable": true, "highlight": true,
+                    "threshold": { "min": 65, "goodColor": "emerald", "badColor": "rose" } },
                   { "key": "sdv-design-new-ai",   "label": "新用例AI生成占比" }
                 ]
               },
@@ -81,7 +86,8 @@
                   { "key": "sdv-script-efficiency", "label": "阶段效率提升预估" },
                   { "key": "sdv-script-coverage",   "label": "覆盖人数" },
                   { "key": "sdv-script-volume",     "label": "生成代码量(k行)" },
-                  { "key": "sdv-script-accuracy",   "label": "生成代码准确率" }
+                  { "key": "sdv-script-accuracy",   "label": "生成代码准确率", "sortable": true,
+                    "threshold": { "min": 80, "goodColor": "emerald", "badColor": "amber" } }
                 ]
               },
               { "key": "sdv-exec", "label": "测试执行Agent" },
