@@ -54,6 +54,19 @@ export default defineNuxtConfig({
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       ],
+      // FOUC 防护：HTML 解析阶段就把主题 class 设好，避免主题切换后刷新一闪默认主题。
+      // localStorage 里存的就是 htmlClass 完整字符串（'' / 'theme-business' / 'theme-ant'），
+      // 跟 app/composables/use-theme.ts 的写入对齐，零拼接、零映射。
+      script: [
+        {
+          tagPosition: 'head',
+          innerHTML:
+            '(function(){try{' +
+              'var c=localStorage.getItem("ops-dashboard:theme");' +
+              'if(c)document.documentElement.className=c;' +
+            '}catch(e){}})();',
+        },
+      ],
     },
   },
 

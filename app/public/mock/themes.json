@@ -1,0 +1,26 @@
+{
+  "default": "minimal",
+  "items": [
+    {
+      "key": "minimal",
+      "label": "现代极简",
+      "subtitle": "Linear / Notion 风（默认）",
+      "swatch": ["#1a2030", "#3268d8", "#f5f7fa"],
+      "htmlClass": ""
+    },
+    {
+      "key": "business",
+      "label": "商务",
+      "subtitle": "Stripe / Mercury 风",
+      "swatch": ["#1a1f36", "#635bff", "#f6f9fc"],
+      "htmlClass": "theme-business"
+    },
+    {
+      "key": "ant-cn",
+      "label": "中文后台",
+      "subtitle": "Ant Design 风（紧凑、锐角）",
+      "swatch": ["#000000", "#1677ff", "#f0f2f5"],
+      "htmlClass": "theme-ant"
+    }
+  ]
+}

@@ -158,7 +158,21 @@ app/
 
 存盘后 dev 自动 HMR，浏览器**手动刷一下**即可（JSON 不会触发 Vite 热更）。
 
-### 2. 切到后端接口
+### 2. 切样式风格
+
+右上角 ⌄ 旁的小调色板按钮 → 下拉里选：
+
+- **现代极简**（默认）—— Linear / Notion 风，钢蓝
+- **商务** —— Stripe / Mercury 风，紫蓝 + 较大圆角 + 柔和深阴影
+- **中文后台** —— Ant Design 风，Daybreak Blue + 锐角 + 扁平阴影
+
+切换会同步写到 `localStorage` (`ops-dashboard:theme`)，刷新页面保留。
+
+加新风格 = 改 [public/mock/themes.json](public/mock/themes.json) 加一项 +
+[app/assets/css/main.css](app/assets/css/main.css) 加 `html.theme-XXX {...}` 块覆盖 token。
+完整方案 / 主流风格 survey / 工作量评估 见 [STYLE-GUIDE.md](STYLE-GUIDE.md)。
+
+### 3. 切到后端接口
 
 打开 [nuxt.config.ts](nuxt.config.ts) `runtimeConfig.public`：
 

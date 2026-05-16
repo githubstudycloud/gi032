@@ -5,6 +5,56 @@
 
 ---
 
+## #006 — 2026-05-16 — 实现风格切换器（minimal / business / ant 三套 preset，按 §3.7 落地清单）
+
+### 用户提问
+
+> 先按你推荐的来
+
+→ 实施 STYLE-GUIDE.md §3.7 落地清单：3 套 preset（现代极简 / 商务 / 中文后台），暂不做深色。
+
+### 产出文件
+
+- `app/types/theme.ts`：Theme + ThemesResponse 类型
+- `public/mock/themes.json`：3 个 preset（key / label / subtitle / swatch / htmlClass）
+- `app/assets/css/main.css`：新增 `html.theme-business` + `html.theme-ant` token 覆盖块（约 60 行），还跟着调了 body 的 radial-gradient 背景色相
+- `app/composables/use-theme.ts`：useTheme 暴露 themes / activeKey / activeTheme / setTheme，跨组件用 useState 共享
+- `app/components/layout/ThemeSwitcher.vue`：3 色 swatch + chevron 触发按钮 + 下拉面板（VueUse onClickOutside / Esc 关闭 / Transition / aria-haspopup）
+- `nuxt.config.ts`：head 加 FOUC 内联 script（HTML 解析阶段同步把 html class 设好）
+- `app/components/layout/AppTopBar.vue`：右上版本号左侧嵌入 ThemeSwitcher，包 `<ClientOnly>` + skeleton fallback
+- `README.md`：加"切样式风格"小节
+
+### 关键架构决策（debug 出来的）
+
+**localStorage 存的是 htmlClass 完整字符串**（`''` / `'theme-business'` / `'theme-ant'`），不是 key。
+- 原因：FOUC inline script 是 HTML 解析阶段同步执行的，拿不到 themes.json（异步加载）。如果 localStorage 存 key 然后 FOUC 拼 `"theme-" + key`，遇到 key=`ant-cn` 就会拼成 `theme-ant-cn`，跟 CSS 里写的 `html.theme-ant` 对不上 —— **刷新后样式失效**。
+- 现在：FOUC 直接 `documentElement.className = localStorage.getItem(...)` 零拼接、零状态不一致。
+- 副作用：localStorage 调试值不直观（看到的是 `theme-business` 而不是 `business`），但写在了文件注释和文档里。
+
+### 浏览器实测（Chrome DevTools MCP）
+
+| 步骤 | htmlClass | localStorage | 视觉 |
+|---|---|---|---|
+| 初次访问（清 localStorage） | `''` | `null` | 现代极简（钢蓝 235°） |
+| 点商务 | `theme-business` | `theme-business` | 紫蓝主色 + 大圆角 + 深柔阴影 |
+| 点中文后台 | `theme-ant` | `theme-ant` | Daybreak Blue + 锐角 + 扁平阴影 |
+| F5 刷新 | `theme-ant` 保持 | `theme-ant` 保持 | 主题不丢，**无 FOUC 闪一下默认主题** |
+
+控制台 0 error / 0 warning。
+
+### 中途 debug 故事
+
+第一版 setTheme 把 `localStorage.setItem(STORAGE_KEY, key)` 改成存 cls 之前：切到 ant 之后刷新，html.className 变成 `theme-ant-cn`，CSS 没有这个 class → 主题失效。
+排查方式：`evaluate_script` 拿 `documentElement.className` 直接看，发现拼接 bug。
+修法：localStorage 直接存 htmlClass，FOUC / setTheme 都不拼接。同时加 watcher 校验 cls 是否在 preset 里，不在就退到 default（处理老格式 / 删 preset 的 case）。
+
+### 用户下一步
+
+如果想加深色监控（dark-ops），先按 STYLE-GUIDE §3.8 把阴影 / chart 配色板重新设计；按 §3.7 ≈ 多 1h。
+或者直接进具体页（"总览" / "AI辅助测试设计" 等）实现。
+
+---
+
 ## #005 — 2026-05-16 — 写样式风格文档 + 切换器模块设计（暂不实现）
 
 ### 用户提问
