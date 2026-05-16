@@ -35,7 +35,13 @@ export async function useDataSource<TRaw = unknown, T = TRaw>(
   const { data, error, pending, refresh } = await useAsyncData<TRaw>(
     opts.key,
     () => $fetch<TRaw>(url, mode === 'api' && opts.params ? { query: opts.params } : undefined),
-    { immediate: opts.immediate ?? true },
+    {
+      immediate: opts.immediate ?? true,
+      // 故意只在客户端拉：
+      // - 避开 Nitro dev worker 在 Windows + Node 24 上的 OOM；
+      // - 跟生产 CORS 模型一致（浏览器直连后端）。
+      server: false,
+    },
   );
 
   const transformed = computed<T | null>(() => {

@@ -118,6 +118,12 @@ MCP（如果你装了）：
   涉及 `.vue` 文件 / Vue Router / Pinia / Vite + Vue 时**优先参考它**；
   与本 CLAUDE.md 冲突时**以 CLAUDE.md 为准**。
 
+## 已踩过的坑（本机 Windows + Node 24 专项）
+
+- Nuxt 4.4 + Node 24 在 Windows 上：`nuxt dev` 只绑 IPv6 `::1`、Nitro dev worker SSR `$fetch` 触发 OOM。本项目用 `devServer.host='127.0.0.1'` + `useDataSource` 内部 `useAsyncData({ server: false })` 绕开。要恢复 SSR 取数据，先切 Node 22 LTS。
+- Nuxt 4 默认对 `components/<dir>/Foo.vue` 加目录前缀（`<DirFoo/>`）。本项目用 `components: [{ path: '~/components', pathPrefix: false }]` 走扁平命名，模板里直接 `<Foo/>`。
+- 用户不在本机 git config 里写 user.name / user.email。提交时 Claude 用 `git -c user.name="John" -c user.email="vickroytoshiko@gmail.com" commit ...` 一次性覆盖。
+
 ## 提交前自检
 
 - [ ] `pnpm typecheck` 全过

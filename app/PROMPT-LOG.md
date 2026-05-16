@@ -5,6 +5,42 @@
 
 ---
 
+## #002 — 2026-05-16 — 修复启动报错（IPv6-only / SSR worker OOM / 组件不解析 / hydration mismatch）
+
+### 用户提问（原文）
+
+> git 不用写入邮箱和用户名，还有我启动后报错。你自己跑一下修复。
+
+### 调查过程（逐层缩小）
+
+1. **环境**：本机无 pnpm，Node 24.15.0；用 `corepack pnpm@9.12.0` 起。
+2. **第一坑：`nuxt dev` 只绑 IPv6 `::1`**。Windows + Node 24 的 `dns.lookup` 默认 IPv6-first，`nuxt dev` 默认 host 是 `localhost`，但实际只在 `::1` 监听 → 浏览器 `localhost:3000` 走 IPv4 连不上。**修：`devServer.host = '127.0.0.1'`**。
+3. **第二坑：SSR worker OOM**（"Worker terminated due to reaching memory limit: JS heap out of memory"）。任意页面顶层 `await useFetch / useAsyncData + $fetch` 都触发 —— Nitro 2.13.4 在 Windows + Node 24 上的 dev worker 内存限制问题。试过 `NODE_OPTIONS=--max-old-space-size=4096`（不传递到 worker_thread）、试过 `ssr: false`（vite-builder 报 "No entry found in rollupOptions.input"，4.4.5 已知 bug）。**修：`useDataSource` 加 `{ server: false }`**，数据只在客户端拉。
+4. **第三坑：自定义组件不解析**。Nuxt 4 默认对子目录加路径前缀（`components/layout/AppTopBar.vue` → `<LayoutAppTopBar/>`），我模板里写 `<AppTopBar/>` → 解析失败 → SSR 渲染为 `<!---->`。**修：`components: [{ path: '~/components', pathPrefix: false }]`**。
+5. **第四坑：hydration mismatch**。`server: false` 后，SSR 时 `pending=false`，client 初始 `pending=true` → 文本/类名/节点 mismatch。**修：layout 里用 `<ClientOnly>` 包住 `AppTopBar` / `AppSidebar`，给 SSR 提供 skeleton fallback**。
+
+### 验证（Chrome DevTools MCP）
+
+- 首页 `/` ✓：顶部菜单 + 左侧 5 个模块 + 4 张统计卡 + 框架说明 + 最近动态
+- 点 AI辅助测试运营 ✓：展开 2 级（用例管理 / 执行报告 / 知识库）
+- 再点 用例管理 ✓：展开 3 级（用例列表 / 智能生成 / 用例评审）
+- 点 用例列表 ✓：跳 `/ai-test/case/list`，面包屑 / 标题 / 筛选 / 6 行占位表格全在
+- 控制台 0 error / 0 warning
+
+### 改了什么
+
+- `nuxt.config.ts`：加 `devServer.host = '127.0.0.1'`、加 `components: [{ path, pathPrefix: false }]`
+- `composables/use-data-source.ts`：`useAsyncData` 加 `server: false`
+- `layouts/default.vue`：`AppTopBar` / `AppSidebar` 包 `<ClientOnly>` + skeleton fallback
+- `.gitignore`：加 `dev.log` / `install.log` / `.tmp-*`
+
+### 假设 / 留给后续
+
+- 数据全部走客户端拉 = 当前就是 SPA-like 行为。生产部署后接入后端 CORS 应该直接通；如果要保留 SSR 取数据（SEO / 首屏更快），需要换 Node 22 LTS 或等 Nitro 修 Worker OOM。
+- 用户**不需要**写入 git config（已记） —— 提交时继续用 `git -c user.name -c user.email` 一次性覆盖。
+
+---
+
 ## #001 — 2026-05-16 — 项目初始化与基础框架
 
 ### 用户提问（原文摘要）

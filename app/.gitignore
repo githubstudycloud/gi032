@@ -19,3 +19,8 @@ node_modules
 .vscode/*
 !.vscode/settings.json
 .DS_Store
+
+# Dev/install scratch logs + screenshots (used by local Claude Code sessions)
+dev.log
+install.log
+.tmp-*
