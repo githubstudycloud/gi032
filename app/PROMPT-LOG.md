@@ -5,6 +5,53 @@
 
 ---
 
+## #008 — 2026-05-16 — 实现"总览"页（/ai-test/overview/summary）
+
+### 用户提问
+
+> 开始画二级菜单概览下的总览页面。3 个 div：(1) 筛选只含部门 + 查询/重置；(2) 核心指标分组（用户/业务/能力共 12 项），每张卡 ? + 值 + 环比箭头；(3) 试点进展明细 2 tabs（三大先锋产业 + 四大领域）2 级表头表格 + 分页。表头和数据都从 JSON 加载，给后端接管留口子。
+
+### 路由
+
+`app/pages/ai-test/overview/summary.vue`（静态路由自动优先于 catch-all `[...slug].vue`）。
+
+### 数据层
+
+- `public/mock/pages/ai-test-overview-summary.json`（一份大 JSON，filters + metrics 三组 + pilots 两 tab）
+- `app/types/overview-summary.ts`：Filter / Metric / MetricGroup / TableColumn (递归 children) / PilotTable / Pagination 等
+- `app/composables/use-overview-summary.ts`：`useOverviewSummary(params?)` 走我们的 `useDataSource`，返回 `data / filters / metrics / pilots / error / pending / refresh`。`params` 已预留 `department`，后端切到 `/api/pages/ai-test/overview/summary` 即可
+
+### 组件
+
+- `app/components/page/overview-summary/MetricCard.vue` —— 顶 label + ? title 提示；中偏左大数值 (font-display, tabular-nums)；中偏下 ▲/▼/● + 环比；按钮可点（emit drill），focus ring + hover 边框升级
+- `app/components/page/overview-summary/MultiLevelTable.vue` —— 接收 `columns` 树（顶层叶子 rowspan=2 跨两行，顶层有 children 的就 colspan=N + 第二行子列）；leaves 计算扁平叶子；操作列特殊渲染（"详情" 是按钮、"不涉及" 是灰色文字）；缺失 `—` 显示弱化色；分页占位 footer
+
+### 页面装配
+
+`summary.vue` 用 `useNav` 拿面包屑、`useOverviewSummary` 拿数据；筛选 `selectedDept` 跟 query/reset 占位；tab 切 `activeTabKey` ref 派生 `activeTab`；drill / row detail 暂 console.log 占位（待用户说要跳哪页）。整段包 `<ClientOnly>` + skeleton fallback（跟其它客户端取数据的 page 一致）。
+
+### 中途修的 bug
+
+**表格 CJK 文字逐字垂直堆叠**：第一版 `<table class="w-full">` 强制 100% 宽度，13 个叶子列没空间，每个 CJK 字被 wrap 成一行。改 `min-w-full` 也没用 —— 真正问题是 table-layout 还是按容器宽度排。**修法**：`style="width: max-content; min-width: 100%"`，让表格按内容自然撑开，父容器 `overflow-x-auto` 处理水平滚动。
+
+### 实测（Chrome DevTools MCP）
+
+- `/ai-test/overview/summary` ✓：面包屑 AI辅助测试运营 / 概览 / 总览
+- 筛选 ✓：5 个部门 dropdown + 查询/重置
+- 核心指标 ✓：3 组（用户1 / 业务7 / 能力4）共 12 张卡，每张 ? + 值 + ▲/▼ + 环比；底部 footnote 在
+- Tab 1 三大先锋产业试点进展 ✓：6 顶层列 + 11 叶子列 2 级表头，3 行（汽车/金融/能源），金融"不涉及"+其它列 — 灰色；横向滚动条工作
+- Tab 切到四大领域 ✓：6 顶层列 + 17 叶子列 2 级表头，4 行（智能终端/云与计算/网络产品/汽车解决方案）
+- 控制台 0 error / 0 warning
+
+### 用户下一步可选
+
+- 卡片点击下钻 → 跳详情页（哪张卡跳到哪？需用户说明 路由 + 字段）
+- 表格"详情"按钮 → 跳行明细（同上）
+- 筛选维度扩展（dateRange / role 等）
+- 下一个具体页（"产业落地进展" / "领域落地进展" / 通用测试 Agent 下任一）
+
+---
+
 ## #007 — 2026-05-16 — 加 6 个三级菜单 + iframe 嵌入 + dark-ops 主题 + Edge 样式偶发不出来的修法
 
 ### 用户提问
