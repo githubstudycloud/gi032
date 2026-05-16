@@ -63,33 +63,36 @@ const trendLabel = computed<string>(() =>
         {{ metric.label }}
       </span>
 
-      <div
-        :class="[
-          'font-display text-[20px] font-semibold leading-tight tabular-nums break-all',
-          valueThresholdClass || 'text-ink-900',
-        ]"
-      >
-        {{ metric.value }}<span
-          v-if="metric.unit"
-          class="ml-0.5 text-[12px] font-normal text-ink-500"
-        >{{ metric.unit }}</span>
-      </div>
+      <div class="flex items-baseline gap-2 flex-wrap">
+        <div
+          :class="[
+            'font-display text-[20px] font-semibold leading-tight tabular-nums break-all',
+            valueThresholdClass || 'text-ink-900',
+          ]"
+        >
+          {{ metric.value }}<span
+            v-if="metric.unit"
+            class="ml-0.5 text-[12px] font-normal text-ink-500"
+          >{{ metric.unit }}</span>
+        </div>
 
-      <div
-        :class="[
-          'text-[11px] flex items-center gap-1 leading-none',
-          metric.trend === 'up'   ? 'text-emerald-600' :
-          metric.trend === 'down' ? 'text-rose-600'    : 'text-ink-500',
-        ]"
-      >
-        <span aria-hidden="true" class="text-[9px]">{{ metric.trend === 'up' ? '▲' : metric.trend === 'down' ? '▼' : '●' }}</span>
-        <span>环比 {{ metric.mom }}</span>
+        <div
+          :class="[
+            'text-[11px] inline-flex items-baseline gap-0.5 leading-none whitespace-nowrap',
+            metric.trend === 'up'   ? 'text-emerald-600' :
+            metric.trend === 'down' ? 'text-rose-600'    : 'text-ink-500',
+          ]"
+        >
+          <span aria-hidden="true" class="text-[9px] translate-y-[-1px]">{{ metric.trend === 'up' ? '▲' : metric.trend === 'down' ? '▼' : '●' }}</span>
+          <span class="tabular-nums"><span class="text-ink-400 mr-0.5">环比</span>{{ metric.mom }}</span>
+        </div>
+
         <span v-if="hasDetail" class="flex-1" />
         <span
           v-if="hasDetail"
           aria-hidden="true"
           :class="[
-            'inline-flex items-center justify-center text-[9px] transition-transform',
+            'inline-flex items-center justify-center text-[10px] transition-transform self-center',
             active ? 'rotate-180 text-brand-600' : 'text-ink-400',
           ]"
         >▾</span>
