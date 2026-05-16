@@ -9,6 +9,31 @@ import { fileURLToPath } from 'node:url'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(__dirname, '..')
 
+// 极简 YAML 字段解析器：支持单行 plain scalar 和 | / > 块标量。
+// 我们只在自检里展示 description，不依赖 YAML 库；Claude Code 自己用真 YAML parser。
+function parseYamlField(yaml, field) {
+  const lines = yaml.split(/\r?\n/)
+  const startRe = new RegExp(`^${field}:\\s*(.*)$`)
+  const i = lines.findIndex(l => startRe.test(l))
+  if (i < 0) return ''
+  const first = lines[i].match(startRe)[1]
+  // 块标量
+  if (/^[|>][+-]?$/.test(first.trim())) {
+    const buf = []
+    let baseIndent = -1
+    for (let j = i + 1; j < lines.length; j++) {
+      const line = lines[j]
+      if (line.match(/^[a-zA-Z_-]+:\s/) && !line.startsWith(' ')) break
+      if (line.trim() === '' && buf.length === 0) continue
+      if (baseIndent < 0 && line.match(/^\s+/)) baseIndent = line.match(/^\s*/)[0].length
+      buf.push(line.slice(baseIndent).trimEnd())
+    }
+    return buf.join(' ').replace(/\s+/g, ' ').trim()
+  }
+  // 单行 plain / quoted scalar
+  return first.trim().replace(/^["']|["']$/g, '')
+}
+
 const c = {
   reset: '\x1b[0m', bold: '\x1b[1m',
   green: '\x1b[32m', yellow: '\x1b[33m', red: '\x1b[31m', cyan: '\x1b[36m', gray: '\x1b[90m',
@@ -70,14 +95,8 @@ for (const s of skills) {
     problems++
     continue
   }
-  // 解析 description：支持 | 多行、> 多行、单行
-  let desc = ''
-  const m1 = fm[1].match(/description:\s*\|\s*\n((?:\s{2,}.*\n?)+)/)
-  const m2 = fm[1].match(/description:\s*>(?:[+-])?\s*\n((?:\s{2,}.*\n?)+)/)
-  const m3 = fm[1].match(/description:\s*(.+?)(?=\n[a-zA-Z_-]+:\s|$)/)
-  if (m1) desc = m1[1].replace(/^\s+/gm, '').replace(/\s+/g, ' ').trim()
-  else if (m2) desc = m2[1].replace(/^\s+/gm, '').replace(/\s+/g, ' ').trim()
-  else if (m3) desc = m3[1].trim()
+  // 解析 description：逐行处理，支持单行 plain scalar 和 | / > 块标量
+  const desc = parseYamlField(fm[1], 'description')
 
   const short = desc.slice(0, 80) + (desc.length > 80 ? '…' : '')
   ok(`/${s.padEnd(22)}${c.gray}${short}${c.reset}`)

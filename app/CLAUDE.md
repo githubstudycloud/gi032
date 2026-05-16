@@ -95,12 +95,27 @@ app/
 
 ## MCP 与 Skills
 
-启用了：
-- `playwright` MCP — 改完 UI 你必须自己截图看一眼
-- `chrome-devtools` MCP — 性能 / 网络问题用它
-- `context7` MCP — 不确定 API 时先查文档，不要凭记忆写
-- `.claude/skills/new-component/` — `/new-component <Name>` 一键脚手架
-- `.claude/skills/a11y-vue/` — `/a11y-vue <file>` 跑无障碍检查
+MCP（如果你装了）：
+- `playwright` — 改完 UI 你必须自己截图看一眼
+- `chrome-devtools` — 性能 / 网络问题用它
+- `context7` — 不确定 API 时先查文档，不要凭记忆写
+
+项目内 Skills（启动 Claude Code 后自动加载，共 9 个）：
+
+自有：
+- `component-spec` — 写组件前先输出"规约表"
+- `new-vue-component` — `/new-vue-component <Name>` 脚手架
+- `pinia-store` — Pinia 3 setup store 模板
+- `composable-spec` — composable 命名 + 清理规范
+- `a11y-vue` — `/a11y-vue <file>` 无障碍检查
+- `frontend-design` — 强制做出审美选择
+- `a11y-check` / `perf-budget` — 通用审计
+
+第三方（vendored）：
+- `vue-best-practices` — Vue 3 五步工作流 + 23 个 reference 详情。
+  来源 [hyf0/vue-skills](https://github.com/hyf0/vue-skills)（MIT，社区主流，作者意图未来归 Vue 官方）。
+  涉及 `.vue` 文件 / Vue Router / Pinia / Vite + Vue 时**优先参考它**；
+  与本 CLAUDE.md 冲突时**以 CLAUDE.md 为准**。
 
 ## 提交前自检
 

@@ -43,20 +43,53 @@ A：Claude Code 启动时会从你的 cwd（当前工作目录）向上一路找
 
 如果你以后开第二个 Vue 子项目，可以在仓库根加一份共通的 CLAUDE.md，两个项目都共享。
 
-### Q：8 个 Skill 是哪 8 个？
+### Q：现在装了哪些 Skill？
 
-| Skill | 作用 | 类型 |
+共 **9 个**。前 8 个是我们自己写的（"教程内置款"），第 9 个是社区主流第三方款（vendor 进来）：
+
+| Skill | 作用 | 来源 |
 |---|---|---|
-| **new-vue-component** | `/new-vue-component LoginForm` 一键脚手架 SFC + 测试 + Storybook | Vue 专属 |
-| **component-spec** | 写组件前先输出"规约表"（强制设计在前） | Vue 专属 |
-| **pinia-store** | Pinia 3 setup store 标准模板 | Vue 专属 |
-| **composable-spec** | composable 命名 / 返回值 / 清理 规范 | Vue 专属 |
-| **a11y-vue** | Vue SFC 的无障碍检查（图片 alt、标题层级、ARIA） | Vue 专属 |
-| **frontend-design** | 强制做出审美选择（5 选 1）、禁用 Inter/紫粉渐变 | 通用 |
-| **a11y-check** | 通用无障碍审计（兼容 Vue / React） | 通用 |
-| **perf-budget** | 性能预算守门人（Web Vitals + bundle + 图片 + 字体） | 通用 |
+| **new-vue-component** | `/new-vue-component LoginForm` 一键脚手架 SFC + 测试 + Storybook | 自有 |
+| **component-spec** | 写组件前先输出"规约表"（强制设计在前） | 自有 |
+| **pinia-store** | Pinia 3 setup store 标准模板 | 自有 |
+| **composable-spec** | composable 命名 / 返回值 / 清理 规范 | 自有 |
+| **a11y-vue** | Vue SFC 的无障碍检查（图片 alt、标题层级、ARIA） | 自有 |
+| **frontend-design** | 强制做出审美选择（5 选 1）、禁用 Inter/紫粉渐变 | 自有（通用） |
+| **a11y-check** | 通用无障碍审计（兼容 Vue / React） | 自有（通用） |
+| **perf-budget** | 性能预算守门人（Web Vitals + bundle + 图片 + 字体） | 自有（通用） |
+| **vue-best-practices** | Vue 3 + Composition API + `<script setup>` + TS 五步工作流 + 23 个 reference 文件 | 第三方（hyf0/vue-skills @ c9d355f） |
 
 **没拷的**：通用版 `component-spec` 与 Vue 版同名，Vue 项目用 Vue 版即可。
+
+### Q：vue-best-practices 是 Vue 官方的吗？
+
+**不完全是**。
+
+- 仓库：[hyf0/vue-skills](https://github.com/hyf0/vue-skills)（推广别名 `vuejs-ai/skills`）
+- 状态（作者自述）："Early Experiment / Community Project"
+- 但作者意图："If valuable, I plan to propose transferring this project to the Vue organization to benefit the wider community."
+- 数据：2.4k Star、19.2k 安装、Vue School 在推荐、昨天还在更新
+- 协议：MIT
+
+所以是**"社区事实标准 + 即将归官方"**的状态。我们采用 **vendoring**（拷贝源码进项目）而非 npm 包，这样：
+1. 跟着 git 走，团队成员 `git clone` 就有
+2. 锁定到具体 commit（避免上游突然破坏性更新）
+3. 升级是显式 git 操作，不会被静默改动
+
+详细的来源、commit、升级方法见 `app/.claude/skills/vue-best-practices/NOTICE.md`。
+
+### Q：vue-best-practices 跟我们自己的 skill 冲突吗？
+
+不冲突，**互补**：
+
+| 我们的 skill | vue-best-practices 怎么补充 |
+|---|---|
+| `component-spec` 关注"规约表"输出格式 | 关注五步工作流和核心原则（"state 一处真源"、"小而专组件"） |
+| `pinia-store` 关注 setup store 模板 | references 里有 `state-management.md` 讲 Pinia 用法心法 |
+| `composable-spec` 关注命名 / 返回值 | references 里有 `composables.md` 讲 composable 模式 |
+| `new-vue-component` 关注脚手架文件 | 关注组件设计原则（"Props down, Events up"） |
+
+互相加成，不冲突。
 
 ### Q：`.cursor/rules/` 在 Vue + Claude Code 项目里有用吗？
 
@@ -88,18 +121,23 @@ cp docs/frontend-ai-guide/vue/CLAUDE.md app/CLAUDE.md
 cp docs/frontend-ai-guide/vue/AGENTS.md app/AGENTS.md
 cp -r docs/frontend-ai-guide/vue/.cursor/rules/. app/.cursor/rules/
 
-# 4. 复制 Skills（Vue 专属 5 + 通用 3 = 8）
+# 4. 复制自有 Skills（Vue 专属 5 + 通用 3 = 8）
 cp -r docs/frontend-ai-guide/vue/skills/. app/.claude/skills/
 cp -r docs/frontend-ai-guide/skills/frontend-design app/.claude/skills/
 cp -r docs/frontend-ai-guide/skills/a11y-check     app/.claude/skills/
 cp -r docs/frontend-ai-guide/skills/perf-budget    app/.claude/skills/
 
-# 5. 验证（见下一节）
-node scripts/check-setup.mjs
+# 5. Vendor 第三方 vue-best-practices（hyf0/vue-skills @ c9d355f）
+git clone --depth=1 https://github.com/hyf0/vue-skills.git /tmp/vue-skills
+cp -r /tmp/vue-skills/skills/vue-best-practices app/.claude/skills/
+# 在 vue-best-practices/ 下放 NOTICE.md 记录来源 + 协议 + commit
 
-# 6. 提交
-git add app/
-git commit -m "feat(app): 初始化 Vue 项目的 Claude Code 协作配置"
+# 6. 验证
+node scripts/check-setup.mjs   # 期望：9 Skill / 0 问题
+
+# 7. 提交
+git add -A
+git commit -m "..."
 git push
 ```
 
