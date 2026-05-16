@@ -20,6 +20,13 @@ function onReset(): void {
   selectedDept.value = 'all';
 }
 
+/* —— 核心指标视图：分组 / 平铺 —— */
+type MetricViewMode = 'grouped' | 'flat';
+const metricViewMode = ref<MetricViewMode>('grouped');
+const allMetrics = computed(() =>
+  metrics.value?.groups.flatMap(g => g.items) ?? [],
+);
+
 /* —— Tabs —— */
 const activeTabKey = ref<string>('industry');
 const activeTab = computed(() =>
@@ -94,14 +101,51 @@ function onRowDetail(row: Record<string, unknown>): void {
 
       <!-- ============ Div 2：核心指标 ============ -->
       <section class="mt-6 rounded-xl border border-ink-200/70 bg-surface px-5 py-5 shadow-[var(--shadow-card)]">
-        <div class="flex items-center gap-2 mb-4">
+        <header class="flex items-center gap-2 mb-4">
           <span class="w-1 h-4 rounded-full bg-brand-500" />
           <h2 class="font-display text-[15px] font-semibold text-ink-900 tracking-tight">
             核心指标
           </h2>
-        </div>
+          <div class="flex-1" />
+          <!-- 视图切换：分组 / 平铺 -->
+          <div
+            role="tablist"
+            aria-label="核心指标视图"
+            class="inline-flex items-center rounded-md border border-ink-200 bg-ink-50/60 p-0.5 text-[12px]"
+          >
+            <button
+              type="button"
+              role="tab"
+              :aria-selected="metricViewMode === 'grouped'"
+              :class="[
+                'h-7 px-3 rounded transition-colors',
+                metricViewMode === 'grouped'
+                  ? 'bg-surface text-ink-900 shadow-[var(--shadow-card)] font-medium'
+                  : 'text-ink-600 hover:text-ink-900',
+              ]"
+              @click="metricViewMode = 'grouped'"
+            >
+              分组
+            </button>
+            <button
+              type="button"
+              role="tab"
+              :aria-selected="metricViewMode === 'flat'"
+              :class="[
+                'h-7 px-3 rounded transition-colors',
+                metricViewMode === 'flat'
+                  ? 'bg-surface text-ink-900 shadow-[var(--shadow-card)] font-medium'
+                  : 'text-ink-600 hover:text-ink-900',
+              ]"
+              @click="metricViewMode = 'flat'"
+            >
+              平铺
+            </button>
+          </div>
+        </header>
 
-        <div class="space-y-6">
+        <!-- 分组模式：每组一个 section 带小标题 -->
+        <div v-if="metricViewMode === 'grouped'" class="space-y-6">
           <section v-for="g in metrics?.groups ?? []" :key="g.key">
             <h3 class="text-[12px] text-ink-500 mb-2.5 flex items-center gap-2">
               <span class="inline-block w-1 h-3 rounded-full bg-brand-300" />
@@ -116,6 +160,19 @@ function onRowDetail(row: Record<string, unknown>): void {
               />
             </div>
           </section>
+        </div>
+
+        <!-- 平铺模式：所有卡放在一个网格，不展示分类 -->
+        <div
+          v-else
+          class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"
+        >
+          <MetricCard
+            v-for="m in allMetrics"
+            :key="m.key"
+            :metric="m"
+            @drill="onDrill"
+          />
         </div>
 
         <p
