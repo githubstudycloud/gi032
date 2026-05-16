@@ -10,8 +10,11 @@ export default defineNuxtConfig({
   // SSR 本身仍保留，渲染外壳更快，hydration 后再补数据。
 
   devServer: {
-    // Node 24 默认偏好 IPv6，nuxt dev 只绑 ::1 会导致 Windows 的 localhost(IPv4) 连不上。
-    host: '127.0.0.1',
+    // 0.0.0.0 = 监听所有 IPv4 网卡（含 loopback + 局域网），
+    // 同 WiFi/办公网的同事用 http://<本机 IP>:3000 直接访问。
+    // 也修了之前 nuxt dev 默认只绑 IPv6 ::1 导致 localhost 连不上的问题。
+    // 备注：如果不想外部访问，改回 '127.0.0.1' 即可。
+    host: '0.0.0.0',
     port: 3000,
   },
 
