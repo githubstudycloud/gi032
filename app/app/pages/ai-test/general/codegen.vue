@@ -140,7 +140,7 @@ function onRowDetail(row: Record<string, unknown>): void {
           </button>
         </div>
 
-        <MultiLevelTable v-if="activeTab" :data="activeTab" @detail="onRowDetail" />
+        <MultiLevelTable v-if="activeTab" :key="activeTab.key" :data="activeTab" @detail="onRowDetail" />
       </section>
 
       <template #fallback>

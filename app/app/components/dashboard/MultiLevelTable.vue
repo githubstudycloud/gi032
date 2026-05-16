@@ -109,6 +109,29 @@ function clearFilter(key: string): void {
   selectedFilters.value = next;
 }
 
+/* —— tab / data 切换时重置本表所有筛选与排序，防止跨表残留 —— */
+watch(
+  () => props.data.key,
+  () => {
+    sortKey.value = null;
+    sortDir.value = null;
+    filterOpen.value = null;
+    selectedFilters.value = {};
+  },
+);
+
+/* —— 点击表格外关闭筛选下拉 —— */
+const rootEl = ref<HTMLElement | null>(null);
+function onDocClick(e: MouseEvent): void {
+  if (!filterOpen.value) return;
+  const t = e.target as Node | null;
+  if (rootEl.value && t && !rootEl.value.contains(t)) {
+    filterOpen.value = null;
+  }
+}
+onMounted(() => document.addEventListener('click', onDocClick));
+onBeforeUnmount(() => document.removeEventListener('click', onDocClick));
+
 /* —— 派生 rows —— */
 const displayRows = computed<TableRow[]>(() => {
   let rows = props.data.rows.slice();
@@ -153,7 +176,10 @@ const totalPages = computed<number>(() => {
 </script>
 
 <template>
-  <div class="rounded-xl border border-ink-200/70 bg-surface overflow-hidden shadow-[var(--shadow-card)]">
+  <div
+    ref="rootEl"
+    class="rounded-xl border border-ink-200/70 bg-surface overflow-hidden shadow-[var(--shadow-card)]"
+  >
     <div class="overflow-x-auto overflow-y-visible">
       <table
         class="text-[14px] border-collapse"

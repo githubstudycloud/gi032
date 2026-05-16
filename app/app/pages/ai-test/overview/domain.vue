@@ -116,7 +116,7 @@ function onRowDetail(row: Record<string, unknown>): void {
           </h2>
         </div>
 
-        <MultiLevelTable v-if="detailTab" :data="detailTab" @detail="onRowDetail" />
+        <MultiLevelTable v-if="detailTab" :key="detailTab.key" :data="detailTab" @detail="onRowDetail" />
       </section>
 
       <template #fallback>
