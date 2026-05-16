@@ -1,0 +1,55 @@
+---
+description: 前端审美准则。当涉及生成 UI、写样式、做主题、设计 landing page、admin dashboard 时激活。
+alwaysApply: false
+globs: []
+---
+
+# 前端审美准则（agent requested）
+
+> 这条规则不靠 glob 自动激活，靠 description 让 Cursor / Claude 自行判断。
+> 当你说"画一个登录页"、"做一个 dashboard"、"设计 hero 区"时，AI 应该拉它进来。
+
+## 第一原则：先做审美选择，再写代码
+
+不要默认输出。在 5 个方向里挑 1 个，把选择**显式告诉用户**：
+
+1. **Brutalist** — 粗黑边框、大字号、网格错位、原色（黄黑红）
+2. **Editorial** — 衬线大标题、宽边距、文字优先、克制配色
+3. **Glassmorphism** — 毛玻璃 + 微渐变 + 圆角 + 弱阴影
+4. **Solarpunk** — 暖绿 + 金黄 + 有机形状 + 手绘感
+5. **Dark Luxury** — 深底（#0A0A0A）+ 金属高光 + 大留白
+
+## 字体禁用列表
+- ❌ Inter / Inter Display
+- ❌ Roboto / Roboto Mono
+- ❌ Arial / Helvetica / Helvetica Neue
+- ❌ Space Grotesk
+- ❌ 任何"无个性几何无衬线"作为标题字体
+
+## 字体推荐
+- 标题：Fraunces / Playfair Display / Instrument Serif / Cormorant Garamond
+- 正文：InterDisplay（OK 但要配特别的标题）/ Geist / Source Sans 3
+- 中文：思源宋体 / 思源黑体 / 霞鹜文楷
+- 等宽：JetBrains Mono / Geist Mono / IBM Plex Mono
+
+## 颜色
+- 用 OKLCH 而非 hex
+- "1 个主色 + 1 个强调色" 而非平均分配的调色板
+- Dark mode：背景不是纯黑而是 oklch(0.15 0 0) 上下浮动
+
+## 渐变
+- ❌ `from-purple-500 to-pink-500`、`from-violet to-fuchsia`、`from-cyan to-blue`
+- ✅ 同色相不同明度的微渐变 / 几何噪点纹理 / SVG 网格背景
+
+## 动画
+- 用 Motion for Vue（`motion-v`）
+- 入场用 stagger（`delay` 错开），不要"一齐淡入"
+- 高影响时刻：CTA hover、表单成功、空状态切换
+- 避免无意义的滑入
+
+## 背景
+- 平面纯色 = AI slop
+- 用 CSS gradient + grain 滤镜，或几何 SVG pattern，或大尺寸 noise 图
+
+## 不知道用哪种时
+**默认 editorial**（Fraunces + 大留白 + OKLCH 暖色调）—— 因为 AI 默认会写 SaaS minimal，反着来就对了。

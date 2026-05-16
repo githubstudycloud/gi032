@@ -1,0 +1,66 @@
+---
+description: 前端审美准则。当涉及生成 UI、写样式、做主题、设计 landing page、admin dashboard 时激活。
+alwaysApply: false
+globs: []
+---
+
+# 前端审美准则（agent requested）
+
+## 第一原则：先做审美选择，再写代码
+
+不要默认输出。在 5 个方向里挑 1 个，把选择**显式告诉用户**：
+
+1. **Brutalist** — 粗黑边框、大字号、网格错位、原色
+2. **Editorial** — 衬线大标题、宽边距、文字优先、克制配色
+3. **Glassmorphism** — 毛玻璃 + 微渐变 + 圆角 + 弱阴影
+4. **Solarpunk** — 暖绿 + 金黄 + 有机形状
+5. **Dark Luxury** — 深底 + 金属高光 + 大留白
+
+## 字体禁用
+
+- ❌ Inter / Inter Display / Roboto / Arial / Helvetica / Space Grotesk
+- ❌ 任何"无个性几何无衬线"作为标题字体
+
+## 字体推荐
+
+- 标题（衬线）：Fraunces / Playfair Display / Instrument Serif / Cormorant
+- 标题（特殊无衬线）：Geist / Söhne / Suisse Int'l
+- 正文：Geist / Source Sans 3 / InterDisplay（配独特标题字时 OK）
+- 中文：思源宋体 / 思源黑体 / 霞鹜文楷
+- 等宽：Geist Mono / JetBrains Mono / IBM Plex Mono
+
+## 颜色
+
+- 用 OKLCH，不用 hex
+- "1 主色 + 1 强调色"，不要平均调色板
+- Dark mode 背景不是 `#000` 而是 `oklch(0.15 0 0)` 上下浮动
+
+## 渐变
+
+- ❌ `from-purple-500 to-pink-500`、`from-violet to-fuchsia`、`from-cyan to-blue`
+- ✅ 同色相不同明度的微渐变 / 几何噪点纹理 / SVG mesh
+
+## 动画（用 Motion）
+
+```tsx
+import { motion } from 'motion/react'
+
+<motion.div
+  initial={{ opacity: 0, y: 8 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.4, ease: [0.2, 0.8, 0.2, 1] }}
+>
+```
+
+- 用 stagger（`transition.delay = index * 0.08`）错开列表入场
+- 高影响时刻：CTA hover、表单成功
+- 尊重 `prefers-reduced-motion`（Motion 自动）
+
+## 背景
+
+- 纯色 = AI slop
+- 用 CSS 渐变 + grain，或几何 SVG pattern，或 noise 纹理
+
+## 默认选 editorial（如果没说）
+
+AI 默认会写 SaaS minimal，反着来选 editorial（Fraunces + 暖 OKLCH + 大留白）就对了。

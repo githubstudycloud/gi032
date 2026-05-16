@@ -1,0 +1,47 @@
+---
+description: shadcn/ui + Radix + Tailwind v4 样式规则
+alwaysApply: false
+globs: ["app/**/*.tsx", "components/**/*.tsx", "app/**/*.css", "styles/**/*.css"]
+---
+
+# shadcn/ui + Tailwind v4 规则
+
+## 优先复用 `components/ui/` 下的组件
+- Button、Input、Dialog、Card、Form、Toast、Sheet、Popover、Sonner …
+- 安装新的：`npx shadcn@latest add <name>`
+- 不要从 npm 装替代品（MUI / Ant Design / Chakra）
+
+## 底层 Radix UI
+- 无障碍由 Radix 保证
+- 不要绕过 Radix 自己写 Dialog / Popover / Combobox
+
+## Tailwind v4
+- 主题 token 在 `app/globals.css` 的 `@theme { ... }`
+- 不写 `tailwind.config.{js,ts}`
+- 颜色 OKLCH
+- 类名顺序：layout → spacing → typography → color → state
+
+## Dark mode
+- 使用 `class="dark:..."` 前缀
+- 主题 token 在 `:root` 和 `.dark` 各一份
+- 用 `next-themes` 切换（已装）
+
+## 工具函数 `cn()`
+- 来自 `@/lib/utils`（`clsx` + `tailwind-merge`）
+- 所有动态类名都过 `cn()`
+
+```tsx
+import { cn } from '@/lib/utils'
+
+<div className={cn(
+  'rounded-lg p-4',
+  isActive && 'bg-brand-500 text-white',
+  className,  // 透传
+)}>
+```
+
+## 禁止
+- ❌ 引入 MUI / Ant Design / Chakra / Mantine（除非新人项目讨论后）
+- ❌ `style={{ ... }}` 内联（除非动态计算值，且加注释说明）
+- ❌ `bg-gradient-to-r from-purple-500 to-pink-500`、`from-violet to-fuchsia`
+- ❌ 自己手撸 Modal / Tooltip — 用 shadcn/ui

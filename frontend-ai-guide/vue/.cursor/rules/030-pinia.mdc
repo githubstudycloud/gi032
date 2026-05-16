@@ -1,0 +1,51 @@
+---
+description: Pinia 3 store 写法约定
+alwaysApply: false
+globs: ["app/stores/**/*.ts"]
+---
+
+# Pinia 3 规则
+
+## 只用 setup store 写法
+
+```ts
+// app/stores/user.ts
+import { defineStore } from 'pinia'
+
+export const useUserStore = defineStore('user', () => {
+  // state
+  const profile = ref<UserProfile | null>(null)
+  const isLoading = ref(false)
+
+  // getters
+  const isLoggedIn = computed(() => !!profile.value)
+
+  // actions
+  async function login(creds: LoginPayload): Promise<void> {
+    isLoading.value = true
+    try {
+      profile.value = await $fetch('/api/auth/login', { method: 'POST', body: creds })
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  function logout(): void {
+    profile.value = null
+  }
+
+  return { profile, isLoading, isLoggedIn, login, logout }
+})
+```
+
+## 命名
+- store 文件名：单数（`user.ts` 不是 `users.ts`）— 除非确实是集合（`items.ts`）
+- 导出名：`useXxxStore`
+
+## 禁止
+- ❌ Options store（带 `state`/`getters`/`actions` key 的对象写法）
+- ❌ 直接 mutate store 外部状态（用 actions 包装）
+- ❌ 在 store 里写 component-specific 逻辑（那是 composable 的事）
+
+## 持久化
+- 用 `pinia-plugin-persistedstate`（已装），不要自己写 localStorage 同步

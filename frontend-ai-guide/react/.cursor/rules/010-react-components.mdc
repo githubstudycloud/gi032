@@ -1,0 +1,54 @@
+---
+description: React 组件文件约定
+alwaysApply: false
+globs: ["**/*.tsx", "**/*.jsx", "components/**/*.ts"]
+---
+
+# React 组件规则
+
+## Server vs Client Component
+- **默认 Server Component**（不写 `'use client'`）
+- 需要 useState / useEffect / 浏览器 API / 事件处理才加 `'use client'`
+- 把 `'use client'` 推到组件树的"叶子"，不要全树 Client 化
+
+## 文件 / 函数命名
+- 组件文件：`PascalCase.tsx`（与组件名一致）
+- hook 文件：`useXxx.ts`，camelCase
+- 工具：`kebab-case.ts`
+
+## 组件结构（函数式）
+
+```tsx
+'use client'  // 仅在需要时
+
+import { /* 库 */ } from '...'
+import { /* 内部 */ } from '@/components/ui/button'
+import type { /* 类型 */ } from '@/types'
+
+interface UserCardProps {
+  user: User
+  readonly?: boolean
+}
+
+export function UserCard({ user, readonly = false }: UserCardProps) {
+  // hooks 顶部
+  // 派生数据
+  // 渲染
+  return (...)
+}
+```
+
+## Props
+- 接口名 `[ComponentName]Props`
+- 显式 TS 类型，不要 PropTypes
+- 默认值在解构里写
+
+## 不要做
+- ❌ `React.FC<Props>` 类型（隐式 children + 历史包袱）
+- ❌ default export（除非框架必须 — page、layout、route handler、middleware）
+- ❌ `useMemo` / `useCallback` 包一切（React Compiler 处理）
+- ❌ 组件内嵌定义子组件（每次 render 重建）
+
+## key
+- `<ul>` `<map>` 必须带 `key`
+- 不要用 index 当 key（除非纯静态列表）

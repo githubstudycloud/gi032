@@ -1,0 +1,77 @@
+---
+description: TanStack Query / TanStack Form 使用规范
+alwaysApply: false
+globs: ["**/*.tsx", "**/*.ts", "hooks/**/*.ts", "lib/queries/**/*.ts"]
+---
+
+# TanStack Query 规则
+
+## 用 `queryOptions()` 工厂避免 key 拼写错
+
+```ts
+// lib/queries/users.ts
+import { queryOptions } from '@tanstack/react-query'
+
+export const usersQueries = {
+  all: () => queryOptions({
+    queryKey: ['users'],
+    queryFn: () => fetch('/api/users').then(r => r.json()),
+  }),
+  byId: (id: string) => queryOptions({
+    queryKey: ['users', id],
+    queryFn: () => fetch(`/api/users/${id}`).then(r => r.json()),
+    enabled: !!id,
+  }),
+}
+
+// 使用
+const { data } = useQuery(usersQueries.byId(userId))
+```
+
+## Mutation 模板
+
+```ts
+const queryClient = useQueryClient()
+const mutation = useMutation({
+  mutationFn: deleteUser,            // (id: string) => Promise<void>
+  onMutate: async (id) => {
+    await queryClient.cancelQueries({ queryKey: ['users'] })
+    const previous = queryClient.getQueryData<User[]>(['users'])
+    queryClient.setQueryData<User[]>(['users'], old =>
+      old?.filter(u => u.id !== id),
+    )
+    return { previous }
+  },
+  onError: (_err, _id, ctx) => {
+    if (ctx?.previous) queryClient.setQueryData(['users'], ctx.previous)
+    toast.error('删除失败')
+  },
+  onSuccess: () => toast.success('已删除'),
+  onSettled: () => queryClient.invalidateQueries({ queryKey: ['users'] }),
+})
+```
+
+## 规则
+- queryKey 全部走工厂，不要散落字符串
+- mutation 默认实现 optimistic update（上面模板）
+- `staleTime` / `gcTime` 根据数据特点调，不要全默认 0
+- 服务端预取：在 Server Component 用 `prefetchQuery` 然后 `<HydrationBoundary>`
+
+# TanStack Form 规则
+
+- 字段 schema 用 Zod 4
+- 提交时 `onSubmit` 跑 Zod 校验
+- 错误用 shadcn/ui `<FormMessage>` 展示
+
+```tsx
+const form = useForm({
+  defaultValues: { email: '', password: '' },
+  validators: {
+    onChange: z.object({
+      email: z.email(),
+      password: z.string().min(8),
+    }),
+  },
+  onSubmit: async ({ value }) => { ... },
+})
+```

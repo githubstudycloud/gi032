@@ -1,0 +1,44 @@
+---
+description: Nuxt server routes (/server/api/) 写法约定
+alwaysApply: false
+globs: ["server/api/**/*.ts", "server/utils/**/*.ts", "server/middleware/**/*.ts"]
+---
+
+# Nuxt Server API 规则
+
+## 文件命名
+- `server/api/users.get.ts` → GET /api/users
+- `server/api/users.post.ts` → POST /api/users
+- `server/api/users/[id].patch.ts` → PATCH /api/users/:id
+
+## 请求体校验 - Zod 4 必须
+
+```ts
+import { z } from 'zod'
+
+const Body = z.object({
+  email: z.email(),
+  password: z.string().min(8),
+})
+
+export default defineEventHandler(async (event) => {
+  const result = Body.safeParse(await readBody(event))
+  if (!result.success) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'INVALID_BODY',
+      data: { code: 'INVALID_BODY', issues: result.error.issues },
+    })
+  }
+  // ... 业务逻辑
+})
+```
+
+## 错误形状（响应体）
+```ts
+{ error: string; code: string; issues?: ZodIssue[] }
+```
+
+## 鉴权
+- 每个受保护路由首调 `requireAuth(event)`
+- 用户 ID 从 session 派生，**禁止信任客户端传的 userId**

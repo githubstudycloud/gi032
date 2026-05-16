@@ -1,0 +1,38 @@
+---
+description: 项目核心约定（React + Next.js 15）
+alwaysApply: true
+---
+
+# 项目基础规则（React）
+
+## 语言 & 运行时
+- TypeScript 5.6+ strict
+- Node.js 22 LTS
+- 包管理：pnpm
+
+## 框架
+- Next.js 15（App Router + RSC + Server Actions）
+- React 19 + **React Compiler 已启用**
+- Tailwind v4（CSS `@theme`，**不写 config 文件**）
+- shadcn/ui + Radix UI（源码在 `components/ui/`）
+
+## 状态 / 数据
+- 服务端 state：TanStack Query
+- 客户端全局 state：Zustand
+- 表单：TanStack Form + Zod 4
+
+## 代码风格
+- Server Component 默认；需要交互才 `'use client'`
+- 命名导出（除 Next page / layout / route 必须 default 的）
+- async/await，不写 `.then()` 链
+- 所有异步函数显式返回类型
+- 错误形状 `{ error: string; code: string }`
+
+## 禁止
+- Class 组件、Redux（新代码）、Axios
+- MUI / Ant Design / Chakra
+- `tailwind.config.{js,ts}`
+- 手动 `useMemo` / `useCallback` 包一切（React Compiler 已处理）
+- Inter / Roboto / Arial / Helvetica / Space Grotesk 作正文字体
+- `from-purple-500 to-pink-500` 类 AI slop 渐变
+- 在 Server Component 用 `useState`；在 Client 直接 import 数据库

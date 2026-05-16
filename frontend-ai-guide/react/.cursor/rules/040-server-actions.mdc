@@ -1,0 +1,77 @@
+---
+description: Next.js Server Actions / Route Handlers 约定
+alwaysApply: false
+globs: ["app/api/**/*.ts", "lib/actions/**/*.ts", "app/**/actions.ts"]
+---
+
+# Server Actions / Route Handlers 规则
+
+## Server Action 模板
+
+```ts
+// lib/actions/users.ts
+'use server'
+
+import { z } from 'zod'
+import { revalidatePath } from 'next/cache'
+import { requireAuth } from '@/lib/auth'
+
+const CreateUser = z.object({
+  email: z.email(),
+  name: z.string().min(1),
+})
+
+export async function createUser(formData: FormData) {
+  const session = await requireAuth()
+
+  const parsed = CreateUser.safeParse(Object.fromEntries(formData))
+  if (!parsed.success) {
+    return { error: 'INVALID_INPUT', code: 'INVALID_INPUT', issues: parsed.error.issues }
+  }
+
+  try {
+    const user = await db.user.create({ data: parsed.data, /* tenant */ })
+    revalidatePath('/users')
+    return { data: user }
+  } catch (e) {
+    return { error: '创建失败', code: 'DB_ERROR' }
+  }
+}
+```
+
+## Route Handler 模板
+
+```ts
+// app/api/users/route.ts
+import { z } from 'zod'
+import { NextResponse } from 'next/server'
+
+const Body = z.object({ email: z.email(), name: z.string() })
+
+export async function POST(req: Request) {
+  const parsed = Body.safeParse(await req.json())
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: 'INVALID_BODY', code: 'INVALID_BODY', issues: parsed.error.issues },
+      { status: 400 },
+    )
+  }
+  // ...
+  return NextResponse.json({ data: user }, { status: 201 })
+}
+```
+
+## 错误形状（响应体）
+
+```ts
+{ error: string; code: string; issues?: ZodIssue[] }
+```
+
+## 鉴权
+- 每个受保护 action / route 首调 `requireAuth()` / `requireSession()`
+- 用户 ID **从 session 派生**，禁止信任 body 里传的 userId
+- 多租户：tenant 也从 session 派生
+
+## 缓存与重新校验
+- 改了数据后 `revalidatePath(...)` 或 `revalidateTag(...)`
+- 不要全 `revalidatePath('/')` 一刀切
