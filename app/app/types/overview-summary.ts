@@ -52,7 +52,15 @@ export interface Metric {
 }
 
 /* —— 指标明细面板（点击卡片下钻） —— */
-export type MetricChartKind = 'trend' | 'distribution';
+export type MetricChartKind =
+  | 'trend'
+  | 'distribution'
+  | 'donut'
+  | 'bar'
+  | 'gauge'
+  | 'stacked'
+  | 'heatmap'
+  | 'radar';
 
 export interface TrendPoint {
   /** 横轴标签，如 '01月' / '2026-W18' */
@@ -66,20 +74,82 @@ export interface DistributionItem {
   value: number;
   /** 展示用文本（如 "62.4%"），不传则用 value */
   display?: string;
+  /** 可选自定义颜色 token：'emerald' | 'brand' | 'amber' | 'rose' | 'violet' | 'sky' | 'pink' */
+  color?: string;
+}
+
+export interface GaugeData {
+  value: number;
+  min?: number;
+  max?: number;
+  /** 目标值（参考刻度） */
+  target?: number;
+  unit?: string;
+  /** 中心展示文字，不传则用 value+unit */
+  display?: string;
+}
+
+export interface StackedSeries {
+  key: string;
+  label: string;
+  /** 颜色 token：'brand' | 'emerald' | 'amber' | 'rose' | 'violet' | 'sky' */
+  color?: string;
+}
+export interface StackedRow {
+  label: string;
+  values: Record<string, number>;
+}
+export interface StackedData {
+  series: StackedSeries[];
+  rows: StackedRow[];
+}
+
+export interface HeatmapData {
+  xLabels: string[];
+  yLabels: string[];
+  /** 二维矩阵：values[y][x] */
+  values: number[][];
+}
+
+export interface RadarAxis {
+  key: string;
+  label: string;
+  /** 该轴最大值，缺省 = 全部 series 在该轴上的最大值 */
+  max?: number;
+}
+export interface RadarSeries {
+  key: string;
+  label: string;
+  values: Record<string, number>;
+  color?: string;
+}
+export interface RadarData {
+  axes: RadarAxis[];
+  series: RadarSeries[];
 }
 
 export interface MetricChart {
   key: string;
   kind: MetricChartKind;
   title: string;
-  /** 单位（趋势图 Y 轴 / 分布图末尾，可选） */
+  /** 副标题/说明（可选，显示在 title 下方） */
+  subtitle?: string;
+  /** 单位 */
   unit?: string;
-  /** 趋势图数据 */
-  points?: TrendPoint[];
-  /** 分布图数据 */
-  items?: DistributionItem[];
-  /** 阈值（视觉参考线 / 颜色判定，可选） */
+  /** 阈值（趋势图参考线 / 仪表盘目标，可选） */
   threshold?: Threshold;
+  /** trend / sparkline 数据 */
+  points?: TrendPoint[];
+  /** distribution / donut / bar 数据 */
+  items?: DistributionItem[];
+  /** gauge 数据 */
+  gauge?: GaugeData;
+  /** stacked 数据 */
+  stacked?: StackedData;
+  /** heatmap 数据 */
+  heatmap?: HeatmapData;
+  /** radar 数据 */
+  radar?: RadarData;
 }
 
 export interface MetricFilterDim {

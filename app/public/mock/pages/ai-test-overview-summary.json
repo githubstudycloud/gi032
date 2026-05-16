@@ -51,34 +51,125 @@
                 {
                   "key": "ai-user-trend",
                   "kind": "trend",
-                  "title": "近 12 周活跃 AI 用户走势",
+                  "title": "近 12 周活跃走势",
+                  "subtitle": "周活 AI 调用用户数",
                   "unit": "人",
                   "points": [
-                    { "x": "W14", "y": 820 },
-                    { "x": "W15", "y": 865 },
-                    { "x": "W16", "y": 902 },
-                    { "x": "W17", "y": 948 },
-                    { "x": "W18", "y": 1010 },
-                    { "x": "W19", "y": 1052 },
-                    { "x": "W20", "y": 1098 },
-                    { "x": "W21", "y": 1135 },
-                    { "x": "W22", "y": 1180 },
-                    { "x": "W23", "y": 1216 },
-                    { "x": "W24", "y": 1252 },
-                    { "x": "W25", "y": 1284 }
+                    { "x": "W14", "y": 820 }, { "x": "W15", "y": 865 }, { "x": "W16", "y": 902 },
+                    { "x": "W17", "y": 948 }, { "x": "W18", "y": 1010 }, { "x": "W19", "y": 1052 },
+                    { "x": "W20", "y": 1098 }, { "x": "W21", "y": 1135 }, { "x": "W22", "y": 1180 },
+                    { "x": "W23", "y": 1216 }, { "x": "W24", "y": 1252 }, { "x": "W25", "y": 1284 }
                   ]
                 },
                 {
                   "key": "ai-user-by-dept",
                   "kind": "distribution",
                   "title": "按部门分布",
+                  "subtitle": "本月活跃 AI 用户",
                   "unit": "人",
                   "items": [
-                    { "key": "dept-1", "label": "智能终端",   "value": 412 },
-                    { "key": "dept-2", "label": "云服务",     "value": 356 },
-                    { "key": "dept-3", "label": "网络产品",   "value": 298 },
-                    { "key": "dept-4", "label": "汽车解决方案","value": 218 }
+                    { "key": "dept-1", "label": "智能终端",   "value": 412, "color": "brand"   },
+                    { "key": "dept-2", "label": "云服务",     "value": 356, "color": "sky"     },
+                    { "key": "dept-3", "label": "网络产品",   "value": 298, "color": "emerald" },
+                    { "key": "dept-4", "label": "汽车方案",   "value": 218, "color": "violet"  }
                   ]
+                },
+                {
+                  "key": "ai-user-by-role",
+                  "kind": "donut",
+                  "title": "按角色构成",
+                  "subtitle": "占比 %",
+                  "items": [
+                    { "key": "designer", "label": "测试设计", "value": 540, "color": "brand"   },
+                    { "key": "dev",      "label": "测试开发", "value": 386, "color": "violet"  },
+                    { "key": "executor", "label": "测试执行", "value": 248, "color": "emerald" },
+                    { "key": "lead",     "label": "测试主管", "value": 110, "color": "amber"   }
+                  ]
+                },
+                {
+                  "key": "ai-user-by-tenure",
+                  "kind": "bar",
+                  "title": "按司龄分组",
+                  "subtitle": "首次使用 AI 距入职月数",
+                  "unit": "人",
+                  "items": [
+                    { "key": "lt1", "label": "<1y",  "value": 186, "color": "sky"     },
+                    { "key": "1to3","label": "1-3y", "value": 412, "color": "brand"   },
+                    { "key": "3to5","label": "3-5y", "value": 364, "color": "emerald" },
+                    { "key": "5to8","label": "5-8y", "value": 232, "color": "violet"  },
+                    { "key": "gt8", "label": ">8y",  "value": 90,  "color": "amber"   }
+                  ]
+                },
+                {
+                  "key": "ai-user-target",
+                  "kind": "gauge",
+                  "title": "渗透率达成度",
+                  "subtitle": "AI 用户数 / 测试团队总人数",
+                  "gauge": {
+                    "value": 64,
+                    "min": 0,
+                    "max": 100,
+                    "target": 70,
+                    "unit": "%",
+                    "display": "64%"
+                  }
+                },
+                {
+                  "key": "ai-user-ai-vs-human",
+                  "kind": "stacked",
+                  "title": "AI vs 纯人工 用户分布",
+                  "subtitle": "按部门",
+                  "stacked": {
+                    "series": [
+                      { "key": "ai",    "label": "AI 用户",  "color": "brand" },
+                      { "key": "human", "label": "纯人工",   "color": "slate" }
+                    ],
+                    "rows": [
+                      { "label": "智能终端", "values": { "ai": 412, "human": 88  } },
+                      { "label": "云服务",   "values": { "ai": 356, "human": 124 } },
+                      { "label": "网络产品", "values": { "ai": 298, "human": 156 } },
+                      { "label": "汽车方案", "values": { "ai": 218, "human": 92  } }
+                    ]
+                  }
+                },
+                {
+                  "key": "ai-user-heatmap",
+                  "kind": "heatmap",
+                  "title": "活跃热力图",
+                  "subtitle": "部门 × 工作日",
+                  "unit": "人",
+                  "heatmap": {
+                    "xLabels": ["一", "二", "三", "四", "五"],
+                    "yLabels": ["智能终端", "云服务", "网络产品", "汽车方案"],
+                    "values": [
+                      [186, 224, 248, 232, 198],
+                      [156, 198, 220, 212, 178],
+                      [128, 168, 192, 184, 152],
+                      [ 92, 128, 148, 142, 118]
+                    ]
+                  }
+                },
+                {
+                  "key": "ai-user-capability-radar",
+                  "kind": "radar",
+                  "title": "多维使用能力",
+                  "subtitle": "本月 vs 上月",
+                  "radar": {
+                    "axes": [
+                      { "key": "design",   "label": "设计",  "max": 100 },
+                      { "key": "script",   "label": "脚本",  "max": 100 },
+                      { "key": "exec",     "label": "执行",  "max": 100 },
+                      { "key": "review",   "label": "评审",  "max": 100 },
+                      { "key": "defect",   "label": "缺陷",  "max": 100 },
+                      { "key": "report",   "label": "报告",  "max": 100 }
+                    ],
+                    "series": [
+                      { "key": "cur",  "label": "本月", "color": "brand",
+                        "values": { "design": 82, "script": 74, "exec": 68, "review": 60, "defect": 72, "report": 78 } },
+                      { "key": "prev", "label": "上月", "color": "slate",
+                        "values": { "design": 68, "script": 62, "exec": 58, "review": 52, "defect": 64, "report": 70 } }
+                    ]
+                  }
                 }
               ]
             }
