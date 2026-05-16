@@ -1,18 +1,41 @@
 <script setup lang="ts">
-import type { OverviewMetrics } from '~/types/overview-summary';
+import type { OverviewMetrics, Metric } from '~/types/overview-summary';
 
 const props = defineProps<{
   metrics: OverviewMetrics | null;
   title?: string;
 }>();
 
-defineEmits<{
+const emit = defineEmits<{
   drill: [metricKey: string];
+  filterChange: [metricKey: string, filters: Record<string, string>];
 }>();
 
 type ViewMode = 'grouped' | 'flat';
 const viewMode = ref<ViewMode>('grouped');
-const allMetrics = computed(() => props.metrics?.groups.flatMap(g => g.items) ?? []);
+const allMetrics = computed<Metric[]>(() => props.metrics?.groups.flatMap(g => g.items) ?? []);
+
+/** 当前展开明细的 metric key（同时只展开一个） */
+const openKey = ref<string | null>(null);
+const openMetric = computed<Metric | null>(() =>
+  openKey.value ? (allMetrics.value.find(m => m.key === openKey.value) ?? null) : null,
+);
+
+function onCardClick(m: Metric): void {
+  // 有 detail → 切换展开；没有 → 透传 drill 让上层处理（跳明细页等）
+  if (m.detail) {
+    openKey.value = openKey.value === m.key ? null : m.key;
+  } else {
+    openKey.value = null;
+    emit('drill', m.key);
+  }
+}
+
+/** 平铺模式下，open metric 所在的行索引（用于决定面板插入位置） */
+function isOpenInGroup(groupKey: string): boolean {
+  if (!openMetric.value) return false;
+  return props.metrics?.groups.find(g => g.key === groupKey)?.items.some(m => m.key === openKey.value) ?? false;
+}
 </script>
 
 <template>
@@ -66,19 +89,55 @@ const allMetrics = computed(() => props.metrics?.groups.flatMap(g => g.items) ??
             v-for="m in g.items"
             :key="m.key"
             :metric="m"
-            @drill="$emit('drill', $event)"
+            :active="openKey === m.key"
+            @drill="onCardClick(g.items.find(it => it.key === $event)!)"
           />
         </div>
+        <Transition
+          enter-active-class="transition duration-200 ease-out"
+          enter-from-class="opacity-0 -translate-y-1"
+          enter-to-class="opacity-100 translate-y-0"
+          leave-active-class="transition duration-150 ease-in"
+          leave-from-class="opacity-100 translate-y-0"
+          leave-to-class="opacity-0 -translate-y-1"
+        >
+          <div v-if="openMetric && isOpenInGroup(g.key)" class="mt-2.5">
+            <MetricDetailPanel
+              :metric="openMetric"
+              @close="openKey = null"
+              @filter-change="(f) => emit('filterChange', openMetric!.key, f)"
+            />
+          </div>
+        </Transition>
       </section>
     </div>
 
-    <div v-else class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-2">
-      <MetricCard
-        v-for="m in allMetrics"
-        :key="m.key"
-        :metric="m"
-        @drill="$emit('drill', $event)"
-      />
+    <div v-else>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-2">
+        <MetricCard
+          v-for="m in allMetrics"
+          :key="m.key"
+          :metric="m"
+          :active="openKey === m.key"
+          @drill="onCardClick(allMetrics.find(it => it.key === $event)!)"
+        />
+      </div>
+      <Transition
+        enter-active-class="transition duration-200 ease-out"
+        enter-from-class="opacity-0 -translate-y-1"
+        enter-to-class="opacity-100 translate-y-0"
+        leave-active-class="transition duration-150 ease-in"
+        leave-from-class="opacity-100 translate-y-0"
+        leave-to-class="opacity-0 -translate-y-1"
+      >
+        <div v-if="openMetric" class="mt-2.5">
+          <MetricDetailPanel
+            :metric="openMetric"
+            @close="openKey = null"
+            @filter-change="(f) => emit('filterChange', openMetric!.key, f)"
+          />
+        </div>
+      </Transition>
     </div>
 
     <p

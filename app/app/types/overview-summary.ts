@@ -47,6 +47,54 @@ export interface Metric {
   description: string;
   /** 主数值阈值（可选） */
   threshold?: Threshold;
+  /** 点击卡片展开的明细面板配置（可选；无则不展开，仅触发 drill 事件） */
+  detail?: MetricDetail;
+}
+
+/* —— 指标明细面板（点击卡片下钻） —— */
+export type MetricChartKind = 'trend' | 'distribution';
+
+export interface TrendPoint {
+  /** 横轴标签，如 '01月' / '2026-W18' */
+  x: string;
+  y: number;
+}
+
+export interface DistributionItem {
+  key: string;
+  label: string;
+  value: number;
+  /** 展示用文本（如 "62.4%"），不传则用 value */
+  display?: string;
+}
+
+export interface MetricChart {
+  key: string;
+  kind: MetricChartKind;
+  title: string;
+  /** 单位（趋势图 Y 轴 / 分布图末尾，可选） */
+  unit?: string;
+  /** 趋势图数据 */
+  points?: TrendPoint[];
+  /** 分布图数据 */
+  items?: DistributionItem[];
+  /** 阈值（视觉参考线 / 颜色判定，可选） */
+  threshold?: Threshold;
+}
+
+export interface MetricFilterDim {
+  /** 'department' | 'role' | 'person' 等 */
+  key: string;
+  label: string;
+  options: FilterOption[];
+  /** 默认选中的 option key，缺省 = 第一个 */
+  defaultKey?: string;
+}
+
+export interface MetricDetail {
+  charts: MetricChart[];
+  /** 右侧筛选区（部门/角色/人 等），可选 */
+  filters?: MetricFilterDim[];
 }
 
 export interface MetricGroup {

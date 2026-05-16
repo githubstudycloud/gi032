@@ -4,6 +4,8 @@ import { thresholdClass } from '~/utils/threshold';
 
 const props = defineProps<{
   metric: Metric;
+  /** 是否处于「展开明细」激活态（由父组件 MetricsBox 控制） */
+  active?: boolean;
 }>();
 
 defineEmits<{
@@ -13,6 +15,8 @@ defineEmits<{
 const valueThresholdClass = computed<string>(() =>
   thresholdClass(props.metric.value, props.metric.threshold),
 );
+
+const hasDetail = computed<boolean>(() => Boolean(props.metric.detail));
 
 const hovered = ref(false);
 const focused = ref(false);
@@ -41,8 +45,14 @@ const trendLabel = computed<string>(() =>
   >
     <button
       type="button"
-      class="w-full text-left rounded-lg border border-ink-200/70 bg-surface px-3 py-2.5 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-hover)] hover:border-brand-300 transition-all focus:outline-none focus:ring-2 focus:ring-brand-200 flex flex-col gap-1"
+      :class="[
+        'w-full text-left rounded-lg border px-3 py-2.5 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-hover)] transition-all focus:outline-none focus:ring-2 focus:ring-brand-200 flex flex-col gap-1',
+        active
+          ? 'border-brand-400 bg-brand-50/60 ring-2 ring-brand-200/60'
+          : 'border-ink-200/70 bg-surface hover:border-brand-300',
+      ]"
       :aria-describedby="`metric-tip-${metric.key}`"
+      :aria-expanded="hasDetail ? active : undefined"
       @focus="focused = true"
       @blur="focused = false"
       @click="$emit('drill', metric.key)"
@@ -74,6 +84,15 @@ const trendLabel = computed<string>(() =>
       >
         <span aria-hidden="true" class="text-[9px]">{{ metric.trend === 'up' ? '▲' : metric.trend === 'down' ? '▼' : '●' }}</span>
         <span>环比 {{ metric.mom }}</span>
+        <span v-if="hasDetail" class="flex-1" />
+        <span
+          v-if="hasDetail"
+          aria-hidden="true"
+          :class="[
+            'inline-flex items-center justify-center text-[9px] transition-transform',
+            active ? 'rotate-180 text-brand-600' : 'text-ink-400',
+          ]"
+        >▾</span>
       </div>
     </button>
 
