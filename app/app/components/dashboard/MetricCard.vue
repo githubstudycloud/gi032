@@ -41,38 +41,38 @@ const trendLabel = computed<string>(() =>
   >
     <button
       type="button"
-      class="w-full text-left rounded-xl border border-ink-200/70 bg-surface px-4 py-4 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-hover)] hover:border-brand-300 transition-all focus:outline-none focus:ring-2 focus:ring-brand-200 flex flex-col gap-2"
+      class="w-full text-left rounded-lg border border-ink-200/70 bg-surface px-3 py-2.5 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-hover)] hover:border-brand-300 transition-all focus:outline-none focus:ring-2 focus:ring-brand-200 flex flex-col gap-1"
       :aria-describedby="`metric-tip-${metric.key}`"
       @focus="focused = true"
       @blur="focused = false"
       @click="$emit('drill', metric.key)"
     >
       <span
-        class="text-[13px] text-ink-600 leading-snug break-words decoration-dotted decoration-ink-300 underline-offset-4 group-hover:underline group-hover:decoration-brand-400"
+        class="text-[12px] text-ink-600 leading-snug break-words decoration-dotted decoration-ink-300 underline-offset-4 group-hover:underline group-hover:decoration-brand-400 line-clamp-2"
       >
         {{ metric.label }}
       </span>
 
       <div
         :class="[
-          'font-display text-[28px] font-semibold leading-tight tabular-nums break-all',
+          'font-display text-[20px] font-semibold leading-tight tabular-nums break-all',
           valueThresholdClass || 'text-ink-900',
         ]"
       >
         {{ metric.value }}<span
           v-if="metric.unit"
-          class="ml-1 text-[14px] font-normal text-ink-500"
+          class="ml-0.5 text-[12px] font-normal text-ink-500"
         >{{ metric.unit }}</span>
       </div>
 
       <div
         :class="[
-          'text-[12px] flex items-center gap-1',
+          'text-[11px] flex items-center gap-1 leading-none',
           metric.trend === 'up'   ? 'text-emerald-600' :
           metric.trend === 'down' ? 'text-rose-600'    : 'text-ink-500',
         ]"
       >
-        <span aria-hidden="true">{{ metric.trend === 'up' ? '▲' : metric.trend === 'down' ? '▼' : '●' }}</span>
+        <span aria-hidden="true" class="text-[9px]">{{ metric.trend === 'up' ? '▲' : metric.trend === 'down' ? '▼' : '●' }}</span>
         <span>环比 {{ metric.mom }}</span>
       </div>
     </button>
