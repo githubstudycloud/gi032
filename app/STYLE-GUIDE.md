@@ -403,6 +403,12 @@ export function useTheme() {
 **总工作量 ≈ 3.5 小时**（含 dark-ops 反色）。
 **不含 dark-ops** ≈ 2.5h（只做 minimal + business + ant-cn）。
 
+> **实施状态**（2026-05-17）：1–10 全部落地。当前 4 套主题（minimal / business / ant-cn / dark-ops）
+> 已在 [public/mock/themes.json](public/mock/themes.json) 注册并在 [main.css](app/assets/css/main.css)
+> 用 `html.theme-X` 覆盖；右上角切换器 + FOUC 防护脚本 + `localStorage` 持久化（key `ops-dashboard:theme`，
+> 存的是 htmlClass 完整字符串，跟 [nuxt.config.ts](nuxt.config.ts) inline script 对齐，零拼接）。
+> dark-ops 反色（surface / 边框 / shadow → 高光描边）也已做。
+
 ### 3.8 风险与权衡
 
 - **深色模式不是简单反白**：阴影从"投影"变"高光描边"、状态色饱和度要降一档（深底上彩色过曝）、chart 配色要换暗系板。**第一版先不上深色**，让 minimal / business / ant 跑稳再说。

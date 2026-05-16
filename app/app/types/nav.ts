@@ -27,6 +27,13 @@ export interface NavItem {
    * EmbedFrame 会提示用户在新窗口打开。
    */
   embed?: string;
+  /**
+   * iframe sandbox 白名单 token 列表（不设 = 默认 ['allow-scripts','allow-forms','allow-popups']）。
+   * 完整可选 token 见 https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/iframe#sandbox
+   * 设置 false 显式去除 sandbox（仅在你完全信任的内部子系统使用，例如自家 Excel 看板嵌入）。
+   * 参考：README.md "如何为 iframe 嵌入加白名单"。
+   */
+  embedSandbox?: string[] | false;
   /** 子菜单（递归任意层） */
   children?: NavItem[];
 }

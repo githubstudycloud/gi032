@@ -8,21 +8,30 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "typecheck": "nuxt typecheck"
+    "typecheck": "nuxt typecheck",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
-    "@pinia/nuxt": "^0.6.1",
+    "@nuxtjs/i18n": "^10.3.0",
     "@vueuse/core": "^12.0.0",
     "@vueuse/nuxt": "^12.0.0",
     "nuxt": "^4.0.0",
     "pinia": "^3.0.0",
     "vue": "^3.5.13",
-    "vue-router": "^4.4.5"
+    "vue-router": "^4.4.5",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@nuxt/eslint": "^1.15.2",
     "@tailwindcss/vite": "^4.1.0",
+    "@vitest/ui": "^4.1.6",
+    "eslint": "^10.4.0",
     "tailwindcss": "^4.1.0",
     "typescript": "^5.6.3",
+    "vitest": "^4.1.6",
     "vue-tsc": "^2.1.10"
   },
   "packageManager": "pnpm@9.12.0"

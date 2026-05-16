@@ -3,7 +3,7 @@ import { flattenNav } from '~/utils/nav-flat';
 
 const route = useRoute();
 const { items: navItems } = await useNav();
-const { metrics, pilots } = await useOverviewSummary();
+const { metrics, pilots, error, refresh } = await useOverviewSummary();
 
 const flat = computed(() => flattenNav(navItems.value));
 const current = computed(() => flat.value.find(i => i.path === route.path));
@@ -26,8 +26,10 @@ function onRowDetail(row: Record<string, unknown>): void {
 <template>
   <div>
     <ClientOnly>
+      <ErrorPanel v-if="error" :error="error" @retry="refresh" />
+
       <!-- Div 1: 核心指标 -->
-      <div>
+      <div v-else>
         <MetricsBox :metrics="metrics" @drill="onDrill" />
       </div>
 
@@ -40,28 +42,21 @@ function onRowDetail(row: Record<string, unknown>): void {
           </h2>
         </div>
 
-        <div role="tablist" class="flex items-center gap-1 border-b border-ink-200/60 mb-4">
-          <button
-            v-for="t in pilots?.tabs ?? []"
-            :key="t.key"
-            type="button"
-            role="tab"
-            :aria-selected="activeTabKey === t.key"
-            :class="[
-              'relative h-9 px-4 inline-flex items-center text-[13px] font-medium transition-colors',
-              activeTabKey === t.key ? 'text-brand-700' : 'text-ink-600 hover:text-ink-900',
-            ]"
-            @click="activeTabKey = t.key"
-          >
-            {{ t.label }}
-            <span
-              v-if="activeTabKey === t.key"
-              class="absolute left-3 right-3 -bottom-px h-[2.5px] bg-brand-600 rounded-t-full"
-            />
-          </button>
-        </div>
+        <TabStrip
+          v-model="activeTabKey"
+          :tabs="pilots?.tabs ?? []"
+          aria-label="试点进展明细"
+          class="mb-4"
+        />
 
-        <MultiLevelTable v-if="activeTab" :key="activeTab.key" :data="activeTab" @detail="onRowDetail" />
+        <div
+          v-if="activeTab"
+          :id="`panel-${activeTab.key}`"
+          role="tabpanel"
+          :aria-labelledby="`tab-${activeTab.key}`"
+        >
+          <MultiLevelTable :key="activeTab.key" :data="activeTab" @detail="onRowDetail" />
+        </div>
       </section>
 
       <template #fallback>

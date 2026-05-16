@@ -46,9 +46,11 @@ export async function useDataSource<TRaw = unknown, T = TRaw>(
 
   const transformed = computed<T | null>(() => {
     if (data.value == null) return null;
-    return opts.transform
-      ? opts.transform(data.value)
-      : (data.value as unknown as T);
+    // useAsyncData 的返回类型是 PickFrom<TRaw, KeysOf<TRaw>>（Nuxt 自己加的便利包装），
+    // 跟 transform 期望的 TRaw 不一致；调用方都给的是 OverviewSummaryResponse 这种领域对象，
+    // 这里 cast 安全。
+    const raw = data.value as TRaw;
+    return opts.transform ? opts.transform(raw) : (raw as unknown as T);
   });
 
   return {

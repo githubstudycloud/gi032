@@ -150,6 +150,13 @@ export interface MetricChart {
   heatmap?: HeatmapData;
   /** radar 数据 */
   radar?: RadarData;
+  /**
+   * 按筛选维度切换的本地数据变体（本地切 JSON，不需要后端往返）。
+   * 键 = 维度值按 filters 顺序拼接的签名（缺省值或不存在的维度用 'all'）；例：'dept-2|engineer'。
+   * 值 = 部分字段覆盖（points / items / gauge ...）。
+   * 命中规则：从最具体的签名往一级万用 'all' 回退。未命中任何 → 用 base 数据。
+   */
+  variants?: Record<string, Partial<MetricChart>>;
 }
 
 export interface MetricFilterDim {
@@ -178,15 +185,20 @@ export interface OverviewMetrics {
   footnote: string;
 }
 
-/* —— 多级表头表格（两级 thead，最多嵌一层 children） —— */
+/* —— N 级表头表格（children 可递归嵌套，无层级上限） ——
+   渲染层（MultiLevelTable）按 maxDepth = max(depth(col)) 推断 thead 行数，
+   每个叶子的 rowspan 自动 = maxDepth - 当前所在层 + 1，无需在数据里指定。 */
 export interface TableColumn {
   key: string;
   label: string;
-  /** 顶层叶子（无 children）时给 rowspan=2 跨两行表头 */
+  /**
+   * @deprecated 不再使用 —— rowspan 由 MultiLevelTable 按 maxDepth 动态计算。
+   * 保留字段是为了不破坏老 JSON 的反序列化。
+   */
   rowspan?: 1 | 2;
   /** 列宽，CSS 字符串（"120px" / "10%" 等） */
   width?: string;
-  /** 二级表头 */
+  /** 子列（可递归任意深） */
   children?: TableColumn[];
   /** 对齐：默认 center；可显式 left / right */
   align?: 'left' | 'center' | 'right';
@@ -198,10 +210,27 @@ export interface TableColumn {
   highlight?: boolean;
   /** 数值阈值（只有叶子列生效） */
   threshold?: Threshold;
+  /**
+   * 单元格渲染类型；'action' 时单元格按 row[key] 的形状渲染成按钮 / 灰文本。
+   * 不设默认 'value'（普通数值/文本）。
+   */
+  cellType?: 'value' | 'action';
+}
+
+/**
+ * 操作列单元格的标准形状（JSON 里推荐用这个，避免 i18n 时把按钮文案当判定依据）。
+ * 老形式 `"actions": "详情"` / `"actions": "不涉及"` 仍兼容：
+ *   - "详情" → 按钮 kind=detail
+ *   - 其它 → kind=na 灰文字
+ */
+export interface ActionCell {
+  kind: 'detail' | 'na';
+  /** 显示文案（i18n 后端给即可） */
+  label: string;
 }
 
 export interface TableRow {
-  [columnKey: string]: string | number | undefined;
+  [columnKey: string]: string | number | ActionCell | undefined;
 }
 
 export interface Pagination {

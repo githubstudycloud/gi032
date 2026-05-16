@@ -99,21 +99,17 @@ const trendLabel = computed<string>(() =>
       </div>
     </button>
 
-    <!-- Editorial 风格悬浮释义卡 -->
-    <Transition
-      enter-active-class="transition duration-150 ease-out"
-      enter-from-class="opacity-0 -translate-y-1 scale-[0.98]"
-      enter-to-class="opacity-100 translate-y-0 scale-100"
-      leave-active-class="transition duration-100 ease-in"
-      leave-from-class="opacity-100 translate-y-0 scale-100"
-      leave-to-class="opacity-0 -translate-y-1 scale-[0.98]"
+    <!-- Editorial 风格悬浮释义卡：v-show 让 tooltip 只 mount 一次，悬浮反复触发只是切 class，
+         避免每张卡每次 hover 都 mount/unmount 整片 DOM。 -->
+    <div
+      v-show="tipOpen"
+      :id="`metric-tip-${metric.key}`"
+      role="tooltip"
+      :class="[
+        'absolute left-1/2 -translate-x-1/2 top-[calc(100%+10px)] z-30 w-[280px] origin-top pointer-events-none transition duration-150 ease-out',
+        tipOpen ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-1 scale-[0.98]',
+      ]"
     >
-      <div
-        v-if="tipOpen"
-        :id="`metric-tip-${metric.key}`"
-        role="tooltip"
-        class="absolute left-1/2 -translate-x-1/2 top-[calc(100%+10px)] z-30 w-[280px] origin-top pointer-events-none"
-      >
         <!-- 卡片 -->
         <div
           class="relative rounded-lg border border-ink-200/80 bg-surface shadow-[0_12px_32px_-12px_oklch(0.2_0.02_240/0.25),0_4px_12px_-4px_oklch(0.2_0.02_240/0.12)] overflow-hidden"
@@ -187,6 +183,5 @@ const trendLabel = computed<string>(() =>
           />
         </div>
       </div>
-    </Transition>
   </div>
 </template>

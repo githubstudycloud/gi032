@@ -1,0 +1,71 @@
+{
+  "common": {
+    "search": "查询",
+    "reset": "重置",
+    "detail": "详情",
+    "close": "关闭",
+    "back": "返回",
+    "home": "回到首页",
+    "retry": "重试",
+    "noData": "暂无数据",
+    "noMatch": "无匹配数据",
+    "clearAllFilters": "清除所有筛选",
+    "loading": "加载中…",
+    "version": "v0.1.0",
+    "internalPreview": "内部预览"
+  },
+  "topbar": {
+    "switchLocale": "切换语言",
+    "switchTheme": "切换样式风格",
+    "appTitle": "运营看板",
+    "appSubtitle": "Operations Dashboard"
+  },
+  "filters": {
+    "title": "筛选",
+    "timeRange": "时间范围",
+    "department": "部门",
+    "role": "角色",
+    "allDepartments": "全部部门",
+    "allRoles": "全部角色"
+  },
+  "table": {
+    "selectAll": "全选",
+    "invert": "反选",
+    "clear": "清空",
+    "selected": "已选 {count} / {total}",
+    "search": "搜索...",
+    "filterColumn": "筛选 {label}",
+    "sortColumn": "按 {label} 排序",
+    "ascending": "升序",
+    "descending": "降序",
+    "unsorted": "未排序",
+    "pagePrev": "上一页",
+    "pageNext": "下一页",
+    "total": "共 {total} 条 · 每页 {pageSize}"
+  },
+  "metric": {
+    "explanation": "指标释义",
+    "current": "当前",
+    "mom": "环比",
+    "threshold": "阈值",
+    "groupedView": "分组",
+    "flatView": "平铺",
+    "viewSwitcher": "核心指标视图",
+    "trendUp": "上升",
+    "trendDown": "下降",
+    "trendFlat": "持平"
+  },
+  "notImplemented": {
+    "title": "{label}还未实现",
+    "description": "当前菜单项已在导航里登记，但页面组件 / mock 数据还在排期。回到上一级或从其它入口继续。"
+  },
+  "embed": {
+    "openInNewTab": "新窗口打开",
+    "blockedHint": "若下方显示空白：目标站设置了 X-Frame-Options / CSP frame-ancestors 禁止跨域嵌入，请用上方「新窗口打开」"
+  },
+  "error": {
+    "title": "数据加载失败",
+    "schema": "后端返回的数据形状跟约定不一致",
+    "viewDetail": "查看详细 ({count} 条)"
+  }
+}

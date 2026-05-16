@@ -1,0 +1,71 @@
+{
+  "common": {
+    "search": "Search",
+    "reset": "Reset",
+    "detail": "Detail",
+    "close": "Close",
+    "back": "Back",
+    "home": "Home",
+    "retry": "Retry",
+    "noData": "No data",
+    "noMatch": "No matching data",
+    "clearAllFilters": "Clear all filters",
+    "loading": "Loading…",
+    "version": "v0.1.0",
+    "internalPreview": "Internal Preview"
+  },
+  "topbar": {
+    "switchLocale": "Switch language",
+    "switchTheme": "Switch theme",
+    "appTitle": "Ops Dashboard",
+    "appSubtitle": "Operations Dashboard"
+  },
+  "filters": {
+    "title": "Filters",
+    "timeRange": "Time range",
+    "department": "Department",
+    "role": "Role",
+    "allDepartments": "All departments",
+    "allRoles": "All roles"
+  },
+  "table": {
+    "selectAll": "Select all",
+    "invert": "Invert",
+    "clear": "Clear",
+    "selected": "{count} / {total} selected",
+    "search": "Search...",
+    "filterColumn": "Filter {label}",
+    "sortColumn": "Sort by {label}",
+    "ascending": "ascending",
+    "descending": "descending",
+    "unsorted": "unsorted",
+    "pagePrev": "Previous page",
+    "pageNext": "Next page",
+    "total": "{total} rows · {pageSize} per page"
+  },
+  "metric": {
+    "explanation": "Definition",
+    "current": "Current",
+    "mom": "MoM",
+    "threshold": "Threshold",
+    "groupedView": "Grouped",
+    "flatView": "Flat",
+    "viewSwitcher": "Metrics view",
+    "trendUp": "up",
+    "trendDown": "down",
+    "trendFlat": "flat"
+  },
+  "notImplemented": {
+    "title": "{label} not implemented yet",
+    "description": "This menu item is registered, but its page component / mock data are not built yet. Go back or use another entry."
+  },
+  "embed": {
+    "openInNewTab": "Open in new tab",
+    "blockedHint": "If the frame is blank: the target site disables cross-origin embedding via X-Frame-Options / CSP frame-ancestors. Use “Open in new tab” above."
+  },
+  "error": {
+    "title": "Failed to load data",
+    "schema": "Response shape does not match the schema",
+    "viewDetail": "View detail ({count})"
+  }
+}

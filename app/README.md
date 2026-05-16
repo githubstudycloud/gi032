@@ -99,8 +99,29 @@ corepack pnpm dev           # 起开发服 (HMR)
 corepack pnpm build         # 产线构建（输出到 .output/）
 corepack pnpm preview       # 预览 build 产物
 corepack pnpm typecheck     # 跑 vue-tsc 类型检查
+corepack pnpm test          # 跑 Vitest 单元测试（utils + schema fixture）
+corepack pnpm test:watch    # vitest watch 模式
+corepack pnpm lint          # ESLint 检查
+corepack pnpm lint:fix      # ESLint 自动修
 corepack pnpm generate      # 静态生成（如果哪天要静态托管）
 ```
+
+---
+
+## 四点五、Excel/CSV 看板（无代码加新页）
+
+打开 [/ai-test/system/excel](http://localhost:3000/ai-test/system/excel)：
+
+1. 点「下载 2 级模板」/「下载 4 级模板」拿到 CSV 骨架
+2. 在 Excel 里改 `##META` / `##METRICS` / `##COLUMNS` / `##ROWS` 四段（不需要全写）
+3. 「另存为 → CSV UTF-8」回来
+4. 把文件拖进上传区或点「选择文件」
+5. 右侧实时预览 = 一个完整看板（核心指标 + 多级表头表格）
+6. 不满意？继续在 Excel 改、保存、重新拖入；或直接在页面里手动编辑文本框，点「下载当前 CSV」存档
+
+`##COLUMNS` 段加 `parent` 列即可生成 N 级表头（同一 parent 下的列会自动挂成 children）；
+`highlight=1` 标记 KPI 重点列，表头与单元格统一高亮；
+`sortable=1` 单独开启某列排序。
 
 ---
 
@@ -120,15 +141,26 @@ app/
 │   │   ├── index.vue               # 首页（无侧栏，介绍页）
 │   │   └── [...slug].vue           # catch-all 占位页（标题 / 筛选 / 表格）
 │   ├── components/
-│   │   ├── layout/                 # AppTopBar / AppSidebar / AppSidebarItem
-│   │   └── common/                 # PageHeader / FilterBar / DataTablePlaceholder
+│   │   ├── layout/                 # AppTopBar / AppSidebar / AppSidebarItem / ThemeSwitcher / LocaleSwitcher
+│   │   ├── common/                 # EmbedFrame / NavIcon / NotImplemented / ErrorPanel / TabStrip
+│   │   └── dashboard/              # MetricsBox / MetricCard / MetricDetailPanel / MultiLevelTable / charts/*
 │   ├── composables/
 │   │   ├── use-nav.ts              # 单一菜单 composable，派生 activeTop/showSidebar
 │   │   ├── use-branding.ts         # 品牌信息
-│   │   └── use-data-source.ts      # **核心：JSON ↔ API 切换 + transform 适配**
-│   ├── types/                      # NavItem / DataSource 类型
-│   ├── utils/nav-flat.ts           # 树扁平化（路径 → 面包屑）
+│   │   ├── use-theme.ts            # 主题切换
+│   │   ├── use-data-source.ts      # **核心：JSON ↔ API 切换 + transform 适配**
+│   │   └── use-*.ts                # 每个页面一份 composable
+│   ├── pages/ai-test/              # AI 辅助测试运营各 page（overview/general/system/...）
+│   ├── types/                      # NavItem / DataSource / overview-summary 域模型 + schemas.ts (Zod)
+│   ├── utils/
+│   │   ├── nav-flat.ts             # 树扁平化（路径 → 面包屑）
+│   │   ├── threshold.ts            # 阈值套色（utils + test）
+│   │   └── csv-page-parser.ts      # Excel/CSV → 页面数据（utils + test）
 │   └── assets/css/main.css         # Tailwind v4 @theme 调色 + 字体
+├── i18n/locales/                   # zh-CN / en-US 翻译 JSON
+├── docs/
+│   └── api-split-plan.md           # 接后端时表头/数据/配置的拆分方案
+├── tests/                          # Vitest 跨目录集成测试（mock 字段一致性）
 ├── PROMPT-LOG.md                   # 历次提问 / 决策记录（时间倒序）
 └── CLAUDE.md                       # 项目硬规则（Claude Code 启动会自动加载）
 ```
@@ -172,7 +204,56 @@ app/
 [app/assets/css/main.css](app/assets/css/main.css) 加 `html.theme-XXX {...}` 块覆盖 token。
 完整方案 / 主流风格 survey / 工作量评估 见 [STYLE-GUIDE.md](STYLE-GUIDE.md)。
 
-### 3. 切到后端接口
+### 3. iframe 嵌入外部页 + sandbox 白名单
+
+`public/mock/nav.json` 里给菜单项加 `embed` 字段即可嵌入外部 URL：
+
+```jsonc
+{
+  "key":   "search",
+  "label": "搜索页面",
+  "path":  "/ai-test/system/search",
+  "embed": "https://www.google.com/",
+  "embedSandbox": ["allow-scripts", "allow-forms", "allow-popups"]   // 可选
+}
+```
+
+**默认 sandbox**：`['allow-scripts', 'allow-forms', 'allow-popups']`。**不给 `allow-same-origin`**——
+保证嵌入页拿不到本站 cookie / localStorage / IndexedDB。
+
+**需要更宽的权限怎么办**（按需加）：
+
+| 你想做的事 | 加哪个 token | 安全代价 |
+|---|---|---|
+| 嵌入需要登录态 cookie 的内部系统 | `allow-same-origin` | 嵌入页能读你网站的 storage，必须**完全信任** |
+| 嵌入页里的链接能跳走（target=_top） | `allow-top-navigation` | 嵌入页能强制全屏跳转 |
+| 让嵌入页弹自己的下载 / 全屏 | `allow-downloads` / `allow-fullscreen` | 一般 OK |
+| 完全去掉 sandbox（极少用） | `embedSandbox: false` | iframe 跟普通 `<iframe>` 等同，**只用于自家系统** |
+
+完整 token 列表：<https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/iframe#sandbox>
+
+**安全相关 HTTP headers** 已在 `nuxt.config.ts` 的 `routeRules` 配上：
+
+```ts
+'X-Frame-Options': 'DENY',           // 本应用不允许被嵌入
+'X-Content-Type-Options': 'nosniff',
+'Referrer-Policy': 'strict-origin-when-cross-origin',
+'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=()',
+```
+
+如果将来要做成可嵌入小部件，把 `X-Frame-Options` 改成 `SAMEORIGIN` 或者直接删掉。
+
+### 4. 切语言（中 / 英）
+
+右上角语言切换按钮（`ZH ▾`）→ 选「English」。
+locale 持久化在 `ops-dashboard:locale` cookie，刷新保留。
+
+**新增 / 改翻译**：直接编辑 [i18n/locales/zh-CN.json](i18n/locales/zh-CN.json) / [i18n/locales/en-US.json](i18n/locales/en-US.json)。
+组件里用 `$t('common.search')` 或 `useI18n().t(...)` 取词。
+
+新增语言：[nuxt.config.ts](nuxt.config.ts) `i18n.locales` 里加一项 + 新建 locale JSON。
+
+### 5. 切到后端接口
 
 打开 [nuxt.config.ts](nuxt.config.ts) `runtimeConfig.public`：
 
@@ -187,8 +268,16 @@ runtimeConfig: {
 ```
 
 接口路径在每个 composable 里：
-- `useBranding`     → `GET /api/branding`
-- `useNav`          → `GET /api/nav`
+- `useBranding`         → `GET /api/branding`
+- `useNav`              → `GET /api/nav`
+- `useOverviewSummary`  → `GET /api/pages/ai-test/overview/summary`
+- `useIndustryLanding`  → `GET /api/pages/ai-test/overview/industry`
+- `useDomainLanding`    → `GET /api/pages/ai-test/overview/domain`
+- `useGeneralDesign`    → `GET /api/pages/ai-test/general/design`
+- `useGeneralCodegen`   → `GET /api/pages/ai-test/general/codegen`
+
+表头与数据怎么一起 / 分开返、字段不匹配怎么映射、Zod schema 怎么用：
+见 [docs/api-split-plan.md](docs/api-split-plan.md)。
 
 **字段对不上？** 在对应 composable 的 `transform` 里映射，业务页面一行不动。例如后端给的是 `{ code, data: { systemName, ... } }`：
 
@@ -211,7 +300,8 @@ transform: (raw: any) => ({
 | SSR worker `JS heap out of memory` | Nitro dev worker 内存上限在 Node 24 上触发；让数据只在客户端拉 (`useAsyncData({ server: false })`) | use-data-source.ts |
 | 组件不解析 (`Failed to resolve AppTopBar`) | Nuxt 4 默认对子目录加路径前缀；改 `components: [{ path, pathPrefix: false }]` | nuxt.config.ts |
 | Hydration mismatch | 数据 client-only 取的话 SSR/client 节点对不齐；用 `<ClientOnly>` 包数据驱动的段 + skeleton fallback | layout / index / catch-all |
-| `obj.hasOwnProperty is not a function` | `@pinia/nuxt@0.6.1` 偷拉 Pinia 2，跟 Pinia 3 冲突；移出 modules | nuxt.config.ts |
+| `obj.hasOwnProperty is not a function` | `@pinia/nuxt@0.6.1` 偷拉 Pinia 2，跟 Pinia 3 冲突；已移除 `@pinia/nuxt`，等真用 store 再升级 0.11+ | package.json |
+| i18n locale 文件 ENOENT | `@nuxtjs/i18n` 的 `langDir` 默认相对项目根，**不是** Nuxt 4 srcDir；locale 文件放在 `<project-root>/i18n/locales/`，**不要**放 `app/i18n/...` | i18n/locales/ |
 
 **根治方案**：把 Node 切到 22 LTS（`nvm use 22` / `nvs add lts`）。上面所有坑应该都不复现，SSR 取数据也能恢复。
 

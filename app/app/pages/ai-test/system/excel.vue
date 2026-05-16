@@ -19,9 +19,26 @@ const dragging = ref<boolean>(false);
 const hasResult = computed<boolean>(() => imported.value != null);
 
 /* —— 模板下载 —— */
-function downloadTemplate(filename = 'page-template.csv'): void {
+function downloadTemplate(variant: '2l' | '4l' | 'current' = 'current'): void {
+  let body: string;
+  let filename: string;
+  if (variant === 'current' && rawText.value.trim()) {
+    body = rawText.value;
+    filename = (fileName.value || 'page.csv').replace(/[^\w.-]+/g, '_');
+    if (!/\.(csv|txt)$/i.test(filename)) filename += '.csv';
+  } else if (variant === '4l') {
+    body = SAMPLE_CSV_4L;
+    filename = 'page-template-4level.csv';
+  } else {
+    body = SAMPLE_CSV;
+    filename = 'page-template-multilevel.csv';
+  }
+  downloadCsv(body, filename);
+}
+
+function downloadCsv(body: string, filename: string): void {
   // 加 UTF-8 BOM，Excel 双击直接识别中文
-  const blob = new Blob(['\uFEFF', SAMPLE_CSV], { type: 'text/csv;charset=utf-8' });
+  const blob = new Blob(['\uFEFF', body], { type: 'text/csv;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -123,14 +140,23 @@ function onRowDetail(row: Record<string, unknown>): void {
           <div class="flex-1" />
           <button
             type="button"
-            class="h-8 px-3 inline-flex items-center gap-1.5 rounded-md border border-brand-300 bg-brand-50 text-brand-700 text-[12px] font-medium hover:bg-brand-100 transition-colors"
-            @click="downloadTemplate()"
+            class="h-8 px-3 inline-flex items-center gap-1.5 rounded-md border border-brand-300 bg-brand-50 text-brand-700 text-[12px] font-medium hover:bg-brand-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
+            :title="rawText.trim() ? '下载当前编辑器里的 CSV' : '下载内置 2 级模板'"
+            @click="downloadTemplate('current')"
           >
             <svg class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
               <path d="M10 3a1 1 0 0 1 1 1v8.586l2.293-2.293a1 1 0 1 1 1.414 1.414l-4 4a1 1 0 0 1-1.414 0l-4-4a1 1 0 1 1 1.414-1.414L9 12.586V4a1 1 0 0 1 1-1Z" />
               <path d="M3 16a1 1 0 0 1 1-1h12a1 1 0 1 1 0 2H4a1 1 0 0 1-1-1Z" />
             </svg>
-            下载 CSV 模板
+            {{ rawText.trim() ? '下载当前 CSV' : '下载 2 级模板' }}
+          </button>
+          <button
+            type="button"
+            class="h-8 px-3 inline-flex items-center gap-1.5 rounded-md border border-violet-300 bg-violet-50 text-violet-700 text-[12px] font-medium hover:bg-violet-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300"
+            title="下载内置 4 级表头模板"
+            @click="downloadTemplate('4l')"
+          >
+            下载 4 级模板
           </button>
           <button
             type="button"

@@ -1,6 +1,19 @@
 <script setup lang="ts">
-import type { PilotTable, TableColumn, TableRow } from '~/types/overview-summary';
+import type { ActionCell, PilotTable, TableColumn, TableRow } from '~/types/overview-summary';
 import { parseNumeric, thresholdPillClass } from '~/utils/threshold';
+
+/* —— action 列归一化：兼容老的 "详情" / "不涉及" 字符串 + 新的 ActionCell 对象 —— */
+function asActionCell(v: unknown): ActionCell {
+  if (v && typeof v === 'object' && 'kind' in (v as Record<string, unknown>)) {
+    const o = v as ActionCell;
+    return { kind: o.kind, label: o.label };
+  }
+  const s = v == null ? '' : String(v);
+  // 中文老格式：'详情' 之外都是 N/A 标签
+  return s === '详情'
+    ? { kind: 'detail', label: '详情' }
+    : { kind: 'na', label: s || '—' };
+}
 
 const props = defineProps<{
   data: PilotTable;
@@ -94,18 +107,31 @@ const filterOpen = ref<string | null>(null);
 const filterSearch = ref<string>('');
 const selectedFilters = ref<Record<string, Set<string>>>({});
 
-function uniqueValues(key: string): string[] {
-  const set = new Set<string>();
-  for (const r of props.data.rows) {
-    const v = r[key];
-    if (v !== undefined && v !== null && v !== '') set.add(String(v));
+/**
+ * 每列的全部枚举值，按列 key 缓存；data.rows 变才重算。
+ * 行数大、列数多时比每次按下按键都全表扫快得多。
+ */
+const uniqueValuesByKey = computed<Record<string, string[]>>(() => {
+  const out: Record<string, string[]> = {};
+  for (const leaf of allLeaves.value) {
+    if (leaf.cellType === 'action' || leaf.key === 'actions') continue;
+    const set = new Set<string>();
+    for (const r of props.data.rows) {
+      const v = r[leaf.key];
+      if (v !== undefined && v !== null && v !== '') set.add(String(v));
+    }
+    out[leaf.key] = Array.from(set).sort((a, b) => {
+      const na = parseNumeric(a);
+      const nb = parseNumeric(b);
+      if (na !== null && nb !== null) return na - nb;
+      return a.localeCompare(b, 'zh-Hans-CN');
+    });
   }
-  return Array.from(set).sort((a, b) => {
-    const na = parseNumeric(a);
-    const nb = parseNumeric(b);
-    if (na !== null && nb !== null) return na - nb;
-    return a.localeCompare(b, 'zh-Hans-CN');
-  });
+  return out;
+});
+
+function uniqueValues(key: string): string[] {
+  return uniqueValuesByKey.value[key] ?? [];
 }
 
 function filteredValues(key: string): string[] {
@@ -260,8 +286,8 @@ onBeforeUnmount(() => {
   window.removeEventListener('scroll', onScrollOrResize, true);
 });
 
-/* —— 派生 rows —— */
-const displayRows = computed<TableRow[]>(() => {
+/* —— 派生 rows：先筛选 → 再排序 → 最后切分页 —— */
+const filteredAndSortedRows = computed<TableRow[]>(() => {
   let rows = props.data.rows.slice();
 
   for (const [k, set] of Object.entries(selectedFilters.value)) {
@@ -283,6 +309,30 @@ const displayRows = computed<TableRow[]>(() => {
   return rows;
 });
 
+/* —— 本地分页：以筛选+排序后的行数为准 —— */
+const currentPage = ref<number>(1);
+const pageSize = computed<number>(() => Math.max(1, props.data.pagination?.pageSize ?? 10));
+const totalRows = computed<number>(() => filteredAndSortedRows.value.length);
+const totalPages = computed<number>(() => Math.max(1, Math.ceil(totalRows.value / pageSize.value)));
+
+watch([() => props.data.key, totalPages], () => {
+  if (currentPage.value > totalPages.value) currentPage.value = totalPages.value;
+  if (currentPage.value < 1) currentPage.value = 1;
+});
+
+function goPrev(): void {
+  if (currentPage.value > 1) currentPage.value -= 1;
+}
+function goNext(): void {
+  if (currentPage.value < totalPages.value) currentPage.value += 1;
+}
+
+const displayRows = computed<TableRow[]>(() => {
+  const all = filteredAndSortedRows.value;
+  const start = (currentPage.value - 1) * pageSize.value;
+  return all.slice(start, start + pageSize.value);
+});
+
 /* —— 列样式工具 —— */
 function alignClass(col: TableColumn): string {
   const a = col.align ?? 'center';
@@ -293,9 +343,44 @@ function highlightCellClass(col: TableColumn): string {
   return col.highlight ? 'bg-brand-50/50' : '';
 }
 
-const totalPages = computed<number>(() => {
-  const { total, pageSize } = props.data.pagination;
-  return Math.max(1, Math.ceil(total / pageSize));
+/* —— 滚动 / 视口跟随 ——
+   1. window scroll(capture=true) 已经能捕获嵌套滚动；
+   2. 给表格容器再单独加一份保险，触发按钮被横向滚动后弹层位置实时跟随；
+   3. ResizeObserver 处理浏览器窗口 / 侧栏宽度变化；
+   4. IntersectionObserver：当触发按钮被滚出视口时，关闭弹层（避免悬空指向不存在的列） */
+const scrollEl = ref<HTMLElement | null>(null);
+let visObserver: IntersectionObserver | null = null;
+let sizeObserver: ResizeObserver | null = null;
+
+function onTableScroll(): void {
+  if (filterOpen.value) recomputePopoverPos();
+}
+
+watch(filterOpen, async (k) => {
+  visObserver?.disconnect();
+  if (!k) return;
+  await nextTick();
+  const trigger = triggerEls.get(k);
+  if (!trigger || typeof IntersectionObserver === 'undefined') return;
+  visObserver = new IntersectionObserver(
+    ([entry]) => {
+      if (entry && !entry.isIntersecting && filterOpen.value === k) {
+        filterOpen.value = null;
+      }
+    },
+    { threshold: 0.01 },
+  );
+  visObserver.observe(trigger);
+});
+
+onMounted(() => {
+  if (typeof ResizeObserver === 'undefined') return;
+  sizeObserver = new ResizeObserver(() => onScrollOrResize());
+  if (rootEl.value) sizeObserver.observe(rootEl.value);
+});
+onBeforeUnmount(() => {
+  visObserver?.disconnect();
+  sizeObserver?.disconnect();
 });
 </script>
 
@@ -304,7 +389,11 @@ const totalPages = computed<number>(() => {
     ref="rootEl"
     class="rounded-xl border border-ink-200/70 bg-surface overflow-hidden shadow-[var(--shadow-card)]"
   >
-    <div class="overflow-x-auto overflow-y-visible">
+    <div
+      ref="scrollEl"
+      class="overflow-x-auto overflow-y-visible"
+      @scroll="onTableScroll"
+    >
       <table
         class="text-[13.5px] border-collapse"
         style="width: max-content; min-width: 100%"
@@ -317,6 +406,11 @@ const totalPages = computed<number>(() => {
               :rowspan="c.rowspan === 1 ? undefined : c.rowspan"
               :colspan="c.colspan === 1 ? undefined : c.colspan"
               :style="{ width: c.col.width }"
+              :aria-sort="c.isLeaf && isSortable(c.col)
+                ? (sortKey === c.col.key
+                    ? (sortDir === 'asc' ? 'ascending' : sortDir === 'desc' ? 'descending' : 'none')
+                    : 'none')
+                : undefined"
               :class="[
                 'relative px-3 whitespace-nowrap align-middle border-b border-ink-200/60 border-r border-r-ink-200/30 last:border-r-0',
                 alignClass(c.col),
@@ -332,36 +426,49 @@ const totalPages = computed<number>(() => {
                 :class="[
                   'inline-flex items-center gap-1 select-none',
                   alignClass(c.col) === 'text-center' ? 'justify-center' : alignClass(c.col) === 'text-right' ? 'justify-end' : 'justify-start',
-                  c.isLeaf && isSortable(c.col) ? 'cursor-pointer group/sort hover:text-brand-700 transition-colors' : '',
                 ]"
-                @click="c.isLeaf && toggleSort(c.col)"
               >
-                <span>{{ c.col.label }}</span>
-                <span
+                <!-- 排序触发：可排序时是真按钮；否则普通 span。
+                     避免 button 嵌 button —— 筛选按钮作为兄弟节点存在。 -->
+                <button
                   v-if="c.isLeaf && isSortable(c.col)"
-                  class="relative inline-flex flex-col w-2.5 h-3.5 ml-0.5 leading-none"
-                  aria-hidden="true"
+                  type="button"
+                  class="inline-flex items-center gap-0.5 rounded text-inherit focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 hover:text-brand-700 transition-colors cursor-pointer group/sort"
+                  :aria-label="`按 ${c.col.label} 排序，当前 ${sortKey === c.col.key && sortDir === 'asc' ? '升序' : sortKey === c.col.key && sortDir === 'desc' ? '降序' : '未排序'}`"
+                  @click="toggleSort(c.col)"
+                  @keydown.enter.prevent="toggleSort(c.col)"
+                  @keydown.space.prevent="toggleSort(c.col)"
                 >
+                  <span>{{ c.col.label }}</span>
                   <span
-                    class="absolute top-0 left-0 text-[8px] leading-none"
-                    :class="sortKey === c.col.key && sortDir === 'asc' ? 'text-brand-700' : 'text-ink-300 group-hover/sort:text-ink-500'"
-                  >▲</span>
-                  <span
-                    class="absolute bottom-0 left-0 text-[8px] leading-none"
-                    :class="sortKey === c.col.key && sortDir === 'desc' ? 'text-brand-700' : 'text-ink-300 group-hover/sort:text-ink-500'"
-                  >▼</span>
-                </span>
+                    class="relative inline-flex flex-col w-2.5 h-3.5 ml-0.5 leading-none"
+                    aria-hidden="true"
+                  >
+                    <span
+                      class="absolute top-0 left-0 text-[8px] leading-none"
+                      :class="sortKey === c.col.key && sortDir === 'asc' ? 'text-brand-700' : 'text-ink-300 group-hover/sort:text-ink-500'"
+                    >▲</span>
+                    <span
+                      class="absolute bottom-0 left-0 text-[8px] leading-none"
+                      :class="sortKey === c.col.key && sortDir === 'desc' ? 'text-brand-700' : 'text-ink-300 group-hover/sort:text-ink-500'"
+                    >▼</span>
+                  </span>
+                </button>
+                <span v-else>{{ c.col.label }}</span>
+
                 <button
                   v-if="c.isLeaf && isFilterable(c.col)"
                   :ref="(el) => setTriggerEl(c.col.key, el as Element | null)"
                   type="button"
-                  class="ml-1 h-5 px-1 inline-flex items-center justify-center rounded-md text-[10px] leading-none transition-colors"
+                  class="ml-1 h-5 px-1 inline-flex items-center justify-center rounded-md text-[10px] leading-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
                   :class="[
                     isFilterActive(c.col.key)
                       ? 'bg-brand-600 text-white shadow-sm hover:bg-brand-700'
                       : 'text-ink-400 hover:text-brand-700 hover:bg-ink-200/60',
                   ]"
                   :aria-label="`筛选 ${c.col.label}`"
+                  :aria-haspopup="'dialog'"
+                  :aria-expanded="filterOpen === c.col.key"
                   @click.stop="openFilter(c.col.key)"
                 >
                   <svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
@@ -392,16 +499,17 @@ const totalPages = computed<number>(() => {
                 highlightCellClass(leaf),
               ]"
             >
-              <template v-if="leaf.key === 'actions'">
-                <button
-                  v-if="String(row[leaf.key]) === '详情'"
-                  type="button"
-                  class="inline-flex items-center px-2 py-0.5 rounded-md text-brand-700 hover:bg-brand-50 text-[13px] font-medium"
-                  @click="$emit('detail', row)"
-                >
-                  详情 →
-                </button>
-                <span v-else class="text-ink-400 text-[12px]">{{ row[leaf.key] }}</span>
+              <template v-if="leaf.cellType === 'action' || leaf.key === 'actions'">
+                <template v-if="asActionCell(row[leaf.key]).kind === 'detail'">
+                  <button
+                    type="button"
+                    class="inline-flex items-center px-2 py-0.5 rounded-md text-brand-700 hover:bg-brand-50 text-[13px] font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
+                    @click="$emit('detail', row)"
+                  >
+                    {{ asActionCell(row[leaf.key]).label }} <span aria-hidden="true" class="ml-0.5">→</span>
+                  </button>
+                </template>
+                <span v-else class="text-ink-400 text-[12px]">{{ asActionCell(row[leaf.key]).label }}</span>
               </template>
               <template v-else-if="leaf.threshold && parseNumeric(row[leaf.key]) !== null">
                 <span
@@ -421,7 +529,7 @@ const totalPages = computed<number>(() => {
             </td>
           </tr>
           <tr v-if="!displayRows.length">
-            <td :colspan="allLeaves.length" class="text-center py-12 text-ink-400 text-[13px]">
+            <td :colspan="allLeaves.length" class="text-center py-12 text-ink-500 text-[13px]">
               <div class="inline-flex flex-col items-center gap-1.5">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" class="text-ink-300">
                   <rect x="3" y="4" width="18" height="16" rx="2"/>
@@ -445,20 +553,22 @@ const totalPages = computed<number>(() => {
       v-if="data.pagination"
       class="border-t border-ink-100 px-4 py-2.5 flex items-center justify-end gap-3 text-[12px] text-ink-600"
     >
-      <span>共 {{ displayRows.length }} / {{ data.pagination.total }} 条</span>
+      <span>共 {{ totalRows }} 条 · 每页 {{ pageSize }}</span>
       <div class="flex items-center gap-1">
         <button
           type="button"
-          class="h-7 w-7 rounded border border-ink-200 bg-surface hover:bg-ink-100 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center"
-          :disabled="data.pagination.page <= 1"
+          class="h-7 w-7 rounded border border-ink-200 bg-surface hover:bg-ink-100 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
+          :disabled="currentPage <= 1"
           aria-label="上一页"
+          @click="goPrev"
         >‹</button>
-        <span class="px-2">{{ data.pagination.page }} / {{ totalPages }}</span>
+        <span class="px-2 tabular-nums">{{ currentPage }} / {{ totalPages }}</span>
         <button
           type="button"
-          class="h-7 w-7 rounded border border-ink-200 bg-surface hover:bg-ink-100 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center"
-          :disabled="data.pagination.page >= totalPages"
+          class="h-7 w-7 rounded border border-ink-200 bg-surface hover:bg-ink-100 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
+          :disabled="currentPage >= totalPages"
           aria-label="下一页"
+          @click="goNext"
         >›</button>
       </div>
     </footer>
@@ -476,6 +586,9 @@ const totalPages = computed<number>(() => {
     >
       <div
         v-if="openCol"
+        role="dialog"
+        aria-modal="false"
+        :aria-label="`筛选 ${openCol.label}`"
         class="fixed z-[60] flex flex-col rounded-xl border border-ink-200 bg-surface shadow-2xl ring-1 ring-ink-900/10 text-left origin-top overflow-hidden"
         :style="popoverStyle"
         @click.stop
@@ -509,7 +622,7 @@ const totalPages = computed<number>(() => {
           <button type="button" class="text-brand-700 hover:underline" @click="selectAllFilter(openCol.key)">全选</button>
           <button type="button" class="text-ink-600 hover:underline" @click="invertFilter(openCol.key)">反选</button>
           <button type="button" class="text-ink-500 hover:underline" @click="clearFilter(openCol.key)">清空</button>
-          <span class="ml-auto text-ink-400">已选 {{ activeFilterCount(openCol.key) }} / {{ uniqueValues(openCol.key).length }}</span>
+          <span class="ml-auto text-ink-500">已选 {{ activeFilterCount(openCol.key) }} / {{ uniqueValues(openCol.key).length }}</span>
         </div>
 
         <div class="flex-1 min-h-0 overflow-auto px-1.5 pb-1.5">
@@ -526,7 +639,7 @@ const totalPages = computed<number>(() => {
             >
             <span class="truncate flex-1">{{ v }}</span>
           </label>
-          <div v-if="!filteredValues(openCol.key).length" class="px-2 py-3 text-center text-[12px] text-ink-400">
+          <div v-if="!filteredValues(openCol.key).length" class="px-2 py-3 text-center text-[12px] text-ink-500">
             无匹配项
           </div>
         </div>

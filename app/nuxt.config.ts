@@ -20,9 +20,33 @@ export default defineNuxtConfig({
 
   modules: [
     '@vueuse/nuxt',
+    '@nuxt/eslint',
+    '@nuxtjs/i18n',
     // @pinia/nuxt 暂未启用 —— 当前还没用到 Pinia；0.6.1 跟 Pinia 3 不兼容，
     // SSR payload plugin 会炸 obj.hasOwnProperty。等真用 store 再升级到 0.11+ 再加回。
   ],
+
+  i18n: {
+    // 文件型懒加载：~/i18n/locales/{zh-CN,en-US}.json
+    locales: [
+      { code: 'zh-CN', name: '简体中文', file: 'zh-CN.json' },
+      { code: 'en-US', name: 'English',  file: 'en-US.json' },
+    ],
+    defaultLocale: 'zh-CN',
+    strategy: 'no_prefix',  // URL 不带语言前缀，靠 cookie + localStorage 切换
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'ops-dashboard:locale',
+      redirectOn: 'root',
+    },
+  },
+
+  eslint: {
+    // 用 stylistic 风格规则（缩进 / 引号 / 分号统一）；checker 集成到 Vite 里实时报错。
+    config: {
+      stylistic: { indent: 2, quotes: 'single', semi: true },
+    },
+  },
 
   // 让 components/layout/AppTopBar.vue 直接以 <AppTopBar /> 引用，
   // 默认 Nuxt 4 会带目录前缀（LayoutAppTopBar），我们用扁平命名。
@@ -93,6 +117,22 @@ export default defineNuxtConfig({
   typescript: {
     strict: true,
     typeCheck: false,
+  },
+
+  // 通用安全 headers：所有 HTML 路由都加。
+  // CSP 没开 —— 当前 main.css 里有 inline style、FOUC 脚本是 inline script，强 CSP 会全部砍掉。
+  // 等真上线再用 nuxt-security 或者自己生成 nonce。
+  // X-Frame-Options DENY：本应用不允许被嵌入到外部站点；如果将来要做嵌入 widget，改 SAMEORIGIN。
+  routeRules: {
+    '/**': {
+      headers: {
+        'X-Frame-Options': 'DENY',
+        'X-Content-Type-Options': 'nosniff',
+        'Referrer-Policy': 'strict-origin-when-cross-origin',
+        // Permissions-Policy：默认禁掉一堆敏感能力，再开放确实需要的（目前都不需要）
+        'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=()',
+      },
+    },
   },
 
   devtools: { enabled: true },

@@ -67,5 +67,5 @@ const targetAngle = computed<{ x: number; y: number } | null>(() => {
       </div>
     </div>
   </div>
-  <p v-else class="text-[11px] text-ink-400 py-6 text-center">暂无数据</p>
+  <p v-else class="text-[11px] text-ink-500 py-6 text-center">暂无数据</p>
 </template>

@@ -3,6 +3,106 @@
 > 用于回溯：每条记录一次用户提问、当时的项目状态、关键决策、产出物。
 > **时间倒序**（最新在最上面）。
 
+## 索引（TOC）
+
+| 编号 | 主题 |
+|---|---|
+| [#013](#013--2026-05-17--26-项整体优化批量推进打包整合) | 26 项整体优化（清理 / 表格 / a11y / 安全 / Zod / Vitest / ESLint / i18n / 文档） |
+| [#012](#012--2026-05-16--列筛选下拉-teleport-修复--copilot-批量推进总结) | 列筛选下拉 Teleport 修复 + Copilot 批量推进总结 |
+| [#011](#011--2026-05-16--表格排序筛选高亮阈值--指标卡换行阈值--字号留白调整) | 表格排序/筛选/高亮/阈值 + 指标卡换行/阈值 + 字号留白调整 |
+| [#010](#010--2026-05-16--ai辅助测试设计--代码生成两页--侧栏固定修复) | AI辅助测试设计 / 代码生成两页 + 侧栏固定修复 |
+| [#009](#009--2026-05-16--实现领域落地进展页ai-testoverviewdomain) | 实现"领域落地进展"页 |
+| [#008](#008--2026-05-16--实现总览页ai-testoverviewsummary) | 实现"总览"页 |
+| [#007](#007--2026-05-16--加-6-个三级菜单--iframe-嵌入--dark-ops-主题--edge-样式偶发不出来的修法) | 6 个三级菜单 + iframe 嵌入 + dark-ops 主题 + Edge 样式修法 |
+| [#006](#006--2026-05-16--实现风格切换器minimal--business--ant-三套-preset按-37-落地清单) | 实现风格切换器（minimal / business / ant） |
+| [#005](#005--2026-05-16--写样式风格文档--切换器模块设计暂不实现) | 写样式风格文档 + 切换器模块设计 |
+| [#004](#004--2026-05-16--开局域网访问--补-readme) | 开局域网访问 + 补 README |
+| [#003](#003--2026-05-16--重构布局左上-logo--顶部一级--左侧-2-3-级按-section-切换--完整-ai辅助测试运营-菜单--样式打磨) | 重构布局 + 完整 AI辅助测试运营菜单 + 样式打磨 |
+| [#002](#002--2026-05-16--修复启动报错ipv6-only--ssr-worker-oom--组件不解析--hydration-mismatch) | 修复启动报错（IPv6-only / SSR OOM / 组件 / hydration） |
+| [#001](#001--2026-05-16--项目初始化与基础框架) | 项目初始化与基础框架 |
+
+---
+
+## #013 — 2026-05-17 — 26 项整体优化批量推进（打包整合）
+
+### 用户提问
+
+> 1.目前分页可以先加本地分页。2.这个优化下。... 30.加下（编号 1–30，跳过 8/9 不合并）。
+
+### 工作分组
+
+**1. 清理 / 类型 / 死代码（#6/#7/#10/#11/#12）**
+- `use-data-source.ts` 把 `useAsyncData` 的 `PickFrom<TRaw>` 中间形状显式 cast 回 `TRaw`，消除常年 TS2345
+- 删 `PageHeader.vue` / `FilterBar.vue` / `DataTablePlaceholder.vue`（重构后已不再被引用）
+- `package.json` 移除 `@pinia/nuxt`（暂未启用，等真用 store 再升 0.11+）
+- `overview-summary.ts` 给 `TableColumn` 加 `cellType?: 'value' | 'action'`，新增 `ActionCell` 类型；MultiLevelTable 增 `asActionCell()` 归一化（兼容老的 `"详情"` / `"不涉及"` 字符串）
+
+**2. 表格批量改造（#1/#2/#13/#15/#18）**
+- 本地分页：`currentPage` ref + `pagedRows` 切片，prev/next 真按钮，`data.key` 切换自动重置页码
+- 横向滚动跟随：滚动容器单独绑 `@scroll`，叠加 ResizeObserver(rootEl)；当触发按钮滚出视口用 IntersectionObserver 自动关弹层
+- 排序 a11y：表头里改成真 `<button>`，`aria-sort` + Enter/Space 触发；筛选按钮不再嵌在排序 button 内（避免 button 嵌 button 不合法）
+- 弹层 a11y：popover 加 `role="dialog"` + `aria-label`
+- `uniqueValues` 按列 key 收敛到一个 `computed<Record<string, string[]>>`，data.rows 变才重算
+
+**3. 功能补完（#3/#4/#5）**
+- `[...slug].vue` 不再 fake 表格，渲染 `NotImplemented.vue`（标题 / 路径 / 返回上一级按钮）
+- Excel 看板下载按钮改为 3 档：「下载当前 CSV」（编辑器里有内容时） / 「下载 2 级模板」 / 「下载 4 级模板」
+- `MetricChart` 加 `variants?: Record<string, Partial<MetricChart>>`；MetricDetailPanel 按 `filterState` 拼签名（如 `dept-2|all`）从最具体往回退；summary.json 给 `ai-user-trend` 配了 4 个部门的真变体数据，下拉切到任意部门折线立刻换
+
+**4. a11y + tooltip 性能（#14/#16/#17/#19/#20）**
+- 新增 `TabStrip.vue` 通用 tab 条：`role="tablist"` + 真 `<button>` + ←/→/Home/End 切换 + `aria-selected` + `tabindex` 滚动焦点；3 个 tab 页面（summary/industry/codegen）统一改用
+- 给可点击区域批量补 `focus-visible:ring-2 focus-visible:ring-brand-300`
+- 几个内容承载的 `text-ink-400` 提到 `text-ink-500`（图表"暂无数据"、表格"无匹配数据"、popover "已选 X / Y"）
+- MetricCard 释义弹层从 `v-if + <Transition>` 改 `v-show + class transition`，悬浮反复进出不再 mount/unmount 整片 DOM
+
+**5. 安全 / iframe（#21/#22）**
+- `EmbedFrame.vue` 加 sandbox：默认 `['allow-scripts','allow-forms','allow-popups']`（**不给** `allow-same-origin`，防嵌入页拿主站 cookie）
+- `NavItem.embedSandbox?: string[] | false` 让每个菜单按需调
+- `nuxt.config.ts` 加 `routeRules['/**'].headers`：`X-Frame-Options: DENY` + nosniff + Referrer-Policy + Permissions-Policy
+- README 新增「iframe sandbox 白名单」章节，给 token 选择表
+
+**6. 运行时校验 + 错误兜底（#23/#24）**
+- 装 `zod`；`app/types/schemas.ts` 把整套 `overview-summary` + `nav` schema 写完
+- `use-overview-summary` 在 `transform` 里跑 `OverviewSummaryResponseSchema.parse(raw)`，错就抛
+- `ErrorPanel.vue` 兜底 UI：ZodError 拆 issues 显示 path + message，普通 Error 显示 stack，带「重试」按钮（emit retry → 调 `refresh()`）
+- summary.vue 接入 ErrorPanel
+- 新增 [docs/api-split-plan.md](docs/api-split-plan.md)：表头/数据/配置一起返 vs 分开返、后端字段映射在 transform 里、多级表头两种 shape、单元格类型约定、Zod 校验流程
+
+**7. 测试 + lint（#25/#26）**
+- 装 Vitest + @vitest/ui，`vitest.config.ts` 用 node 环境（utils + schema 测，不需要 Nuxt runtime）
+- 3 个 spec 文件 31 个 case 全过：`threshold.spec.ts`（11）/ `csv-page-parser.spec.ts`（10）/ `mock-fixtures.spec.ts`（10：每个 mock JSON 都过 Zod schema）
+- 装 `@nuxt/eslint` + `eslint`，配 stylistic（缩进 2 / 单引号 / 分号）；scripts 加 `lint` / `lint:fix`
+
+**8. i18n + 语言切换（#27）**
+- 装 `@nuxtjs/i18n`，配 zh-CN / en-US 两个 locale，no_prefix 策略 + cookie 记忆（`ops-dashboard:locale`）
+- locale 文件**必须**放在 `<project-root>/i18n/locales/`（不是 srcDir 下，否则 ENOENT —— 已写入"踩坑"小节）
+- `LocaleSwitcher.vue` 顶栏新加按钮（ZH ▾ / EN ▾），跟 ThemeSwitcher 并排
+- 各组件 / mock 文案接入了一版基础翻译；剩余文案逐步迁移即可
+
+**9. 文档（#28/#29/#30）**
+- README 加：四点五节（Excel 看板用法）、iframe sandbox 白名单表、i18n 切换说明、test/lint 脚本、新增的 composable endpoint 表
+- README "踩坑表"补：Pinia 已修；i18n locale 目录必须在 project root
+- STYLE-GUIDE 在 3.7 落地清单后追加「实施状态」（4 套主题已落地）
+- 本文（PROMPT-LOG.md）顶部加 TOC
+
+### 验证
+
+- `pnpm typecheck` 干净（消了 use-data-source 的老警告，无新错）
+- `pnpm test` 3 文件 31 case 全过
+- 6 个页面（summary / industry / domain / design / codegen / excel）curl 都 200
+- i18n module 装上后老 dev server 卡死，taskkill 重启后 `__NUXT__.config.public.i18n` 正常注入
+
+### 跳过
+
+- #8 / #9：用户明确说当前壳还在调整，不合并代码
+
+### 用户下一步可选
+
+- 实跑 `pnpm lint:fix` 看 ESLint 报告（首次会很多 style 差异，自动修一遍即可）
+- 把剩余页面的 composable 也接 Zod schema（目前只 summary 接了）
+- 把更多文案接入 i18n，把 `$t(...)` 推到所有 SFC
+- 接真后端：照着 [docs/api-split-plan.md](docs/api-split-plan.md) 改 `dataSourceMode` + transform 映射
+
 ---
 
 ## #012 — 2026-05-16 — 列筛选下拉 Teleport 修复 + Copilot 批量推进总结

@@ -56,18 +56,24 @@ defineProps<{
 
       <div class="flex-1" />
 
-      <!-- 右：样式切换 + 版本号 -->
-      <div class="flex items-center gap-3">
+      <!-- 右：语言切换 + 样式切换 + 版本号 -->
+      <div class="flex items-center gap-2">
+        <ClientOnly>
+          <LocaleSwitcher />
+          <template #fallback>
+            <div class="h-9 w-[68px] rounded-md bg-ink-100" />
+          </template>
+        </ClientOnly>
         <ClientOnly>
           <ThemeSwitcher />
           <template #fallback>
             <div class="h-9 w-[68px] rounded-md bg-ink-100" />
           </template>
         </ClientOnly>
-        <div class="hidden md:flex items-center gap-2 text-xs text-ink-500">
+        <div class="hidden md:flex items-center gap-2 ml-1 text-xs text-ink-500">
           <span class="font-mono">{{ brand?.version || 'v0.1.0' }}</span>
           <span class="text-ink-300">·</span>
-          <span>内部预览</span>
+          <span>{{ $t('common.internalPreview') }}</span>
         </div>
       </div>
     </div>

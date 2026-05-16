@@ -43,6 +43,29 @@ function onFilterChange(dim: MetricFilterDim, value: string): void {
   emit('filterChange', { ...filterState.value });
 }
 
+/* —— variant 解析：按维度签名命中 chart.variants 的覆盖，未命中回退 base —— */
+function resolveChart(chart: MetricChart): MetricChart {
+  if (!chart.variants) return chart;
+  const dims = detail.value?.filters ?? [];
+  const values = dims.map(d => filterState.value[d.key] || 'all');
+  // 从最具体的签名往回回退到 all|all|...
+  for (let i = values.length; i >= 0; i--) {
+    const sig = [
+      ...values.slice(0, i),
+      ...Array(values.length - i).fill('all'),
+    ].join('|');
+    const override = chart.variants[sig];
+    if (override) {
+      return { ...chart, ...override };
+    }
+  }
+  return chart;
+}
+
+const resolvedCharts = computed<MetricChart[]>(() =>
+  (detail.value?.charts ?? []).map(resolveChart),
+);
+
 /** 图表卡片背景的轻微强调色（按 kind 微调） */
 function cardAccent(kind: MetricChart['kind']): string {
   switch (kind) {
@@ -115,7 +138,7 @@ function thresholdChip(chart: MetricChart): string | null {
     <!-- 3 列图表网格 -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 px-4 py-3.5">
       <section
-        v-for="chart in detail.charts"
+        v-for="chart in resolvedCharts"
         :key="chart.key"
         :class="[
           'rounded-md border border-ink-200/60 bg-gradient-to-br shadow-[var(--shadow-card)] overflow-hidden flex flex-col',

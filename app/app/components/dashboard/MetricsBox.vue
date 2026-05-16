@@ -56,7 +56,7 @@ function isOpenInGroup(groupKey: string): boolean {
           role="tab"
           :aria-selected="viewMode === 'grouped'"
           :class="[
-            'h-6 px-2.5 rounded transition-colors',
+            'h-6 px-2.5 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300',
             viewMode === 'grouped'
               ? 'bg-surface text-ink-900 shadow-[var(--shadow-card)] font-medium'
               : 'text-ink-600 hover:text-ink-900',
@@ -68,7 +68,7 @@ function isOpenInGroup(groupKey: string): boolean {
           role="tab"
           :aria-selected="viewMode === 'flat'"
           :class="[
-            'h-6 px-2.5 rounded transition-colors',
+            'h-6 px-2.5 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300',
             viewMode === 'flat'
               ? 'bg-surface text-ink-900 shadow-[var(--shadow-card)] font-medium'
               : 'text-ink-600 hover:text-ink-900',
