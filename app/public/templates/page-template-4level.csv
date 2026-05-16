@@ -1,0 +1,41 @@
+##META
+key,value
+title,测试运营全链路指标（4 级表头 + 重点列示例）
+subtitle,COLUMNS 段支持任意层嵌套；highlight=1 列在表头与单元格统一高亮（亮色底+品牌色文）
+footnote,带高亮的列为 KPI 重点列，可直接定位；多级表头由 parent 链自动推断
+
+##METRICS
+group_key,group_label,key,label,value,unit,mom,trend,description
+kpi,关键指标,total-passrate,综合通过率,93.2%,,+1.4pp,up,各产业用例执行通过率加权平均
+kpi,关键指标,total-fix-rate,缺陷修复率,87.5%,,+2.1pp,up,本月缺陷修复 ÷ 本月发现
+kpi,关键指标,total-adoption,用例采纳率,71.4%,,+3.5pp,up,AI 生成且被采纳的用例占比
+volume,规模指标,total-cases,执行用例,"5,760",,+12.3%,up,本月全部产业执行的用例总数
+volume,规模指标,total-defects,发现缺陷,218,,+5.8%,up,本月全部产业发现缺陷数
+
+##COLUMNS
+key,label,parent,width,align,highlight,sortable
+industry,产业,,110px,left,0,0
+owner,接口人,,90px,left,0,0
+ops,测试运营全链路,,,center,0,0
+design,测试设计,ops,,center,0,0
+design-req,需求阶段,design,,center,0,0
+d-req-in,接入需求,design-req,,center,0,1
+d-req-conv,转化率,design-req,,center,1,1
+design-case,用例阶段,design,,center,0,0
+d-case-review,评审中,design-case,,center,0,1
+d-case-pass,采纳率,design-case,,center,1,1
+exec,测试执行,ops,,center,0,0
+exec-run,用例执行,exec,,center,0,0
+e-run-total,执行数,exec-run,,center,0,1
+e-run-pass,通过率,exec-run,,center,1,1
+exec-defect,缺陷情况,exec,,center,0,0
+e-def-found,发现数,exec-defect,,center,0,1
+e-def-fix,修复率,exec-defect,,center,1,1
+
+##ROWS
+industry,owner,d-req-in,d-req-conv,d-case-review,d-case-pass,e-run-total,e-run-pass,e-def-found,e-def-fix
+智能汽车,张三,128,82%,46,71%,1280,92.4%,52,88.5%
+云计算,李四,96,78%,38,75%,1120,94.1%,41,90.2%
+工业互联,王五,72,65%,29,58%,820,88.7%,27,77.8%
+智能终端,赵六,156,85%,55,68%,1560,91.2%,63,85.7%
+网络产品,孙七,84,76%,33,72%,980,93.8%,35,82.9%

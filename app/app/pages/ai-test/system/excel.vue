@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { flattenNav } from '~/utils/nav-flat';
-import { parsePageCsv, SAMPLE_CSV, type ImportedPage, type ParseIssue } from '~/utils/csv-page-parser';
+import { parsePageCsv, SAMPLE_CSV, SAMPLE_CSV_4L, type ImportedPage, type ParseIssue } from '~/utils/csv-page-parser';
 
 const route = useRoute();
 const { items: navItems } = await useNav();
@@ -34,6 +34,12 @@ function loadSample(): void {
   fileName.value = 'page-template.csv（内置示例）';
   rawText.value = SAMPLE_CSV;
   doParse(SAMPLE_CSV);
+}
+
+function loadSample4L(): void {
+  fileName.value = 'page-template-4level.csv（内置 4 级表头示例）';
+  rawText.value = SAMPLE_CSV_4L;
+  doParse(SAMPLE_CSV_4L);
 }
 
 /* —— 解析 —— */
@@ -131,7 +137,14 @@ function onRowDetail(row: Record<string, unknown>): void {
             class="h-8 px-3 inline-flex items-center gap-1.5 rounded-md border border-ink-200 bg-surface text-ink-700 text-[12px] font-medium hover:bg-ink-50 transition-colors"
             @click="loadSample()"
           >
-            载入示例
+            载入 2 级示例
+          </button>
+          <button
+            type="button"
+            class="h-8 px-3 inline-flex items-center gap-1.5 rounded-md border border-violet-300 bg-violet-50 text-violet-700 text-[12px] font-medium hover:bg-violet-100 transition-colors"
+            @click="loadSample4L()"
+          >
+            载入 4 级示例
           </button>
         </header>
 
@@ -141,8 +154,9 @@ function onRowDetail(row: Record<string, unknown>): void {
           <code class="ml-1 px-1 py-0.5 rounded bg-ink-100 text-ink-800 text-[11.5px]">##METRICS</code>
           <code class="ml-1 px-1 py-0.5 rounded bg-ink-100 text-ink-800 text-[11.5px]">##COLUMNS</code>
           <code class="ml-1 px-1 py-0.5 rounded bg-ink-100 text-ink-800 text-[11.5px]">##ROWS</code>
-          。<code class="px-1 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[11.5px]">##COLUMNS</code>
-          段加 <code class="px-1 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[11.5px]">parent</code> 列可生成二级表头（先定义父列、再让子列引用其 key）。
+                    。<code class="px-1 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[11.5px]">##COLUMNS</code>
+          段加 <code class="px-1 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[11.5px]">parent</code> 列可生成多级表头（可任意嵌套，先定义父列、再让子列引用其 key）；
+          <code class="px-1 py-0.5 rounded bg-brand-50 text-brand-700 text-[11.5px]">highlight=1</code> 标记重点列，表头与单元格均会高亮。
           Excel 编辑后请用「另存为 → CSV UTF-8」保存；或直接编辑 CSV 文件后拖入下方区域。
         </p>
       </section>
@@ -248,9 +262,9 @@ function onRowDetail(row: Record<string, unknown>): void {
         <button
           type="button"
           class="mt-3 h-8 px-3 inline-flex items-center rounded-md border border-brand-300 bg-brand-50 text-brand-700 text-[12px] font-medium hover:bg-brand-100"
-          @click="loadSample()"
+          @click="loadSample4L()"
         >
-          先看一眼示例
+          看一眼 4 级表头 + 重点列示例
         </button>
       </section>
 
