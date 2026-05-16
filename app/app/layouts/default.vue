@@ -13,7 +13,7 @@ const { items, activeTop, activeTopKey, showSidebar } = await useNav();
         :brand="branding"
       />
       <template #fallback>
-        <div class="h-16 shrink-0 border-b border-ink-200/80 bg-white/95" />
+        <div class="h-16 shrink-0 border-b border-ink-200/80 bg-surface/95" />
       </template>
     </ClientOnly>
 

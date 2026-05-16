@@ -13,6 +13,9 @@
   --color-brand-800: oklch(0.350 0.110 235);
   --color-brand-900: oklch(0.270 0.080 235);
 
+  /* —— 卡片表面色（跟 ink 阶解耦）：亮色主题=纯白，深色主题=略浅于页面底的深灰 —— */
+  --color-surface: oklch(1 0 0);
+
   /* —— 中性灰：略带蓝调，避免冷冰冰 —— */
   --color-ink-50:   oklch(0.985 0.003 240);
   --color-ink-100:  oklch(0.965 0.005 240);
@@ -143,7 +146,48 @@ html.theme-ant {
   --shadow-hover: 0 2px 6px -1px oklch(0.200 0.020 260 / 0.10), 0 1px 2px 0 oklch(0.200 0.020 260 / 0.05);
 }
 
-/* 商务 / ant 主题下首页的 radial-gradient 跟着主色调一下 */
+/* —— 深色监控 / Datadog · Grafana 风：暗底 + 亮青蓝主色 + 高光描边阴影 —— */
+html.theme-dark-ops {
+  /* 卡片表面：略浅于页面底，跟 ink-50 有 ~6 个 oklch L 差 = 可见层级 */
+  --color-surface: oklch(0.215 0.012 240);
+
+  /* ink 完全反向：深底浅字 */
+  --color-ink-50:   oklch(0.155 0.012 240);  /* 页面底（接近 #14181f）*/
+  --color-ink-100:  oklch(0.200 0.012 240);  /* 表头底 / hover 表面 */
+  --color-ink-150:  oklch(0.230 0.012 240);  /* skeleton */
+  --color-ink-200:  oklch(0.275 0.012 240);  /* 边框 / 分隔 */
+  --color-ink-300:  oklch(0.355 0.012 240);  /* 输入框 / 滚动条 */
+  --color-ink-400:  oklch(0.475 0.012 240);
+  --color-ink-500:  oklch(0.620 0.014 240);  /* 副标题（中性，不变） */
+  --color-ink-600:  oklch(0.735 0.012 240);
+  --color-ink-700:  oklch(0.835 0.010 240);  /* 正文 */
+  --color-ink-800:  oklch(0.905 0.008 240);
+  --color-ink-900:  oklch(0.965 0.006 240);  /* 主标题（接近白） */
+
+  /* brand：深底上更亮的青蓝（220°）。注意 50/100 现在是"深色 chip 底"而非浅底，
+     语义上仍然是"低对比的活动表面"，跟 700/800 (亮色文字) 形成对比。 */
+  --color-brand-50:  oklch(0.300 0.060 220);   /* 活动叶子的深 chip 底 */
+  --color-brand-100: oklch(0.345 0.080 220);   /* hover */
+  --color-brand-200: oklch(0.405 0.110 220);
+  --color-brand-300: oklch(0.480 0.140 220);
+  --color-brand-400: oklch(0.580 0.165 220);
+  --color-brand-500: oklch(0.685 0.180 220);   /* 主色：亮青蓝 */
+  --color-brand-600: oklch(0.745 0.180 220);   /* 主操作按钮 */
+  --color-brand-700: oklch(0.820 0.150 220);   /* 强调文字 */
+  --color-brand-800: oklch(0.890 0.110 220);
+  --color-brand-900: oklch(0.940 0.070 220);
+
+  /* shadow 改成高光描边：深底上黑色 box-shadow 看不出来，用浅色 ring 体现层级 */
+  --shadow-card:  0 0 0 1px oklch(1 0 0 / 0.05), 0 1px 2px 0 oklch(0 0 0 / 0.5);
+  --shadow-hover: 0 0 0 1px oklch(1 0 0 / 0.10), 0 6px 16px -4px oklch(0 0 0 / 0.6);
+
+  /* 圆角保持中等 */
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+}
+
+/* —— 商务 / ant / dark-ops 主题下首页背景渐变跟主色调对齐 —— */
 html.theme-business body {
   background:
     radial-gradient(ellipse 80% 50% at 50% -20%, oklch(0.95 0.040 280 / 0.4), transparent 70%),
@@ -153,4 +197,10 @@ html.theme-ant body {
   background:
     radial-gradient(ellipse 80% 50% at 50% -20%, oklch(0.94 0.045 260 / 0.45), transparent 70%),
     var(--color-ink-50);
+}
+html.theme-dark-ops body {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -20%, oklch(0.30 0.060 220 / 0.5), transparent 70%),
+    var(--color-ink-50);
+  color: var(--color-ink-900);
 }

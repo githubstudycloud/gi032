@@ -20,13 +20,22 @@ useHead({
 
 <template>
   <div>
-    <!-- 标题 / 面包屑依赖客户端取的 nav，需要 ClientOnly 包 -->
     <ClientOnly>
       <PageHeader
         :title="current?.label ?? '未配置页面'"
         :subtitle="current ? undefined : `路径 ${currentPath} 未在 nav.json 中配置`"
         :breadcrumb="current?.breadcrumb"
       />
+      <!-- 有 embed = 渲染 iframe；否则 = 占位（筛选 + 表格） -->
+      <EmbedFrame
+        v-if="current?.embed"
+        :src="current.embed"
+        :title="current.label"
+      />
+      <template v-else>
+        <FilterBar />
+        <DataTablePlaceholder />
+      </template>
       <template #fallback>
         <div class="pb-5 border-b border-ink-200/70">
           <div class="h-4 w-32 rounded bg-ink-150" />
@@ -34,7 +43,5 @@ useHead({
         </div>
       </template>
     </ClientOnly>
-    <FilterBar />
-    <DataTablePlaceholder />
   </div>
 </template>

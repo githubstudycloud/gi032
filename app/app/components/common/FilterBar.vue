@@ -15,7 +15,7 @@ function onReset(): void {
 </script>
 
 <template>
-  <section class="mt-6 rounded-xl border border-ink-200/70 bg-white px-5 py-4 shadow-[var(--shadow-card)]">
+  <section class="mt-6 rounded-xl border border-ink-200/70 bg-surface px-5 py-4 shadow-[var(--shadow-card)]">
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
       <label class="block text-sm">
         <span class="block text-ink-600 mb-1.5 text-[11px] font-medium tracking-wide uppercase">关键字</span>
@@ -23,7 +23,7 @@ function onReset(): void {
           v-model="keyword"
           type="search"
           placeholder="搜索名称 / ID…"
-          class="w-full h-9 rounded-md border border-ink-200 px-3 text-[13px] bg-white outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
+          class="w-full h-9 rounded-md border border-ink-200 px-3 text-[13px] bg-surface outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
         />
       </label>
 
@@ -31,7 +31,7 @@ function onReset(): void {
         <span class="block text-ink-600 mb-1.5 text-[11px] font-medium tracking-wide uppercase">状态</span>
         <select
           v-model="status"
-          class="w-full h-9 rounded-md border border-ink-200 px-3 text-[13px] bg-white outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
+          class="w-full h-9 rounded-md border border-ink-200 px-3 text-[13px] bg-surface outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
         >
           <option value="all">全部</option>
           <option value="active">进行中</option>
@@ -44,7 +44,7 @@ function onReset(): void {
         <span class="block text-ink-600 mb-1.5 text-[11px] font-medium tracking-wide uppercase">时间范围</span>
         <select
           v-model="dateRange"
-          class="w-full h-9 rounded-md border border-ink-200 px-3 text-[13px] bg-white outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
+          class="w-full h-9 rounded-md border border-ink-200 px-3 text-[13px] bg-surface outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
         >
           <option value="1d">最近 1 天</option>
           <option value="7d">最近 7 天</option>
@@ -63,7 +63,7 @@ function onReset(): void {
         </button>
         <button
           type="button"
-          class="h-9 px-4 rounded-md border border-ink-200 bg-white text-[13px] text-ink-700 hover:bg-ink-100 transition-colors"
+          class="h-9 px-4 rounded-md border border-ink-200 bg-surface text-[13px] text-ink-700 hover:bg-ink-100 transition-colors"
           @click="onReset"
         >
           重置

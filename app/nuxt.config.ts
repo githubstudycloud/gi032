@@ -67,6 +67,26 @@ export default defineNuxtConfig({
             '}catch(e){}})();',
         },
       ],
+      // Critical baseline CSS：
+      // Nuxt 4 + Vite 7 + Windows 在 dev 下会把 main.css 注入两次（一份 /_nuxt/assets/css，
+      // 一份 Windows 绝对路径 URL），Edge 偶发会出现首屏空白（两份都没及时加载）。
+      // 这里给一个最小兜底：字体栈、背景色、文字色，让 main.css 哪怕慢也不会"完全失样式"。
+      // main.css 加载完后由它接管（同名 var 后定义覆盖）。
+      style: [
+        {
+          innerHTML:
+            // color-scheme 告诉浏览器我们自己控制深/浅，禁掉 Chrome auto-dark 把白色强转
+            'html{color-scheme:light}' +
+            'html.theme-dark-ops{color-scheme:dark}' +
+            '*,*::before,*::after{box-sizing:border-box}' +
+            'html,body{margin:0;padding:0}' +
+            'body{font-family:"Noto Sans SC","PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",system-ui,sans-serif;' +
+            '-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;' +
+            'background:#f5f7fa;color:#1a2030;min-height:100vh}' +
+            // dark-ops 主题下 baseline 直接给深底，避免 FOUC 闪一下白
+            'html.theme-dark-ops body{background:#14181f;color:#f2f4f7}',
+        },
+      ],
     },
   },
 

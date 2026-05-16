@@ -20,6 +20,13 @@ export interface NavItem {
   single?: boolean;
   /** 禁用 */
   disabled?: boolean;
+  /**
+   * 第三方页面 URL（iframe 嵌入）。
+   * 设了之后，访问该 path 时不渲染占位 page，而是渲染 EmbedFrame。
+   * 注意：目标站点 X-Frame-Options / CSP frame-ancestors 限制无法被嵌入时会显示空白，
+   * EmbedFrame 会提示用户在新窗口打开。
+   */
+  embed?: string;
   /** 子菜单（递归任意层） */
   children?: NavItem[];
 }

@@ -9,7 +9,7 @@ defineProps<{
 </script>
 
 <template>
-  <header class="h-16 shrink-0 bg-white/95 backdrop-blur-sm border-b border-ink-200/80 sticky top-0 z-20">
+  <header class="h-16 shrink-0 bg-surface/95 backdrop-blur-sm border-b border-ink-200/80 sticky top-0 z-20">
     <div class="h-full flex items-center px-6 gap-8">
       <!-- 左：大 LOGO + 标题 -->
       <NuxtLink to="/" class="flex items-center gap-3 shrink-0 -my-1 px-2 py-1 rounded-lg hover:bg-ink-100/60 transition-colors">

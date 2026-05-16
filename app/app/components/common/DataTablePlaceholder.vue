@@ -37,12 +37,12 @@ function statusClass(s: Row['status']): string {
 </script>
 
 <template>
-  <section class="mt-4 rounded-xl border border-ink-200/70 bg-white overflow-hidden shadow-[var(--shadow-card)]">
+  <section class="mt-4 rounded-xl border border-ink-200/70 bg-surface overflow-hidden shadow-[var(--shadow-card)]">
     <header class="px-5 py-3.5 border-b border-ink-200/70 flex items-center gap-3">
       <h2 class="text-[14px] font-semibold text-ink-900">数据列表</h2>
       <span class="text-[12px] text-ink-500">共 {{ rows.length }} 条 · 占位数据</span>
       <div class="flex-1" />
-      <button class="h-8 px-3 rounded-md border border-ink-200 bg-white text-[12px] text-ink-700 hover:bg-ink-100 transition-colors">
+      <button class="h-8 px-3 rounded-md border border-ink-200 bg-surface text-[12px] text-ink-700 hover:bg-ink-100 transition-colors">
         导出
       </button>
     </header>

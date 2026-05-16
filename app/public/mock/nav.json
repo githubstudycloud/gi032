@@ -7,6 +7,13 @@
       "single": true
     },
     {
+      "key": "home1",
+      "label": "首页1",
+      "path": "/embed/home1",
+      "single": true,
+      "embed": "https://www.google.com/"
+    },
+    {
       "key": "ai-test",
       "label": "AI辅助测试运营",
       "path": "/ai-test",
@@ -43,7 +50,13 @@
           "key": "ai-test-special",
           "label": "AI辅助专项测试",
           "children": [
-            { "key": "ai-test-special-precise", "label": "AI辅助精准测试", "path": "/ai-test/special/precise" }
+            { "key": "ai-test-special-precise",  "label": "AI辅助精准测试",     "path": "/ai-test/special/precise" },
+            { "key": "ai-test-special-dts",      "label": "AI辅助DTS问题分析",  "path": "/ai-test/special/dts" },
+            { "key": "ai-test-special-voc",      "label": "AI辅助VOC问题分析",  "path": "/ai-test/special/voc" },
+            { "key": "ai-test-special-beta",     "label": "AI辅助Beta问题分析", "path": "/ai-test/special/beta" },
+            { "key": "ai-test-special-security", "label": "AI辅助安全测试",     "path": "/ai-test/special/security" },
+            { "key": "ai-test-special-doc",      "label": "AI辅助资料测试",     "path": "/ai-test/special/doc" },
+            { "key": "ai-test-special-perf",     "label": "AI辅助性能测试",     "path": "/ai-test/special/perf" }
           ]
         },
         {
@@ -59,7 +72,13 @@
           "label": "系统管理",
           "children": [
             { "key": "ai-test-system-metrics", "label": "指标管理",    "path": "/ai-test/system/metrics" },
-            { "key": "ai-test-system-excel",   "label": "Excel看板",   "path": "/ai-test/system/excel" }
+            { "key": "ai-test-system-excel",   "label": "Excel看板",   "path": "/ai-test/system/excel" },
+            {
+              "key": "ai-test-system-search",
+              "label": "搜索页面",
+              "path": "/ai-test/system/search",
+              "embed": "https://www.google.com/"
+            }
           ]
         }
       ]

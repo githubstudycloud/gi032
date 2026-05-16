@@ -5,6 +5,87 @@
 
 ---
 
+## #007 — 2026-05-16 — 加 6 个三级菜单 + iframe 嵌入 + dark-ops 主题 + Edge 样式偶发不出来的修法
+
+### 用户提问
+
+> 先把二级菜单 AI辅助专项测试下再加 AI辅助DTS问题分析 / VOC / Beta / 安全 / 资料 / 性能；Edge 有时样式加载不出来，做下优化；加 dark-ops 深色监控主题；顶部和左侧菜单支持嵌入页面 URL，加"首页1"嵌入谷歌、系统管理下加"搜索页面"嵌入谷歌作为示例。
+
+### 1. 6 个三级菜单（5 分钟）
+
+改 `public/mock/nav.json` 的 `ai-test-special.children`：
+- AI辅助精准测试（已有）
+- + AI辅助DTS问题分析   /ai-test/special/dts
+- + AI辅助VOC问题分析   /ai-test/special/voc
+- + AI辅助Beta问题分析  /ai-test/special/beta
+- + AI辅助安全测试     /ai-test/special/security
+- + AI辅助资料测试     /ai-test/special/doc
+- + AI辅助性能测试     /ai-test/special/perf
+
+### 2. iframe 嵌入功能
+
+- NavItem 类型加 `embed?: string` 字段
+- 新增 `app/components/common/EmbedFrame.vue`：URL bar + 新窗口打开 + **常驻警示条**（说明 X-Frame-Options / CSP frame-ancestors 限制）+ iframe 主体
+- catch-all `pages/[...slug].vue`：检测到 `current.embed` 渲染 `<EmbedFrame>`，否则继续渲染占位 FilterBar + DataTable
+- nav.json 加 2 个示例：
+  - 顶部一级 "首页1"：path `/embed/home1`、single、embed `https://www.google.com/`
+  - 系统管理下三级 "搜索页面"：path `/ai-test/system/search`、embed `https://www.google.com/`
+
+**重要陷阱**：第一版 EmbedFrame 用 4s 定时器检测 `onload` 没触发就显示 hint。但浏览器对 X-Frame-Options 被阻挡的 iframe **也会触发 load 事件**（加载的是 `chrome-error://chromewebdata/`），导致 hint 永远不出现。改成常驻显示警示条，不依赖 load 检测。
+
+### 3. Edge 样式偶发加载不出来
+
+**根因**（curl + Select-String 找到）：Nuxt 4 + Vite 7 + Windows 下 dev HTML 把 main.css 引用了**两次**：
+```
+<link rel="stylesheet" href="/_nuxt/assets/css/main.css" crossorigin>
+<link rel="stylesheet" href="/_nuxt/C:/Users/John/Desktop/claude/20260515/app/app/assets/css/main.css" crossorigin>
+```
+Edge 的缓存策略下偶发两个都没及时加载，导致页面无样式。
+
+**修法**：`nuxt.config.ts` 的 `app.head.style` 加内联 critical CSS baseline —— 字体栈 + body bg + smoothing + color-scheme，main.css 即使完全没加载页面也不会"全白裸 HTML"。
+
+```js
+// 简化版
+'html{color-scheme:light}html.theme-dark-ops{color-scheme:dark}' +
+'*,*::before,*::after{box-sizing:border-box}html,body{margin:0;padding:0}' +
+'body{font-family:"Noto Sans SC",...;background:#f5f7fa;color:#1a2030;...}' +
+'html.theme-dark-ops body{background:#14181f;color:#f2f4f7}'
+```
+
+### 4. dark-ops 深色监控主题
+
+`main.css` 加 `html.theme-dark-ops` 块：
+- ink 阶**完全反向**：ink-50 = 0.155 0.012 240（最深，页面底），ink-900 = 0.965 0.006 240（最亮，主标题）
+- brand 阶**重定义**：brand-50 = 0.300 0.060 220（深色 chip 底，活动叶子用），brand-600 = 0.745 0.180 220（亮青蓝主操作），brand-700 = 0.820 0.150 220（强调文字）
+- shadow 改成**高光描边**：1px 浅 ring + 强黑阴影增强层级感
+- body 背景渐变换深青色 radial
+
+`themes.json` 加第 4 个 preset。
+
+### 5. Dark mode 衍生的硬编码白色问题
+
+dark-ops 上线后发现：顶部 / 侧栏 / 卡片仍然是白色，被 Chrome auto-dark 强转。两步根治：
+
+a. **加 `color-scheme: light/dark` 声明**（在 baseline + 主题块里）→ Chrome 不再 auto-dark
+b. **加 `--color-surface` token 解耦"卡片表面"语义** → 不再依赖 `bg-white`
+   - light/business/ant 主题：`--color-surface: oklch(1 0 0)`（白）
+   - dark-ops：`--color-surface: oklch(0.215 0.012 240)`（比 ink-50 略浅）
+   - 把 8 个文件里的 `bg-white` / `bg-white/95` 全部替换成 `bg-surface` / `bg-surface/95`
+
+### 实测（Chrome DevTools MCP）
+
+- `/ai-test/special/dts` ✓：侧栏 AI辅助专项测试下面 7 个项全在，面包屑正确
+- `/ai-test/system/search` ✓：iframe 显示 "www.google.com 拒绝了我们的连接请求"，警示条常驻
+- 切 dark-ops ✓：`html.className = 'theme-dark-ops'`，顶部/侧栏/卡片**全深底**，主色变亮青蓝
+- 切回 minimal ✓：完全恢复亮色钢蓝
+- 控制台 0 error / 0 warning
+
+### 用户下一步
+
+如果都 OK，下轮开始做具体页（用户上轮说"完成后开始设计具体页"）。具体哪页先：总览 / DTS问题分析 / AI辅助测试设计 待用户挑。
+
+---
+
 ## #006 — 2026-05-16 — 实现风格切换器（minimal / business / ant 三套 preset，按 §3.7 落地清单）
 
 ### 用户提问

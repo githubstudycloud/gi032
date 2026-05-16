@@ -29,7 +29,7 @@ function onKeydown(e: KeyboardEvent): void {
         'h-9 px-2.5 inline-flex items-center gap-2 rounded-md border transition-colors',
         open
           ? 'bg-ink-100 border-ink-200 text-ink-900'
-          : 'bg-white/0 border-transparent text-ink-700 hover:bg-ink-100 hover:text-ink-900',
+          : 'bg-surface/0 border-transparent text-ink-700 hover:bg-ink-100 hover:text-ink-900',
       ]"
       :aria-haspopup="true"
       :aria-expanded="open"
@@ -66,7 +66,7 @@ function onKeydown(e: KeyboardEvent): void {
         v-if="open"
         role="menu"
         aria-label="样式风格"
-        class="absolute right-0 top-[calc(100%+4px)] w-[280px] rounded-lg border border-ink-200 bg-white shadow-[var(--shadow-hover)] p-1.5 z-50"
+        class="absolute right-0 top-[calc(100%+4px)] w-[280px] rounded-lg border border-ink-200 bg-surface shadow-[var(--shadow-hover)] p-1.5 z-50"
       >
         <div class="px-3 py-2 text-[11px] uppercase tracking-wider text-ink-500 font-mono">
           样式风格

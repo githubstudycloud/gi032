@@ -64,7 +64,7 @@ const updates = [
         <div
           v-for="stat in stats"
           :key="stat.key"
-          class="rounded-xl border border-ink-200/70 bg-white p-5 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-hover)] transition-shadow"
+          class="rounded-xl border border-ink-200/70 bg-surface p-5 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-hover)] transition-shadow"
         >
           <div class="text-[12px] text-ink-500">{{ stat.label }}</div>
           <div class="mt-2 font-display text-[28px] font-semibold text-ink-900 leading-none">
@@ -98,7 +98,7 @@ const updates = [
             v-for="entry in entries"
             :key="entry.key"
             :to="entry.path"
-            class="group rounded-xl border border-ink-200/70 bg-white p-5 hover:border-brand-300 hover:shadow-[var(--shadow-hover)] transition-all"
+            class="group rounded-xl border border-ink-200/70 bg-surface p-5 hover:border-brand-300 hover:shadow-[var(--shadow-hover)] transition-all"
           >
             <div class="flex items-start justify-between">
               <div class="font-display text-[16px] font-semibold text-ink-900 tracking-tight">
@@ -113,7 +113,7 @@ const updates = [
         </div>
         <template #fallback>
           <div class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div v-for="i in 4" :key="i" class="h-[88px] rounded-xl border border-ink-200/70 bg-white" />
+            <div v-for="i in 4" :key="i" class="h-[88px] rounded-xl border border-ink-200/70 bg-surface" />
           </div>
         </template>
       </ClientOnly>
@@ -125,7 +125,7 @@ const updates = [
         <span class="w-1 h-4 rounded-full bg-brand-500" />
         最近动态
       </h2>
-      <ul class="mt-4 rounded-xl border border-ink-200/70 bg-white divide-y divide-ink-100">
+      <ul class="mt-4 rounded-xl border border-ink-200/70 bg-surface divide-y divide-ink-100">
         <li v-for="u in updates" :key="u.time" class="px-5 py-4 flex items-center gap-4">
           <div class="font-mono text-[12px] text-ink-500 shrink-0 w-12">{{ u.time }}</div>
           <div class="min-w-0 flex-1">

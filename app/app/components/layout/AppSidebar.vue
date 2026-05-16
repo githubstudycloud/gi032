@@ -7,7 +7,7 @@ defineProps<{
 </script>
 
 <template>
-  <aside class="w-[260px] shrink-0 border-r border-ink-200/80 bg-white flex flex-col">
+  <aside class="w-[260px] shrink-0 border-r border-ink-200/80 bg-surface flex flex-col">
     <!-- 侧栏头：当前一级菜单 -->
     <div class="h-14 shrink-0 px-5 flex items-center border-b border-ink-200/60">
       <div class="flex items-center gap-2 min-w-0">
