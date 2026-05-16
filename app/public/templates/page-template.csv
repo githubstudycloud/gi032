@@ -1,0 +1,30 @@
+##META
+key,value
+title,AI 辅助测试覆盖度（示例）
+subtitle,来自 CSV 导入演示，每段以 ## 段名 开头
+footnote,数据仅作示例，全部可在 Excel/CSV 中修改
+
+##METRICS
+group_key,group_label,key,label,value,unit,mom,trend,description
+quality,质量指标,total-cases,用例总数,"3,560",,+9.4%,up,本月新增的测试用例总数（含 AI 与人工）
+quality,质量指标,ai-ratio,AI生成占比,60.3%,,+5.2pp,up,公式：AI 生成有效用例数 ÷ 用例总数
+quality,质量指标,defect-found,缺陷发现数,128,,-3.1%,down,本月发现的全部缺陷数
+capability,能力指标,ai-generated,AI生成用例数,"3,420",,+22.5%,up,AI 系统本月生成的全部候选用例
+capability,能力指标,adoption-rate,采纳率,62.8%,,-1.2pp,down,AI 采纳用例数 ÷ AI 生成用例数
+capability,能力指标,avg-interactions,平均交互次数,4.6,,-0.3,down,每个需求的平均交互轮数
+
+##COLUMNS
+key,label,width,align,highlight
+industry,产业,120px,left,0
+owner,接口人,90px,left,0
+coverage,设计覆盖人数,,center,0
+adoption,采纳率,,center,1
+new-cases,新增用例,,right,0
+defects,发现缺陷,,right,0
+
+##ROWS
+industry,owner,coverage,adoption,new-cases,defects
+智能汽车,张三,42,68%,420,52
+云计算,李四,38,72%,380,41
+工业互联,王五,29,55%,265,27
+智能终端,赵六,55,64%,512,63

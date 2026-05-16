@@ -1,0 +1,288 @@
+/**
+ * CSV → 页面数据 解析器
+ *
+ * 一个文件多段，段头形如 `##METRICS`。空行/`#` 注释行忽略。
+ * 段内首行 = 表头，其余 = 数据行。
+ *
+ * 支持段：
+ *   ##META       : key,value 两列；title / subtitle / footnote
+ *   ##METRICS    : group_key,group_label,key,label,value,unit,mom,trend,description
+ *   ##COLUMNS    : key,label,width,align,highlight (highlight: 1/0)
+ *   ##ROWS       : 表头 = 列 key 列表；其余 = 数据行
+ *
+ * 兼容 Excel 另存的 CSV（UTF-8 BOM、CRLF、双引号转义）。
+ */
+import type {
+  Metric,
+  MetricGroup,
+  OverviewMetrics,
+  OverviewPilots,
+  PilotTable,
+  TableColumn,
+  TableRow,
+  TrendDir,
+} from '~/types/overview-summary';
+
+export interface ImportedPage {
+  meta: {
+    title: string;
+    subtitle?: string;
+    footnote?: string;
+  };
+  metrics: OverviewMetrics;
+  pilots: OverviewPilots;
+}
+
+export interface ParseIssue {
+  section: string;
+  line: number;
+  message: string;
+}
+
+export interface ParseResult {
+  ok: boolean;
+  data: ImportedPage | null;
+  issues: ParseIssue[];
+}
+
+/* —— RFC4180 简化版 CSV 行解析 —— */
+function parseCsvLine(line: string): string[] {
+  const out: string[] = [];
+  let cur = '';
+  let inQuote = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (inQuote) {
+      if (ch === '"') {
+        if (line[i + 1] === '"') {
+          cur += '"';
+          i++;
+        } else {
+          inQuote = false;
+        }
+      } else {
+        cur += ch;
+      }
+    } else {
+      if (ch === ',') {
+        out.push(cur);
+        cur = '';
+      } else if (ch === '"' && cur === '') {
+        inQuote = true;
+      } else {
+        cur += ch;
+      }
+    }
+  }
+  out.push(cur);
+  return out.map(s => s.trim());
+}
+
+/* —— 把整段 CSV 拆成 section → rows[] —— */
+function splitSections(text: string): Record<string, { lineNo: number; cells: string[] }[]> {
+  // 去掉 UTF-8 BOM
+  if (text.charCodeAt(0) === 0xfeff) text = text.slice(1);
+  const lines = text.split(/\r?\n/);
+  const sections: Record<string, { lineNo: number; cells: string[] }[]> = {};
+  let cur: string | null = null;
+  for (let i = 0; i < lines.length; i++) {
+    const raw = lines[i] ?? '';
+    const trimmed = raw.trim();
+    if (!trimmed) continue;
+    if (trimmed.startsWith('##')) {
+      cur = trimmed.slice(2).trim().toUpperCase();
+      sections[cur] = [];
+      continue;
+    }
+    if (trimmed.startsWith('#')) continue; // 注释
+    if (cur == null) continue; // section 之前的内容忽略
+    sections[cur]!.push({ lineNo: i + 1, cells: parseCsvLine(raw) });
+  }
+  return sections;
+}
+
+function toTrend(v: string | undefined): TrendDir {
+  const x = (v ?? '').toLowerCase().trim();
+  if (x === 'down' || x === '↓' || x === '降') return 'down';
+  if (x === 'flat' || x === '-' || x === '平') return 'flat';
+  return 'up';
+}
+
+function toAlign(v: string | undefined): 'left' | 'center' | 'right' {
+  const x = (v ?? '').toLowerCase().trim();
+  if (x === 'left' || x === '左') return 'left';
+  if (x === 'right' || x === '右') return 'right';
+  return 'center';
+}
+
+function nonEmpty(s: string | undefined): string | undefined {
+  if (s == null) return undefined;
+  const t = s.trim();
+  return t === '' ? undefined : t;
+}
+
+/* —— 主入口 —— */
+export function parsePageCsv(text: string): ParseResult {
+  const issues: ParseIssue[] = [];
+  const sections = splitSections(text);
+
+  /* META */
+  const meta = { title: '导入的页面', subtitle: undefined as string | undefined, footnote: undefined as string | undefined };
+  for (const row of sections.META ?? []) {
+    const [k, v] = row.cells;
+    if (!k) continue;
+    if (k === 'key' && (v ?? '').toLowerCase() === 'value') continue; // 跳过表头
+    if (k === 'title') meta.title = v ?? meta.title;
+    else if (k === 'subtitle') meta.subtitle = nonEmpty(v);
+    else if (k === 'footnote') meta.footnote = nonEmpty(v);
+  }
+
+  /* METRICS */
+  const metricsRows = sections.METRICS ?? [];
+  const groupMap = new Map<string, MetricGroup>();
+  if (metricsRows.length > 0) {
+    const [header, ...rest] = metricsRows;
+    const cols = header!.cells.map(c => c.toLowerCase());
+    const idx = (name: string): number => cols.indexOf(name);
+    const iGk = idx('group_key');
+    const iGl = idx('group_label');
+    const iK = idx('key');
+    const iL = idx('label');
+    const iV = idx('value');
+    const iU = idx('unit');
+    const iM = idx('mom');
+    const iT = idx('trend');
+    const iD = idx('description');
+    if (iGk < 0 || iK < 0 || iL < 0 || iV < 0) {
+      issues.push({ section: 'METRICS', line: header!.lineNo, message: '缺少必需列 group_key/key/label/value' });
+    } else {
+      for (const row of rest) {
+        const c = row.cells;
+        const gk = c[iGk] ?? '';
+        if (!gk) continue;
+        if (!groupMap.has(gk)) {
+          groupMap.set(gk, { key: gk, label: c[iGl] ?? gk, items: [] });
+        }
+        const metric: Metric = {
+          key: c[iK] ?? '',
+          label: c[iL] ?? '',
+          value: c[iV] ?? '',
+          unit: iU >= 0 ? nonEmpty(c[iU]) : undefined,
+          mom: (iM >= 0 ? c[iM] : '') ?? '',
+          trend: toTrend(iT >= 0 ? c[iT] : undefined),
+          description: iD >= 0 ? (c[iD] ?? '') : '',
+        };
+        if (!metric.key) {
+          issues.push({ section: 'METRICS', line: row.lineNo, message: '指标 key 为空，已跳过' });
+          continue;
+        }
+        groupMap.get(gk)!.items.push(metric);
+      }
+    }
+  }
+  const metrics: OverviewMetrics = {
+    groups: Array.from(groupMap.values()),
+    footnote: meta.footnote ?? '数据来源：本地 CSV 导入',
+  };
+
+  /* COLUMNS */
+  const colsRows = sections.COLUMNS ?? [];
+  const columns: TableColumn[] = [];
+  if (colsRows.length > 0) {
+    const [header, ...rest] = colsRows;
+    const ch = header!.cells.map(c => c.toLowerCase());
+    const iK = ch.indexOf('key');
+    const iL = ch.indexOf('label');
+    const iW = ch.indexOf('width');
+    const iA = ch.indexOf('align');
+    const iH = ch.indexOf('highlight');
+    if (iK < 0 || iL < 0) {
+      issues.push({ section: 'COLUMNS', line: header!.lineNo, message: '缺少必需列 key/label' });
+    } else {
+      for (const row of rest) {
+        const c = row.cells;
+        const k = c[iK] ?? '';
+        if (!k) continue;
+        columns.push({
+          key: k,
+          label: c[iL] ?? k,
+          rowspan: 2,
+          width: iW >= 0 ? nonEmpty(c[iW]) : undefined,
+          align: toAlign(iA >= 0 ? c[iA] : undefined),
+          highlight: iH >= 0 ? (c[iH] === '1' || (c[iH] ?? '').toLowerCase() === 'true') : undefined,
+        });
+      }
+    }
+  }
+
+  /* ROWS */
+  const rowsSection = sections.ROWS ?? [];
+  const rows: TableRow[] = [];
+  if (rowsSection.length > 0) {
+    const [header, ...rest] = rowsSection;
+    const keys = header!.cells;
+    for (const row of rest) {
+      const r: TableRow = {};
+      for (let i = 0; i < keys.length; i++) {
+        const k = keys[i];
+        if (!k) continue;
+        const v = row.cells[i] ?? '';
+        // 数字尝试解析（保持字符串若包含非数字字符）
+        const num = Number(v.replace(/,/g, ''));
+        r[k] = v !== '' && Number.isFinite(num) && /^[-+0-9.,]+$/.test(v) ? num : v;
+      }
+      rows.push(r);
+    }
+  }
+
+  const pilots: OverviewPilots = {
+    tabs: columns.length > 0 || rows.length > 0
+      ? [{
+          key: 'main',
+          label: meta.title,
+          columns,
+          rows,
+          pagination: { page: 1, pageSize: Math.max(rows.length, 10), total: rows.length },
+        } satisfies PilotTable]
+      : [],
+  };
+
+  return {
+    ok: issues.length === 0 && (metrics.groups.length > 0 || pilots.tabs.length > 0),
+    data: { meta, metrics, pilots },
+    issues,
+  };
+}
+
+/* —— 模板 —— */
+export const SAMPLE_CSV: string = `##META
+key,value
+title,AI 辅助测试覆盖度（示例）
+subtitle,来自 CSV 导入演示，每段以 ## 段名 开头
+footnote,数据仅作示例，全部可在 Excel/CSV 中修改
+
+##METRICS
+group_key,group_label,key,label,value,unit,mom,trend,description
+quality,质量指标,total-cases,用例总数,"3,560",,+9.4%,up,本月新增的测试用例总数（含 AI 与人工）
+quality,质量指标,ai-ratio,AI生成占比,60.3%,,+5.2pp,up,公式：AI 生成有效用例数 ÷ 用例总数
+quality,质量指标,defect-found,缺陷发现数,128,,-3.1%,down,本月发现的全部缺陷数
+capability,能力指标,ai-generated,AI生成用例数,"3,420",,+22.5%,up,AI 系统本月生成的全部候选用例
+capability,能力指标,adoption-rate,采纳率,62.8%,,-1.2pp,down,AI 采纳用例数 ÷ AI 生成用例数
+capability,能力指标,avg-interactions,平均交互次数,4.6,,-0.3,down,每个需求的平均交互轮数
+
+##COLUMNS
+key,label,width,align,highlight
+industry,产业,120px,left,0
+owner,接口人,90px,left,0
+coverage,设计覆盖人数,,center,0
+adoption,采纳率,,center,1
+new-cases,新增用例,,right,0
+defects,发现缺陷,,right,0
+
+##ROWS
+industry,owner,coverage,adoption,new-cases,defects
+智能汽车,张三,42,68%,420,52
+云计算,李四,38,72%,380,41
+工业互联,王五,29,55%,265,27
+智能终端,赵六,55,64%,512,63
+`;
