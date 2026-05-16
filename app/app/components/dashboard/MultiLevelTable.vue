@@ -156,6 +156,68 @@ function openFilter(key: string): void {
   filterSearch.value = '';
 }
 
+/* —— 弹层定位（Teleport 到 body，避免被表格 overflow-hidden 裁剪 / 遮住列表） —— */
+const triggerEls = new Map<string, HTMLElement>();
+function setTriggerEl(key: string, el: Element | null): void {
+  if (el instanceof HTMLElement) triggerEls.set(key, el);
+  else triggerEls.delete(key);
+}
+
+const POPOVER_WIDTH = 260;
+const POPOVER_MAX_H = 320;
+const popoverStyle = ref<Record<string, string>>({ left: '0px', top: '0px', width: `${POPOVER_WIDTH}px` });
+
+function recomputePopoverPos(): void {
+  if (!filterOpen.value) return;
+  const trigger = triggerEls.get(filterOpen.value);
+  if (!trigger) return;
+  const rect = trigger.getBoundingClientRect();
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  let left = rect.left + rect.width / 2 - POPOVER_WIDTH / 2;
+  left = Math.max(8, Math.min(left, vw - POPOVER_WIDTH - 8));
+
+  const spaceBelow = vh - rect.bottom - 8;
+  const spaceAbove = rect.top - 8;
+  const openUp = spaceBelow < 200 && spaceAbove > spaceBelow;
+
+  const style: Record<string, string> = {
+    left: `${left}px`,
+    width: `${POPOVER_WIDTH}px`,
+  };
+  if (openUp) {
+    // 用 bottom 锚定到触发按钮上方 8px：popover 紧贴上沿，不会留多余空隙
+    style.bottom = `${vh - rect.top + 8}px`;
+    style.maxHeight = `${Math.min(spaceAbove, POPOVER_MAX_H)}px`;
+  } else {
+    style.top = `${rect.bottom + 8}px`;
+    style.maxHeight = `${Math.min(spaceBelow, POPOVER_MAX_H)}px`;
+  }
+  popoverStyle.value = style;
+}
+
+const openCol = computed<TableColumn | null>(() => {
+  if (!filterOpen.value) return null;
+  function find(cols: TableColumn[]): TableColumn | null {
+    for (const c of cols) {
+      if (c.key === filterOpen.value && !c.children?.length) return c;
+      if (c.children?.length) {
+        const f = find(c.children);
+        if (f) return f;
+      }
+    }
+    return null;
+  }
+  return find(props.data.columns);
+});
+
+watch(filterOpen, async (k) => {
+  if (k) {
+    await nextTick();
+    recomputePopoverPos();
+  }
+});
+
 /* —— tab / data 切换时重置本表所有筛选与排序，防止跨表残留 —— */
 watch(
   () => props.data.key,
@@ -182,13 +244,20 @@ function onEsc(e: KeyboardEvent): void {
     filterOpen.value = null;
   }
 }
+function onScrollOrResize(): void {
+  recomputePopoverPos();
+}
 onMounted(() => {
   document.addEventListener('click', onDocClick);
   document.addEventListener('keydown', onEsc);
+  window.addEventListener('resize', onScrollOrResize);
+  window.addEventListener('scroll', onScrollOrResize, true);
 });
 onBeforeUnmount(() => {
   document.removeEventListener('click', onDocClick);
   document.removeEventListener('keydown', onEsc);
+  window.removeEventListener('resize', onScrollOrResize);
+  window.removeEventListener('scroll', onScrollOrResize, true);
 });
 
 /* —— 派生 rows —— */
@@ -284,6 +353,7 @@ const totalPages = computed<number>(() => {
                 </span>
                 <button
                   v-if="c.isLeaf && isFilterable(c.col)"
+                  :ref="(el) => setTriggerEl(c.col.key, el as Element | null)"
                   type="button"
                   class="ml-1 h-5 px-1 inline-flex items-center justify-center rounded-md text-[10px] leading-none transition-colors"
                   :class="[
@@ -300,72 +370,6 @@ const totalPages = computed<number>(() => {
                   <span v-if="isFilterActive(c.col.key)" class="ml-0.5 font-semibold">{{ activeFilterCount(c.col.key) }}</span>
                 </button>
               </div>
-
-              <Transition
-                enter-active-class="transition duration-150 ease-out"
-                enter-from-class="opacity-0 -translate-y-1 scale-95"
-                enter-to-class="opacity-100 translate-y-0 scale-100"
-                leave-active-class="transition duration-100 ease-in"
-                leave-from-class="opacity-100"
-                leave-to-class="opacity-0"
-              >
-                <div
-                  v-if="filterOpen === c.col.key"
-                  class="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 z-30 w-[240px] rounded-xl border border-ink-200 bg-surface shadow-xl ring-1 ring-ink-900/5 text-left origin-top overflow-hidden"
-                  @click.stop
-                >
-                  <div class="flex items-center justify-between px-3 py-2 bg-ink-50/80 border-b border-ink-200/60">
-                    <span class="text-[12px] font-semibold text-ink-700">筛选 · {{ c.col.label }}</span>
-                    <button
-                      type="button"
-                      class="w-5 h-5 inline-flex items-center justify-center rounded text-ink-400 hover:text-ink-700 hover:bg-ink-200/60 text-[14px] leading-none"
-                      aria-label="关闭"
-                      @click="filterOpen = null"
-                    >×</button>
-                  </div>
-
-                  <div class="px-2.5 pt-2 pb-1.5">
-                    <div class="relative">
-                      <input
-                        v-model="filterSearch"
-                        type="text"
-                        placeholder="搜索..."
-                        class="w-full h-7 pl-7 pr-2 text-[12px] rounded-md border border-ink-200 bg-surface placeholder:text-ink-400 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
-                      >
-                      <svg class="absolute left-2 top-1/2 -translate-y-1/2 text-ink-400" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
-                        <circle cx="7" cy="7" r="4.5"/>
-                        <path d="m13.5 13.5-3-3"/>
-                      </svg>
-                    </div>
-                  </div>
-
-                  <div class="flex items-center gap-2 px-3 pb-1.5 text-[11px]">
-                    <button type="button" class="text-brand-700 hover:underline" @click="selectAllFilter(c.col.key)">全选</button>
-                    <button type="button" class="text-ink-600 hover:underline" @click="invertFilter(c.col.key)">反选</button>
-                    <button type="button" class="text-ink-500 hover:underline" @click="clearFilter(c.col.key)">清空</button>
-                    <span class="ml-auto text-ink-400">已选 {{ activeFilterCount(c.col.key) }} / {{ uniqueValues(c.col.key).length }}</span>
-                  </div>
-
-                  <div class="max-h-[220px] overflow-auto px-1.5 pb-1.5">
-                    <label
-                      v-for="v in filteredValues(c.col.key)"
-                      :key="v"
-                      class="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-brand-50/60 cursor-pointer text-[12.5px] text-ink-800"
-                    >
-                      <input
-                        type="checkbox"
-                        :checked="selectedFilters[c.col.key]?.has(v) ?? false"
-                        class="w-3.5 h-3.5 accent-brand-600 cursor-pointer"
-                        @change="toggleFilterValue(c.col.key, v)"
-                      >
-                      <span class="truncate flex-1">{{ v }}</span>
-                    </label>
-                    <div v-if="!filteredValues(c.col.key).length" class="px-2 py-3 text-center text-[12px] text-ink-400">
-                      无匹配项
-                    </div>
-                  </div>
-                </div>
-              </Transition>
             </th>
           </tr>
         </thead>
@@ -459,4 +463,74 @@ const totalPages = computed<number>(() => {
       </div>
     </footer>
   </div>
+
+  <!-- 筛选下拉：Teleport 到 body，position:fixed，不被表格容器 overflow 裁剪也不会被列表盖住 -->
+  <Teleport to="body">
+    <Transition
+      enter-active-class="transition duration-150 ease-out"
+      enter-from-class="opacity-0 -translate-y-1 scale-95"
+      enter-to-class="opacity-100 translate-y-0 scale-100"
+      leave-active-class="transition duration-100 ease-in"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
+    >
+      <div
+        v-if="openCol"
+        class="fixed z-[60] flex flex-col rounded-xl border border-ink-200 bg-surface shadow-2xl ring-1 ring-ink-900/10 text-left origin-top overflow-hidden"
+        :style="popoverStyle"
+        @click.stop
+      >
+        <div class="flex items-center justify-between px-3 py-2 bg-ink-50/80 border-b border-ink-200/60 shrink-0">
+          <span class="text-[12px] font-semibold text-ink-700">筛选 · {{ openCol.label }}</span>
+          <button
+            type="button"
+            class="w-5 h-5 inline-flex items-center justify-center rounded text-ink-400 hover:text-ink-700 hover:bg-ink-200/60 text-[14px] leading-none"
+            aria-label="关闭"
+            @click="filterOpen = null"
+          >×</button>
+        </div>
+
+        <div class="px-2.5 pt-2 pb-1.5 shrink-0">
+          <div class="relative">
+            <input
+              v-model="filterSearch"
+              type="text"
+              placeholder="搜索..."
+              class="w-full h-7 pl-7 pr-2 text-[12px] rounded-md border border-ink-200 bg-surface placeholder:text-ink-400 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+            >
+            <svg class="absolute left-2 top-1/2 -translate-y-1/2 text-ink-400" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <circle cx="7" cy="7" r="4.5"/>
+              <path d="m13.5 13.5-3-3"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 px-3 pb-1.5 text-[11px] shrink-0">
+          <button type="button" class="text-brand-700 hover:underline" @click="selectAllFilter(openCol.key)">全选</button>
+          <button type="button" class="text-ink-600 hover:underline" @click="invertFilter(openCol.key)">反选</button>
+          <button type="button" class="text-ink-500 hover:underline" @click="clearFilter(openCol.key)">清空</button>
+          <span class="ml-auto text-ink-400">已选 {{ activeFilterCount(openCol.key) }} / {{ uniqueValues(openCol.key).length }}</span>
+        </div>
+
+        <div class="flex-1 min-h-0 overflow-auto px-1.5 pb-1.5">
+          <label
+            v-for="v in filteredValues(openCol.key)"
+            :key="v"
+            class="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-brand-50/60 cursor-pointer text-[12.5px] text-ink-800"
+          >
+            <input
+              type="checkbox"
+              :checked="selectedFilters[openCol.key]?.has(v) ?? false"
+              class="w-3.5 h-3.5 accent-brand-600 cursor-pointer"
+              @change="toggleFilterValue(openCol.key, v)"
+            >
+            <span class="truncate flex-1">{{ v }}</span>
+          </label>
+          <div v-if="!filteredValues(openCol.key).length" class="px-2 py-3 text-center text-[12px] text-ink-400">
+            无匹配项
+          </div>
+        </div>
+      </div>
+    </Transition>
+  </Teleport>
 </template>

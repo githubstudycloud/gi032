@@ -5,6 +5,62 @@
 
 ---
 
+## #012 — 2026-05-16 — 列筛选下拉 Teleport 修复 + Copilot 批量推进总结
+
+### 用户提问
+
+> 先暂停页面编写，刚才用 Copilot 续写了一下，读最近几次提交，更新相关文档和修改说明；
+> 现在筛选的样式不行，会遮盖列表，整个验证测试优化一下。
+
+### Copilot 续写一览（5738245..94d50d8，共 12 个提交）
+
+按时间顺序：
+
+1. **5738245 feat(ai-test)** — AI辅助测试设计 / 代码生成两页（接 #010）。
+2. **cf36358 feat(ui)** — 表格排序/筛选/高亮/阈值 + 指标卡换行/阈值 + 字号留白调整（#011）。
+3. **62069f6 feat(ui)** — MetricCard 整卡 hover 触发 popover 显示多行 description，去掉 ? 图标；5 个 JSON 全量补 threshold / highlight / sortable / filterable demo。
+4. **2095b40 fix(table)** — 切 tab 残留筛选/排序 bug；`watch(data.key)` 清空 state；document 点击外部自动关闭下拉；5 个页面给 `<MultiLevelTable>` 加 `:key=tab.key` 强制重建。
+5. **352c714 feat(table)** — 所有列默认 sortable+filterable（actions 除外），JSON 用 `sortable:false` / `filterable:false` 关闭；下拉重做（240px 卡片化 + 搜索 + 全选/反选/清空 + 已选计数 + Transition）；funnel 图标替代 ▾；上下三角分别高亮 asc/desc；表头加渐变；tbody 加斑马纹 + 空态图标；阈值 → 胶囊样式。
+6. **415f05b feat(industry)** — 三大先锋表 SDV测试设计Agent 新增 "阶段效率提升预估" 列（sortable + threshold）。
+7. **bcc4196 refactor(layout)** — 内容页 `<PageHeader>` 去掉、`<AppSidebar>` section 头去掉，避免与顶栏 + 选中菜单重复。
+8. **896c2bc style(metrics)** — 卡片紧凑化：padding 4→2.5、数值 28→20px、grid lg:4→5 xl:6，一行可放 5–6 张。
+9. **0e0f879 feat(metric)** — 卡片点击下钻 → 新组件 `MetricDetailPanel.vue`（纯 SVG 折线 + 横向柱 + 维度筛选条）；types 加 `MetricDetail / MetricChart / MetricFilterDim`。
+10. **6a2c9a4 feat(charts)** — 明细面板 8 种图表（trend/distribution/donut/bar/gauge/stacked/heatmap/radar），拆 `components/dashboard/charts/`，3 列网格，统一 brand/emerald/amber/violet/sky/rose/pink/slate 色 token。
+11. **f77bf8e style(metric)** — 环比移到数字右侧同行 baseline 对齐，▾ 在同行最右。
+12. **baa040e / 5b2c471 / 94d50d8 feat(excel)** — 新增 `/ai-test/system/excel`，CSV 4 段格式（##META / ##METRICS / ##COLUMNS / ##ROWS），`parent` 列生成多级表头，`highlight=1` 标重点，模板可下载（2/3/4 级示例），预览复用 MetricsBox + MultiLevelTable，与其它 5 页同款。
+
+### 我这一轮的修复 —— "筛选下拉遮盖列表" 问题
+
+**原 bug**：`MultiLevelTable.vue` 里筛选下拉是 `<th>` 内的 `absolute` 元素，被表格外层 `overflow-hidden` 容器裁剪。同时 z-30 在某些主题下偏低，列表数据从下方"穿透"过来视觉上像被盖住。
+
+**修法**：
+
+- 列筛选下拉用 `<Teleport to="body">` 抽出到 body 级，`position: fixed`，z-60；不再受任何祖先 overflow / transform 影响。
+- 触发按钮 `:ref` 收到 Map 里，弹层每次 `nextTick` 后用 `getBoundingClientRect()` 重算坐标。
+- 智能开向：下方剩余空间 < 200px 且上方空间更大时，弹层用 `bottom` 锚定到触发按钮上方 8px（紧贴上沿，无多余空隙）；否则下方 8px。
+- `maxHeight` 跟随可用空间动态收敛（最大 320px），弹层内部 `flex flex-col` + `flex-1 min-h-0 overflow-auto`，让值列表自动滚动而 header / 搜索 / 全反清 / 计数行保持显示。
+- 监听 `window` 的 `scroll`（capture）/ `resize`，弹层位置实时跟随；保留 ESC + 外部点击关闭。
+
+### 验证（Playwright + Chrome DevTools 风格手测）
+
+- 总览 / 产业 / 领域 / 设计 / 代码生成 / Excel 6 个页面 200，0 console error。
+- `pnpm typecheck` 仅遗留 `use-data-source.ts:50` 老错误。
+- 总览页 筛选 "产业 → 汽车" → 表格瞬时只剩 1 行；筛选按钮显示徽章 "1"；底部 `共 1/3 条`。
+- 点击页面其他位置 → 弹层自动关闭。
+
+### 产出
+
+- 修改：`app/components/dashboard/MultiLevelTable.vue`
+- 修改：`PROMPT-LOG.md`（本条）
+
+### 用户下一步可选
+
+- 继续 #010 提到的 AI辅助测试执行 / 结果分析两页
+- E2E测试Agent / AI辅助专项测试 各子页
+- 接后端：把 `runtimeConfig.public.dataSourceMode` 切到 `api`，server 路由按 JSON 字段同形返回即可
+
+---
+
 ## #011 — 2026-05-16 — 表格排序/筛选/高亮/阈值 + 指标卡换行/阈值 + 字号留白调整
 
 ### 用户提问

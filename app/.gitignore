@@ -24,3 +24,4 @@ node_modules
 dev.log
 install.log
 .tmp-*
+.playwright-mcp/
