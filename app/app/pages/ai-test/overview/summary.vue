@@ -3,22 +3,12 @@ import { flattenNav } from '~/utils/nav-flat';
 
 const route = useRoute();
 const { items: navItems } = await useNav();
-const { filters, metrics, pilots } = await useOverviewSummary();
+const { metrics, pilots } = await useOverviewSummary();
 
 /* —— 面包屑 —— */
 const flat = computed(() => flattenNav(navItems.value));
 const current = computed(() => flat.value.find(i => i.path === route.path));
 useHead({ title: () => current.value?.label ?? '总览' });
-
-/* —— 筛选 —— */
-const selectedDept = ref<string>('all');
-function onSearch(): void {
-  // TODO: 接入后端时，在这里调 refresh({ department: selectedDept.value })
-  // 当前 JSON 模式不消费 params，但签名预留
-}
-function onReset(): void {
-  selectedDept.value = 'all';
-}
 
 /* —— 核心指标视图：分组 / 平铺 —— */
 type MetricViewMode = 'grouped' | 'flat';
@@ -59,47 +49,7 @@ function onRowDetail(row: Record<string, unknown>): void {
     </ClientOnly>
 
     <ClientOnly>
-      <!-- ============ Div 1：筛选条件 ============ -->
-      <section class="mt-6 rounded-xl border border-ink-200/70 bg-surface px-5 py-4 shadow-[var(--shadow-card)]">
-        <div class="flex flex-wrap items-end gap-4">
-          <label class="block text-sm flex-1 min-w-[200px] max-w-[320px]">
-            <span class="block text-ink-600 mb-1.5 text-[11px] font-medium tracking-wide uppercase">
-              部门
-            </span>
-            <select
-              v-model="selectedDept"
-              class="w-full h-9 rounded-md border border-ink-200 px-3 text-[13px] bg-surface text-ink-900 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
-            >
-              <option
-                v-for="opt in filters?.departments ?? []"
-                :key="opt.key"
-                :value="opt.key"
-              >
-                {{ opt.label }}
-              </option>
-            </select>
-          </label>
-
-          <div class="flex gap-2">
-            <button
-              type="button"
-              class="h-9 px-4 rounded-md bg-brand-600 text-white text-[13px] font-medium hover:bg-brand-700 active:bg-brand-800 transition-colors shadow-[0_2px_6px_-1px_oklch(0.62_0.14_235/0.35)]"
-              @click="onSearch"
-            >
-              查询
-            </button>
-            <button
-              type="button"
-              class="h-9 px-4 rounded-md border border-ink-200 bg-surface text-[13px] text-ink-700 hover:bg-ink-100 transition-colors"
-              @click="onReset"
-            >
-              重置
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <!-- ============ Div 2：核心指标 ============ -->
+      <!-- ============ Div 1：核心指标 ============ -->
       <section class="mt-6 rounded-xl border border-ink-200/70 bg-surface px-5 py-5 shadow-[var(--shadow-card)]">
         <header class="flex items-center gap-2 mb-4">
           <span class="w-1 h-4 rounded-full bg-brand-500" />
@@ -183,12 +133,12 @@ function onRowDetail(row: Record<string, unknown>): void {
         </p>
       </section>
 
-      <!-- ============ Div 3：试点进展明细 ============ -->
+      <!-- ============ Div 2：试点进展明细（标题跟随当前 tab） ============ -->
       <section class="mt-6">
         <div class="flex items-center gap-2 mb-4">
           <span class="w-1 h-4 rounded-full bg-brand-500" />
           <h2 class="font-display text-[15px] font-semibold text-ink-900 tracking-tight">
-            三大先锋产业试点进展明细
+            {{ activeTab?.label ?? '试点进展明细' }}
           </h2>
         </div>
 

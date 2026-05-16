@@ -21,6 +21,7 @@
         {
           "key": "ai-test-overview",
           "label": "概览",
+          "icon": "overview",
           "children": [
             { "key": "ai-test-overview-summary",  "label": "总览",         "path": "/ai-test/overview/summary" },
             { "key": "ai-test-overview-industry", "label": "产业落地进展", "path": "/ai-test/overview/industry" },
@@ -30,6 +31,7 @@
         {
           "key": "ai-test-general",
           "label": "通用测试Agent",
+          "icon": "agent",
           "children": [
             { "key": "ai-test-general-design",  "label": "AI辅助测试设计",     "path": "/ai-test/general/design" },
             { "key": "ai-test-general-codegen", "label": "AI辅助测试代码生成", "path": "/ai-test/general/codegen" },
@@ -40,6 +42,7 @@
         {
           "key": "ai-test-e2e",
           "label": "E2E测试Agent",
+          "icon": "flow",
           "children": [
             { "key": "ai-test-e2e-app",        "label": "APP E2E测试",     "path": "/ai-test/e2e/app" },
             { "key": "ai-test-e2e-thirdparty", "label": "三方应用E2E测试", "path": "/ai-test/e2e/thirdparty" },
@@ -49,6 +52,7 @@
         {
           "key": "ai-test-special",
           "label": "AI辅助专项测试",
+          "icon": "target",
           "children": [
             { "key": "ai-test-special-precise",  "label": "AI辅助精准测试",     "path": "/ai-test/special/precise" },
             { "key": "ai-test-special-dts",      "label": "AI辅助DTS问题分析",  "path": "/ai-test/special/dts" },
@@ -62,6 +66,7 @@
         {
           "key": "ai-test-tools",
           "label": "Test工具运营",
+          "icon": "tools",
           "children": [
             { "key": "ai-test-tools-user",    "label": "Test用户数据", "path": "/ai-test/tools/user" },
             { "key": "ai-test-tools-session", "label": "Session分析",  "path": "/ai-test/tools/session" }
@@ -70,6 +75,7 @@
         {
           "key": "ai-test-system",
           "label": "系统管理",
+          "icon": "settings",
           "children": [
             { "key": "ai-test-system-metrics", "label": "指标管理",    "path": "/ai-test/system/metrics" },
             { "key": "ai-test-system-excel",   "label": "Excel看板",   "path": "/ai-test/system/excel" },
@@ -91,14 +97,15 @@
         {
           "key": "feedback-inbox",
           "label": "反馈收件箱",
+          "icon": "inbox",
           "children": [
             { "key": "feedback-inbox-all",     "label": "全部反馈", "path": "/feedback/inbox/all" },
             { "key": "feedback-inbox-pending", "label": "待处理",   "path": "/feedback/inbox/pending" },
             { "key": "feedback-inbox-closed",  "label": "已关闭",   "path": "/feedback/inbox/closed" }
           ]
         },
-        { "key": "feedback-stats", "label": "数据统计", "path": "/feedback/stats" },
-        { "key": "feedback-rules", "label": "分类规则", "path": "/feedback/rules" }
+        { "key": "feedback-stats", "label": "数据统计", "icon": "overview", "path": "/feedback/stats" },
+        { "key": "feedback-rules", "label": "分类规则", "icon": "rules",    "path": "/feedback/rules" }
       ]
     },
     {
@@ -109,6 +116,7 @@
         {
           "key": "ops-monitor",
           "label": "服务监控",
+          "icon": "monitor",
           "children": [
             { "key": "ops-monitor-service",  "label": "服务状态", "path": "/ops/monitor/service" },
             { "key": "ops-monitor-resource", "label": "资源用量", "path": "/ops/monitor/resource" }
@@ -117,12 +125,13 @@
         {
           "key": "ops-log",
           "label": "日志检索",
+          "icon": "log",
           "children": [
             { "key": "ops-log-search", "label": "日志查询", "path": "/ops/log/search" },
             { "key": "ops-log-alert",  "label": "告警规则", "path": "/ops/log/alert" }
           ]
         },
-        { "key": "ops-task", "label": "定时任务", "path": "/ops/task" }
+        { "key": "ops-task", "label": "定时任务", "icon": "task", "path": "/ops/task" }
       ]
     },
     {
@@ -133,14 +142,15 @@
         {
           "key": "settings-account",
           "label": "账号管理",
+          "icon": "users",
           "children": [
             { "key": "settings-account-user",   "label": "用户列表", "path": "/settings/account/user" },
             { "key": "settings-account-role",   "label": "角色权限", "path": "/settings/account/role" },
             { "key": "settings-account-policy", "label": "访问策略", "path": "/settings/account/policy" }
           ]
         },
-        { "key": "settings-system", "label": "系统参数", "path": "/settings/system" },
-        { "key": "settings-audit",  "label": "审计日志", "path": "/settings/audit" }
+        { "key": "settings-system", "label": "系统参数", "icon": "settings", "path": "/settings/system" },
+        { "key": "settings-audit",  "label": "审计日志", "icon": "log",      "path": "/settings/audit" }
       ]
     }
   ]

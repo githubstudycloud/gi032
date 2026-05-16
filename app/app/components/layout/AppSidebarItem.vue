@@ -82,7 +82,7 @@ const padLeftPx = computed<string>(() => {
       v-else
       type="button"
       :class="[
-        'w-full flex items-center h-8 rounded-md pr-3 transition-colors',
+        'w-full flex items-center gap-1.5 h-8 rounded-md pr-3 transition-colors',
         depth === 0
           ? 'text-[12px] font-semibold tracking-wide text-ink-500 hover:text-ink-700 mt-3 first:mt-1'
           : 'text-[13px] text-ink-700 hover:bg-ink-100/80 hover:text-ink-900',
@@ -91,6 +91,12 @@ const padLeftPx = computed<string>(() => {
       :style="{ paddingLeft: padLeftPx }"
       @click="toggle"
     >
+      <!-- 二级菜单的图标（depth=0） -->
+      <NavIcon
+        v-if="depth === 0 && item.icon"
+        :name="item.icon"
+        class="text-ink-500"
+      />
       <span class="truncate flex-1 text-left">{{ item.label }}</span>
       <svg
         v-if="hasChildren && depth > 0"
