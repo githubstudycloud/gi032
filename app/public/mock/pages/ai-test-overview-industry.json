@@ -1,0 +1,270 @@
+{
+  "filters": {
+    "timeRanges": [
+      { "key": "7d",     "label": "最近 7 天" },
+      { "key": "30d",    "label": "最近 30 天" },
+      { "key": "90d",    "label": "最近 90 天" },
+      { "key": "custom", "label": "自定义" }
+    ],
+    "departments": [
+      { "key": "all",    "label": "全部部门" },
+      { "key": "dept-1", "label": "智能终端测试部" },
+      { "key": "dept-2", "label": "云服务测试部" },
+      { "key": "dept-3", "label": "网络产品测试部" },
+      { "key": "dept-4", "label": "汽车解决方案测试部" }
+    ]
+  },
+
+  "metrics": {
+    "groups": [
+      {
+        "key": "user",
+        "label": "用户指标",
+        "items": [
+          { "key": "ai-user-count", "label": "AI用户数", "value": "1,284", "mom": "+12.3%", "trend": "up", "description": "本月使用过 AI 测试运营任意功能的活跃用户数。" }
+        ]
+      },
+      {
+        "key": "business",
+        "label": "业务指标",
+        "items": [
+          { "key": "ai-requirements",    "label": "AI需求数",                  "value": "186",   "mom": "+8.1%",  "trend": "up",   "description": "本月接入 AI 测试设计 / 脚本生成的需求总数。" },
+          { "key": "total-requirements", "label": "需求数",                    "value": "412",   "mom": "+3.2%",  "trend": "up",   "description": "本月所有进入测试环节的需求总数。" },
+          { "key": "design-coverage",    "label": "AI测试设计需求覆盖率",      "value": "62.4%", "mom": "+4.8pp", "trend": "up",   "description": "AI 需求 / 需求总数。" },
+          { "key": "valid-ai-cases",     "label": "AI生成的有效用例数",        "value": "2,148", "mom": "+18.6%", "trend": "up",   "description": "AI 生成且被采纳的用例总数。" },
+          { "key": "total-cases",        "label": "用例数",                    "value": "3,560", "mom": "+9.4%",  "trend": "up",   "description": "本月新增的测试用例总数。" },
+          { "key": "ai-case-ratio",      "label": "AI生成测试用例占比",        "value": "60.3%", "mom": "+5.2pp", "trend": "up",   "description": "AI 生成有效用例数 / 用例总数。" },
+          { "key": "ai-defect-ratio",    "label": "AI生成用例发现缺陷占比",    "value": "52.8%", "mom": "+3.1pp", "trend": "up",   "description": "AI 生成用例发现缺陷数 / 全部用例发现缺陷数。" }
+        ]
+      },
+      {
+        "key": "capability",
+        "label": "能力指标",
+        "items": [
+          { "key": "ai-cases-generated", "label": "AI生成用例数",       "value": "3,420", "mom": "+22.5%", "trend": "up",   "description": "AI 系统本月生成的全部候选用例（含未采纳）。" },
+          { "key": "ai-cases-adopted",   "label": "AI生成采纳用例数",   "value": "2,148", "mom": "+18.6%", "trend": "up",   "description": "AI 生成且落入正式用例库的数量。" },
+          { "key": "adoption-rate",      "label": "AI生成用例采纳率",   "value": "62.8%", "mom": "-1.2pp", "trend": "down", "description": "AI 生成采纳用例数 / AI 生成用例数。" },
+          { "key": "avg-interactions",   "label": "平均每需求交互次数", "value": "4.6",   "mom": "-0.3",   "trend": "down", "description": "每个需求的 AI 平均交互轮数。" }
+        ]
+      }
+    ],
+    "footnote": "点击卡片可查看明细数字，点击图表元素可下钻到对应维度的明细数据。"
+  },
+
+  "pilots": {
+    "tabs": [
+      {
+        "key": "industry-detail",
+        "label": "产业试点进展明细",
+        "columns": [
+          { "key": "industry", "label": "产业",                "width": "90px" },
+          { "key": "owner",    "label": "接口人",              "width": "80px" },
+          { "key": "e2e-eff",  "label": "端到端效率提升预估",  "width": "130px" },
+          {
+            "key": "sdv",
+            "label": "SDV测试Agent",
+            "children": [
+              {
+                "key": "sdv-design",
+                "label": "测试设计Agent",
+                "children": [
+                  { "key": "sdv-design-coverage", "label": "覆盖人数" },
+                  { "key": "sdv-design-landed",   "label": "落地需求个数" },
+                  { "key": "sdv-design-adoption", "label": "用例采纳率" },
+                  { "key": "sdv-design-new-ai",   "label": "新用例AI生成占比" }
+                ]
+              },
+              {
+                "key": "sdv-script",
+                "label": "测试脚本Agent",
+                "children": [
+                  { "key": "sdv-script-efficiency", "label": "阶段效率提升预估" },
+                  { "key": "sdv-script-coverage",   "label": "覆盖人数" },
+                  { "key": "sdv-script-volume",     "label": "生成代码量(k行)" },
+                  { "key": "sdv-script-accuracy",   "label": "生成代码准确率" }
+                ]
+              },
+              { "key": "sdv-exec", "label": "测试执行Agent" },
+              {
+                "key": "sdv-result",
+                "label": "结果分析Agent",
+                "children": [
+                  { "key": "sdv-result-accuracy", "label": "结果分析准确率" },
+                  { "key": "sdv-result-users",    "label": "使用人数" }
+                ]
+              },
+              {
+                "key": "sdv-api",
+                "label": "API E2E测试",
+                "children": [
+                  { "key": "sdv-api-volume",   "label": "代码量" },
+                  { "key": "sdv-api-accuracy", "label": "生成代码准确率" }
+                ]
+              },
+              {
+                "key": "sdv-aifeature",
+                "label": "AI特性E2E测试",
+                "children": [
+                  { "key": "sdv-aifeature-new",  "label": "新增脚本AI生成占比" },
+                  { "key": "sdv-aifeature-half", "label": "50%由AI测试" }
+                ]
+              }
+            ]
+          },
+          {
+            "key": "e2e",
+            "label": "E2E测试",
+            "children": [
+              {
+                "key": "e2e-third",
+                "label": "三方应用E2E测试",
+                "children": [
+                  { "key": "e2e-third-core",   "label": "核心路径智能执行比例90%" },
+                  { "key": "e2e-third-recall", "label": "准召率90%" },
+                  { "key": "e2e-third-reduce", "label": "减少30%的修改引入问题" }
+                ]
+              },
+              {
+                "key": "e2e-precise",
+                "label": "精准测试",
+                "children": [
+                  { "key": "e2e-precise-detect", "label": "AI检测占比60%" },
+                  { "key": "e2e-precise-recall", "label": "准召率90%" }
+                ]
+              },
+              {
+                "key": "e2e-doc",
+                "label": "资料测试",
+                "children": [
+                  { "key": "e2e-doc-top5", "label": "红线top5" }
+                ]
+              },
+              {
+                "key": "e2e-security",
+                "label": "安全测试",
+                "children": [
+                  { "key": "e2e-security-nss", "label": "开发者NSS牵引50%" }
+                ]
+              },
+              { "key": "e2e-testing", "label": "Testing" }
+            ]
+          },
+          { "key": "special", "label": "专项测试", "width": "100px" },
+          { "key": "tools",   "label": "外部工具", "width": "100px" },
+          { "key": "actions", "label": "操作",     "width": "90px" }
+        ],
+        "rows": [
+          {
+            "industry": "汽车", "owner": "张三", "e2e-eff": "+34%",
+            "sdv-design-coverage": "12", "sdv-design-landed": "28", "sdv-design-adoption": "65.4%", "sdv-design-new-ai": "58.2%",
+            "sdv-script-efficiency": "+38%", "sdv-script-coverage": "8", "sdv-script-volume": "1.8", "sdv-script-accuracy": "82.1%",
+            "sdv-exec": "已接入",
+            "sdv-result-accuracy": "88.7%", "sdv-result-users": "10",
+            "sdv-api-volume": "2.1", "sdv-api-accuracy": "84.5%",
+            "sdv-aifeature-new": "61.0%", "sdv-aifeature-half": "✓",
+            "e2e-third-core": "92%", "e2e-third-recall": "91%", "e2e-third-reduce": "-32%",
+            "e2e-precise-detect": "62%", "e2e-precise-recall": "90%",
+            "e2e-doc-top5": "4/5",
+            "e2e-security-nss": "+52%",
+            "e2e-testing": "进行中",
+            "special": "—",
+            "tools": "Jira / FT",
+            "actions": "详情"
+          },
+          {
+            "industry": "金融", "owner": "李四", "e2e-eff": "+18%",
+            "sdv-design-coverage": "9", "sdv-design-landed": "22", "sdv-design-adoption": "71.2%", "sdv-design-new-ai": "63.5%",
+            "sdv-script-efficiency": "—", "sdv-script-coverage": "—", "sdv-script-volume": "—", "sdv-script-accuracy": "—",
+            "sdv-exec": "—",
+            "sdv-result-accuracy": "—", "sdv-result-users": "—",
+            "sdv-api-volume": "—", "sdv-api-accuracy": "—",
+            "sdv-aifeature-new": "—", "sdv-aifeature-half": "—",
+            "e2e-third-core": "—", "e2e-third-recall": "—", "e2e-third-reduce": "—",
+            "e2e-precise-detect": "—", "e2e-precise-recall": "—",
+            "e2e-doc-top5": "—",
+            "e2e-security-nss": "—",
+            "e2e-testing": "—",
+            "special": "—",
+            "tools": "—",
+            "actions": "不涉及"
+          },
+          {
+            "industry": "能源", "owner": "王五", "e2e-eff": "+22%",
+            "sdv-design-coverage": "6", "sdv-design-landed": "15", "sdv-design-adoption": "59.8%", "sdv-design-new-ai": "52.4%",
+            "sdv-script-efficiency": "+24%", "sdv-script-coverage": "5", "sdv-script-volume": "1.1", "sdv-script-accuracy": "78.4%",
+            "sdv-exec": "建设中",
+            "sdv-result-accuracy": "82.0%", "sdv-result-users": "6",
+            "sdv-api-volume": "0.9", "sdv-api-accuracy": "79.2%",
+            "sdv-aifeature-new": "55.2%", "sdv-aifeature-half": "—",
+            "e2e-third-core": "86%", "e2e-third-recall": "88%", "e2e-third-reduce": "-26%",
+            "e2e-precise-detect": "55%", "e2e-precise-recall": "87%",
+            "e2e-doc-top5": "3/5",
+            "e2e-security-nss": "+44%",
+            "e2e-testing": "未启动",
+            "special": "—",
+            "tools": "Jenkins",
+            "actions": "详情"
+          }
+        ],
+        "pagination": { "page": 1, "pageSize": 10, "total": 3 }
+      },
+
+      {
+        "key": "capability-map",
+        "label": "产业人员能力地图",
+        "columns": [
+          { "key": "industry", "label": "产业",   "width": "100px" },
+          { "key": "owner",    "label": "接口人", "width": "90px" },
+          {
+            "key": "hw",
+            "label": "HW",
+            "children": [
+              { "key": "hw-total",     "label": "总人数" },
+              { "key": "hw-gold-dev",  "label": "AI金种子(Agent/skill开发)" },
+              { "key": "hw-gold-user", "label": "AI金种子(先锋试点用户)" }
+            ]
+          },
+          {
+            "key": "od",
+            "label": "OD",
+            "children": [
+              { "key": "od-rate",     "label": "AI渗透率" },
+              { "key": "od-total",    "label": "总人数" },
+              { "key": "od-gold-dev", "label": "AI金种子(Agent/skill开发)" }
+            ]
+          },
+          {
+            "key": "tm",
+            "label": "TM",
+            "children": [
+              { "key": "tm-gold-kb",   "label": "AI金种子(知识库构建)" },
+              { "key": "tm-gold-user", "label": "AI金种子(先锋试点用户)" },
+              { "key": "tm-rate",      "label": "AI渗透率" }
+            ]
+          }
+        ],
+        "rows": [
+          {
+            "industry": "汽车", "owner": "张三",
+            "hw-total": "48", "hw-gold-dev": "12", "hw-gold-user": "8",
+            "od-rate": "58.4%", "od-total": "26", "od-gold-dev": "5",
+            "tm-gold-kb": "3", "tm-gold-user": "6", "tm-rate": "52.1%"
+          },
+          {
+            "industry": "金融", "owner": "李四",
+            "hw-total": "32", "hw-gold-dev": "7", "hw-gold-user": "4",
+            "od-rate": "41.2%", "od-total": "18", "od-gold-dev": "3",
+            "tm-gold-kb": "2", "tm-gold-user": "3", "tm-rate": "38.5%"
+          },
+          {
+            "industry": "能源", "owner": "王五",
+            "hw-total": "26", "hw-gold-dev": "5", "hw-gold-user": "3",
+            "od-rate": "44.6%", "od-total": "14", "od-gold-dev": "2",
+            "tm-gold-kb": "1", "tm-gold-user": "2", "tm-rate": "40.9%"
+          }
+        ],
+        "pagination": { "page": 1, "pageSize": 10, "total": 3 }
+      }
+    ]
+  }
+}

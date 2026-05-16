@@ -10,6 +10,8 @@ export interface FilterOption {
 }
 export interface OverviewFilters {
   departments: FilterOption[];
+  /** 部分页有时间范围筛选；总览页可以不返回 */
+  timeRanges?: FilterOption[];
 }
 
 /* —— 核心指标 —— */
