@@ -26,18 +26,8 @@ function onRowDetail(row: Record<string, unknown>): void {
 <template>
   <div>
     <ClientOnly>
-      <PageHeader :title="current?.label ?? '总览'" :breadcrumb="current?.breadcrumb" />
-      <template #fallback>
-        <div class="pb-5 border-b border-ink-200/70">
-          <div class="h-4 w-32 rounded bg-ink-150" />
-          <div class="mt-3 h-7 w-32 rounded bg-ink-150" />
-        </div>
-      </template>
-    </ClientOnly>
-
-    <ClientOnly>
       <!-- Div 1: 核心指标 -->
-      <div class="mt-6">
+      <div>
         <MetricsBox :metrics="metrics" @drill="onDrill" />
       </div>
 

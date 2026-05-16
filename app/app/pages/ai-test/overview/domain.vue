@@ -35,18 +35,8 @@ function onRowDetail(row: Record<string, unknown>): void {
 <template>
   <div>
     <ClientOnly>
-      <PageHeader :title="current?.label ?? '领域落地进展'" :breadcrumb="current?.breadcrumb" />
-      <template #fallback>
-        <div class="pb-5 border-b border-ink-200/70">
-          <div class="h-4 w-32 rounded bg-ink-150" />
-          <div class="mt-3 h-7 w-32 rounded bg-ink-150" />
-        </div>
-      </template>
-    </ClientOnly>
-
-    <ClientOnly>
       <!-- Div 1: 领域落地进展筛选 -->
-      <section class="mt-6 rounded-xl border border-ink-200/70 bg-surface px-5 py-4 shadow-[var(--shadow-card)]">
+      <section class="rounded-xl border border-ink-200/70 bg-surface px-5 py-4 shadow-[var(--shadow-card)]">
         <header class="flex items-center gap-2 mb-3">
           <span class="w-1 h-4 rounded-full bg-brand-500" />
           <h2 class="font-display text-[15px] font-semibold text-ink-900 tracking-tight">

@@ -8,16 +8,6 @@ defineProps<{
 
 <template>
   <aside class="w-[260px] shrink-0 border-r border-ink-200/80 bg-surface flex flex-col">
-    <!-- 侧栏头：当前一级菜单 -->
-    <div class="h-14 shrink-0 px-5 flex items-center border-b border-ink-200/60">
-      <div class="flex items-center gap-2 min-w-0">
-        <div class="w-1 h-5 rounded-full bg-brand-500" />
-        <h2 class="font-display text-[15px] font-semibold text-ink-900 tracking-tight truncate">
-          {{ section.label }}
-        </h2>
-      </div>
-    </div>
-
     <!-- 子菜单：2-3 层递归 -->
     <nav class="flex-1 overflow-y-auto px-2 py-3 space-y-px">
       <AppSidebarItem
