@@ -1,0 +1,30 @@
+---
+description: 项目核心约定，所有 chat / composer / agent 会话都加载
+alwaysApply: true
+---
+
+# 项目基础规则（Vue + Nuxt 4）
+
+## 语言 & 运行时
+- TypeScript 5.6+ strict 模式
+- Node.js 22 LTS
+- 包管理：pnpm
+
+## 框架
+- Nuxt 4 + Vite 7 + Vue 3 Composition API（`<script setup lang="ts">`）
+- Pinia 3（**只用 setup store**）
+- VueUse 优先于自己写 composable
+- HTTP 走 `$fetch` / `useFetch` / `useAsyncData`，**禁止 Axios**
+
+## 代码风格
+- 命名导出（除 Nuxt 必须 default 的 page / middleware）
+- 所有异步函数显式标注返回类型
+- 错误统一形状：`{ error: string; code: string }`
+- async/await，**不要** `.then()` 链
+- 用户可见文本走 i18n
+
+## 禁止
+- Options API、Vuex、Element Plus / Ant Design Vue
+- `tailwind.config.{js,ts}`（用 Tailwind v4 CSS `@theme`）
+- Inter / Roboto / Arial / Helvetica / Space Grotesk 作正文字体
+- `from-purple-500 to-pink-500` 这类典型 AI slop 渐变

@@ -1,0 +1,32 @@
+---
+description: shadcn-vue 组件库与 Tailwind v4 样式规则
+alwaysApply: false
+globs: ["app/components/**/*.vue", "app/pages/**/*.vue", "app/layouts/**/*.vue", "assets/css/**/*.css"]
+---
+
+# shadcn-vue + Tailwind v4 规则
+
+## 优先复用 `app/components/ui/` 下已有组件
+- Button、Input、Dialog、Card、Form、Toast 等都是 shadcn-vue CLI 复制进来的
+- 看一眼有没有再说要不要新增
+- 新组件用 `npx shadcn-vue@latest add <name>` 安装，不要手撸
+
+## 底层是 Reka UI
+- 无障碍由 Reka UI 保证（Radix Vue 改名而来）
+- 不要绕过 Reka UI 自己实现 Dialog / Popover / Combobox
+
+## Tailwind v4 写法
+- 主题 token 在 `assets/css/main.css` 用 `@theme { ... }` 写
+- 不写 `tailwind.config.{js,ts}`
+- 颜色用 OKLCH，不用 hex
+- 类名顺序：layout → spacing → typography → color → state
+
+## Dark mode
+- 用 `class="dark:"` 前缀，跟 shadcn-vue 默认配置一致
+- 主题 token 在 `:root` 与 `.dark` 各定义一次
+
+## 禁止
+- ❌ 引入 Element Plus、Ant Design Vue、PrimeVue
+- ❌ `style="..."` 内联，除非动态计算值
+- ❌ `from-purple-500 to-pink-500`、`bg-gradient-to-r` 接 violet / fuchsia / pink
+- ❌ 自己手撸 Modal / Tooltip — 用 shadcn-vue 的

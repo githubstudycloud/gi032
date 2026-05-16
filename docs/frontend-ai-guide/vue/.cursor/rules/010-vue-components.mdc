@@ -1,0 +1,45 @@
+---
+description: Vue SFC 与组件相关约定
+alwaysApply: false
+globs: ["**/*.vue", "app/components/**/*.ts"]
+---
+
+# Vue 组件规则
+
+## SFC 顺序
+1. `<script setup lang="ts">`
+2. `<template>`
+3. `<style scoped>`（如果用，多数情况下走 Tailwind 不写 style）
+
+## script setup 内容顺序
+1. import
+2. defineProps / defineEmits / defineSlots / defineOptions
+3. composable 调用（useXxx）
+4. ref / reactive 状态
+5. computed
+6. 监听器（watch / watchEffect）
+7. 生命周期（onMounted / onBeforeUnmount …）
+8. 方法
+
+## Props / Emits 必须显式类型化
+```ts
+const props = defineProps<{ user: User; readonly?: boolean }>()
+const emit = defineEmits<{ submit: [payload: FormData]; cancel: [] }>()
+```
+
+不要用运行时声明（`defineProps(['user', 'readonly'])`）。
+
+## v-for 必须带 :key，禁止用 index 当 key（除非列表纯静态）
+
+## 模板里禁止写复杂表达式 — 抽 computed
+
+## 组件命名 PascalCase，文件名 PascalCase 与组件名一致
+
+## 写组件前必须先输出"规约表"
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| props | ... | ✓ | ... |
+| emits | ... | ✓ | ... |
+| slots | ... | - | ... |
+| 依赖 | useXxx / inject | - | ... |
+| 状态 | ref / computed | - | ... |
