@@ -5,6 +5,54 @@
 
 ---
 
+## #003 — 2026-05-16 — 重构布局（左上 LOGO + 顶部一级 + 左侧 2-3 级，按 section 切换）+ 完整 AI辅助测试运营 菜单 + 样式打磨
+
+### 用户提问（要点）
+
+> 运营看板作为左上角大 LOGO，右边是一级菜单（首页 / AI辅助测试运营 / 用户反馈 / 后台运维 / 系统设置）。点首页 = 单页（无侧栏）；点 AI辅助测试运营 = 左侧出 2-3 级（用户给了完整 6 大组结构）。菜单名后续动态加。当前样式不够美观，先把这些做完再做具体页。
+
+### 关键决策
+
+- **数据结构**：把 `nav-top.json` + `nav-sidebar.json` **合并成一棵树** `nav.json`。顶部 = 树的根；侧栏 = 当前激活根的 children。一处维护，符合"菜单动态增"。
+- **类型 / composable 统一**：用一个 `NavItem` 替代之前的 TopMenuItem / SidebarMenuItem，用一个 `useNav()` 替代之前的 useTopMenu / useSidebarMenu，并派生 `activeTop / activeTopKey / showSidebar`（根据当前 route 反查所在的一级）。
+- **layout 条件侧栏**：`showSidebar` 取决于 `activeTop.single`（只有"首页"标 `single: true`），其它一级都有侧栏。
+- **侧栏二级默认展开**：用户进到 `/ai-test` 不用挨个点开就能看到所有 3 级链接；3 级仍是叶子链接。
+
+### 中途踩的 3 个新坑（顺手修了）
+
+1. **`@pinia/nuxt@0.6.1` 把 Pinia 2 拉了进来**（跟我 package.json 写的 Pinia 3 冲突），SSR payload plugin 里炸 `obj.hasOwnProperty is not a function`。当前没用 Pinia，**modules 里去掉 `@pinia/nuxt`**；等真用 store 再升 0.11+ 加回。
+2. **`useNav` 里 `useRoute()` 在 `await useDataSource()` 之后调** → Nuxt 上下文已丢，500。把 `useRoute()` 提到任何 await 之前。
+3. **hydration mismatch**：`useNav`（与 `useBranding`）都是 client-only 拉，SSR 看到空数据、client 看到完整数据 → 节点数对不上。把 index 的"进入模块"卡片段 + catch-all 的 PageHeader 各包一层 `<ClientOnly>` 加 skeleton fallback。
+
+### 样式调整
+
+- 主色：OKLCH 235° 钢蓝，铺了 50–900 完整阶
+- 中性色：略带蓝调的 ink 灰，避免冷死灰
+- 字体：display 用思源宋（标题更有版式张力）、body 用 Noto Sans SC、mono 用 JetBrains Mono
+- 阴影：用蓝调阴影 token，卡片有层次但不脏
+- 顶部菜单活跃项：底部 brand-600 蓝条 + brand 文字
+- 侧栏活跃叶子：左侧 3px brand-600 蓝条 + brand-50 浅底 + brand-700 文字
+- 背景：上方加一层 radial-gradient 极淡蓝光晕，避免一片死白
+
+### 产出文件
+
+- 新：`public/mock/nav.json`、`app/composables/use-nav.ts`
+- 删：`public/mock/nav-top.json`、`public/mock/nav-sidebar.json`、`app/composables/use-top-menu.ts`、`app/composables/use-sidebar-menu.ts`、`app/components/layout/AppSidebarBrand.vue`
+- 改：`app/types/nav.ts`（统一 NavItem）、`app/utils/nav-flat.ts`（改名 flattenNav）、`app/layouts/default.vue`（条件侧栏）、`app/components/layout/AppTopBar.vue`（大 LOGO + 一级菜单）、`app/components/layout/AppSidebar.vue`（section 标题 + 子树）、`app/components/layout/AppSidebarItem.vue`（二级默认展开 + 三级活动条）、`app/pages/index.vue`（hero + 关键指标 + 模块入口 + 最近动态）、`app/pages/[...slug].vue`、`app/components/common/*`、`app/assets/css/main.css`、`nuxt.config.ts`（移除 @pinia/nuxt）
+
+### 浏览器实测
+
+- `/`：顶部 LOGO + 5 个一级菜单（首页高亮）+ Hero + 4 张指标卡 + 4 张模块入口 + 最近动态。无侧栏。
+- `/ai-test`：顶部 AI辅助测试运营 高亮 + 侧栏显示该 section 完整树（6 个二级组 + 全部三级）+ 主区域 PageHeader + FilterBar + 占位表格。
+- `/ai-test/overview/summary`：侧栏中 "总览" 项左侧蓝条高亮 + 浅蓝底；面包屑 "AI辅助测试运营 / 概览 / 总览"；H1 "总览"。
+- 控制台 0 error / 0 warning。
+
+### 后续提到的方向
+
+- 用户接下来要做具体页面 —— 先做空骨架，等他确认页面内容再填。
+
+---
+
 ## #002 — 2026-05-16 — 修复启动报错（IPv6-only / SSR worker OOM / 组件不解析 / hydration mismatch）
 
 ### 用户提问（原文）

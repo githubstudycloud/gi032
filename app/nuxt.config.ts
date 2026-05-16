@@ -17,7 +17,8 @@ export default defineNuxtConfig({
 
   modules: [
     '@vueuse/nuxt',
-    '@pinia/nuxt',
+    // @pinia/nuxt 暂未启用 —— 当前还没用到 Pinia；0.6.1 跟 Pinia 3 不兼容，
+    // SSR payload plugin 会炸 obj.hasOwnProperty。等真用 store 再升级到 0.11+ 再加回。
   ],
 
   // 让 components/layout/AppTopBar.vue 直接以 <AppTopBar /> 引用，

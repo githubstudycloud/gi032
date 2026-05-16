@@ -1,6 +1,18 @@
 <script setup lang="ts">
 useHead({ title: '首页' });
 
+const { items } = await useNav();
+
+/* 把除"首页"外的一级菜单做成入口卡片 */
+const entries = computed(() =>
+  items.value.filter(i => !i.single && i.path).map(i => ({
+    key: i.key,
+    label: i.label,
+    path: i.path!,
+    sub: i.children?.length ? `${i.children.length} 个分组` : '查看详情',
+  })),
+);
+
 interface Stat {
   key: string;
   label: string;
@@ -10,66 +22,120 @@ interface Stat {
 }
 
 const stats: Stat[] = [
-  { key: 'cases',    label: '今日新增用例', value: '128', hint: '同比 +12%',  trend: 'up' },
-  { key: 'feedback', label: '待处理反馈',   value: '7',   hint: '24h 内回复', trend: 'flat' },
-  { key: 'alerts',   label: '运维告警',     value: '0',   hint: '系统状态正常', trend: 'down' },
+  { key: 'cases',    label: '今日新增用例', value: '128',   hint: '同比 +12%',  trend: 'up' },
+  { key: 'feedback', label: '待处理反馈',   value: '7',     hint: '24h 内回复', trend: 'flat' },
+  { key: 'alerts',   label: '运维告警',     value: '0',     hint: '系统状态正常', trend: 'down' },
   { key: 'users',    label: '活跃用户',     value: '1,284', hint: '同比 +3.2%', trend: 'up' },
 ];
 
 const updates = [
-  { time: '10:24', title: '【AI 测试】用例自动生成跑批完成', module: 'AI辅助测试运营' },
-  { time: '09:51', title: '【反馈】3 条高优先级反馈待处理',    module: '用户反馈' },
-  { time: '09:00', title: '【运维】昨日服务健康度报告已生成',  module: '后台运维' },
+  { time: '10:24', title: 'AI 测试用例自动生成跑批完成（128 条）', module: 'AI辅助测试运营' },
+  { time: '09:51', title: '收到 3 条高优先级反馈待处理',            module: '用户反馈' },
+  { time: '09:00', title: '昨日服务健康度报告已生成',                module: '后台运维' },
 ];
 </script>
 
 <template>
   <div>
-    <PageHeader title="首页" subtitle="运营看板总览" />
+    <!-- Hero -->
+    <section class="relative overflow-hidden rounded-2xl border border-ink-200/60 bg-gradient-to-br from-white via-brand-50/30 to-white px-10 py-12">
+      <div class="absolute top-0 right-0 w-72 h-72 -mt-20 -mr-20 rounded-full bg-brand-100/40 blur-3xl pointer-events-none" />
+      <div class="relative max-w-3xl">
+        <p class="text-[11px] font-mono uppercase tracking-[0.22em] text-brand-700">
+          Operations Dashboard · v0.1.0
+        </p>
+        <h1 class="mt-3 font-display text-[40px] leading-[1.15] font-semibold text-ink-900 tracking-tight">
+          运营看板
+        </h1>
+        <p class="mt-4 text-[15px] text-ink-600 leading-relaxed">
+          统一聚合 AI 测试 / 用户反馈 / 后台运维 / 系统设置 四条线，给到一线运营与决策层一个可下钻、可比对的实时视图。
+          导航与数据均由 JSON 驱动，后续切到后端接口只需改 <code class="font-mono text-[13px] text-brand-700 bg-brand-50 px-1.5 py-0.5 rounded">runtimeConfig</code>。
+        </p>
+      </div>
+    </section>
 
-    <section class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <div
-        v-for="stat in stats"
-        :key="stat.key"
-        class="rounded-lg border border-ink-200 bg-white p-5"
-      >
-        <div class="text-xs text-ink-500">{{ stat.label }}</div>
-        <div class="mt-2 text-2xl font-semibold text-ink-900 font-display">{{ stat.value }}</div>
+    <!-- 关键指标 -->
+    <section class="mt-8">
+      <h2 class="font-display text-[15px] font-semibold text-ink-900 tracking-tight flex items-center gap-2">
+        <span class="w-1 h-4 rounded-full bg-brand-500" />
+        关键指标
+      </h2>
+      <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div
-          :class="[
-            'mt-1 text-xs',
-            stat.trend === 'up'   ? 'text-emerald-600' :
-            stat.trend === 'down' ? 'text-rose-600'    : 'text-ink-500',
-          ]"
+          v-for="stat in stats"
+          :key="stat.key"
+          class="rounded-xl border border-ink-200/70 bg-white p-5 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-hover)] transition-shadow"
         >
-          {{ stat.hint }}
+          <div class="text-[12px] text-ink-500">{{ stat.label }}</div>
+          <div class="mt-2 font-display text-[28px] font-semibold text-ink-900 leading-none">
+            {{ stat.value }}
+          </div>
+          <div
+            :class="[
+              'mt-2 text-[11px] flex items-center gap-1',
+              stat.trend === 'up'   ? 'text-emerald-600' :
+              stat.trend === 'down' ? 'text-rose-600'    : 'text-ink-500',
+            ]"
+          >
+            <span v-if="stat.trend === 'up'">▲</span>
+            <span v-else-if="stat.trend === 'down'">▼</span>
+            <span v-else>●</span>
+            <span>{{ stat.hint }}</span>
+          </div>
         </div>
       </div>
     </section>
 
-    <section class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-4">
-      <div class="lg:col-span-2 rounded-lg border border-ink-200 bg-white p-6">
-        <h2 class="text-base font-semibold text-ink-900">框架说明</h2>
-        <ul class="mt-3 space-y-2 text-sm text-ink-700 list-disc list-inside">
-          <li>顶部菜单 / 左侧菜单 / 左侧大标题 全部由 <code class="font-mono text-xs bg-ink-100 px-1 rounded">public/mock/*.json</code> 驱动</li>
-          <li>切换数据源：把 <code class="font-mono text-xs bg-ink-100 px-1 rounded">nuxt.config.ts → runtimeConfig.public.dataSourceMode</code> 改成 <code class="font-mono text-xs bg-ink-100 px-1 rounded">'api'</code> 并设 <code class="font-mono text-xs bg-ink-100 px-1 rounded">apiBase</code></li>
-          <li>后端字段对不上：在对应 <code class="font-mono text-xs bg-ink-100 px-1 rounded">composables/use-*.ts</code> 的 <code class="font-mono text-xs bg-ink-100 px-1 rounded">transform</code> 里映射</li>
-          <li>所有具体页面统一使用 <code class="font-mono text-xs bg-ink-100 px-1 rounded">pages/[...slug].vue</code> 占位渲染（标题 / 筛选 / 表格），后续按需拆出独立页</li>
-        </ul>
-      </div>
-
-      <div class="rounded-lg border border-ink-200 bg-white p-6">
-        <h2 class="text-base font-semibold text-ink-900">最近动态</h2>
-        <ul class="mt-3 space-y-3 text-sm">
-          <li v-for="u in updates" :key="u.time" class="flex gap-3">
-            <span class="font-mono text-xs text-ink-500 shrink-0 mt-0.5">{{ u.time }}</span>
-            <div class="min-w-0">
-              <div class="text-ink-900 truncate">{{ u.title }}</div>
-              <div class="text-[11px] text-ink-500 mt-0.5">{{ u.module }}</div>
+    <!-- 模块入口（entries 派生自客户端 useNav，所以整段包 ClientOnly） -->
+    <section class="mt-10">
+      <h2 class="font-display text-[15px] font-semibold text-ink-900 tracking-tight flex items-center gap-2">
+        <span class="w-1 h-4 rounded-full bg-brand-500" />
+        进入模块
+      </h2>
+      <ClientOnly>
+        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <NuxtLink
+            v-for="entry in entries"
+            :key="entry.key"
+            :to="entry.path"
+            class="group rounded-xl border border-ink-200/70 bg-white p-5 hover:border-brand-300 hover:shadow-[var(--shadow-hover)] transition-all"
+          >
+            <div class="flex items-start justify-between">
+              <div class="font-display text-[16px] font-semibold text-ink-900 tracking-tight">
+                {{ entry.label }}
+              </div>
+              <svg class="w-4 h-4 text-ink-400 group-hover:text-brand-600 group-hover:translate-x-0.5 transition-all" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M7 5l6 5-6 5V5z" />
+              </svg>
             </div>
-          </li>
-        </ul>
-      </div>
+            <div class="mt-2 text-[12px] text-ink-500">{{ entry.sub }}</div>
+          </NuxtLink>
+        </div>
+        <template #fallback>
+          <div class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div v-for="i in 4" :key="i" class="h-[88px] rounded-xl border border-ink-200/70 bg-white" />
+          </div>
+        </template>
+      </ClientOnly>
+    </section>
+
+    <!-- 最近动态 -->
+    <section class="mt-10">
+      <h2 class="font-display text-[15px] font-semibold text-ink-900 tracking-tight flex items-center gap-2">
+        <span class="w-1 h-4 rounded-full bg-brand-500" />
+        最近动态
+      </h2>
+      <ul class="mt-4 rounded-xl border border-ink-200/70 bg-white divide-y divide-ink-100">
+        <li v-for="u in updates" :key="u.time" class="px-5 py-4 flex items-center gap-4">
+          <div class="font-mono text-[12px] text-ink-500 shrink-0 w-12">{{ u.time }}</div>
+          <div class="min-w-0 flex-1">
+            <div class="text-[14px] text-ink-900 truncate">{{ u.title }}</div>
+          </div>
+          <div class="text-[11px] text-ink-500 shrink-0 px-2 py-0.5 rounded-full bg-ink-100">
+            {{ u.module }}
+          </div>
+        </li>
+      </ul>
     </section>
   </div>
 </template>

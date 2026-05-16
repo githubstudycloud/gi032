@@ -1,26 +1,35 @@
 <script setup lang="ts">
-import type { Branding, SidebarMenuItem } from '~/types/nav';
+import type { NavItem } from '~/types/nav';
 
 defineProps<{
-  brand: Branding | null;
-  items: SidebarMenuItem[];
-  pending?: boolean;
+  section: NavItem;
 }>();
 </script>
 
 <template>
-  <aside class="w-64 shrink-0 border-r border-ink-200 bg-white flex flex-col">
-    <AppSidebarBrand :brand="brand" />
-    <div v-if="pending" class="px-4 py-4 text-sm text-ink-500">加载中…</div>
-    <nav v-else class="flex-1 overflow-y-auto px-2 py-3 space-y-0.5">
+  <aside class="w-[260px] shrink-0 border-r border-ink-200/80 bg-white flex flex-col">
+    <!-- 侧栏头：当前一级菜单 -->
+    <div class="h-14 shrink-0 px-5 flex items-center border-b border-ink-200/60">
+      <div class="flex items-center gap-2 min-w-0">
+        <div class="w-1 h-5 rounded-full bg-brand-500" />
+        <h2 class="font-display text-[15px] font-semibold text-ink-900 tracking-tight truncate">
+          {{ section.label }}
+        </h2>
+      </div>
+    </div>
+
+    <!-- 子菜单：2-3 层递归 -->
+    <nav class="flex-1 overflow-y-auto px-2 py-3 space-y-px">
       <AppSidebarItem
-        v-for="item in items"
-        :key="item.key"
-        :item="item"
+        v-for="child in section.children"
+        :key="child.key"
+        :item="child"
         :depth="0"
       />
     </nav>
-    <div class="px-4 py-3 border-t border-ink-200 text-[11px] text-ink-500">
+
+    <!-- 侧栏底：留白 -->
+    <div class="px-5 py-3 border-t border-ink-200/60 text-[11px] text-ink-500">
       © 2026 · 运营平台
     </div>
   </aside>

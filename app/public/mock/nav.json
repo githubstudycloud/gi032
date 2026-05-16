@@ -3,39 +3,71 @@
     {
       "key": "home",
       "label": "首页",
-      "icon": "home",
       "path": "/",
       "single": true
     },
     {
       "key": "ai-test",
       "label": "AI辅助测试运营",
-      "icon": "robot",
+      "path": "/ai-test",
       "children": [
         {
-          "key": "ai-test-case",
-          "label": "用例管理",
+          "key": "ai-test-overview",
+          "label": "概览",
           "children": [
-            { "key": "ai-test-case-list",     "label": "用例列表", "path": "/ai-test/case/list" },
-            { "key": "ai-test-case-generate", "label": "智能生成", "path": "/ai-test/case/generate" },
-            { "key": "ai-test-case-review",   "label": "用例评审", "path": "/ai-test/case/review" }
+            { "key": "ai-test-overview-summary",  "label": "总览",         "path": "/ai-test/overview/summary" },
+            { "key": "ai-test-overview-industry", "label": "产业落地进展", "path": "/ai-test/overview/industry" },
+            { "key": "ai-test-overview-domain",   "label": "领域落地进展", "path": "/ai-test/overview/domain" }
           ]
         },
         {
-          "key": "ai-test-execution",
-          "label": "执行报告",
+          "key": "ai-test-general",
+          "label": "通用测试Agent",
           "children": [
-            { "key": "ai-test-execution-overview", "label": "执行概览", "path": "/ai-test/execution/overview" },
-            { "key": "ai-test-execution-detail",   "label": "执行明细", "path": "/ai-test/execution/detail" }
+            { "key": "ai-test-general-design",  "label": "AI辅助测试设计",     "path": "/ai-test/general/design" },
+            { "key": "ai-test-general-codegen", "label": "AI辅助测试代码生成", "path": "/ai-test/general/codegen" },
+            { "key": "ai-test-general-exec",    "label": "AI辅助测试执行",     "path": "/ai-test/general/exec" },
+            { "key": "ai-test-general-result",  "label": "AI辅助结果分析",     "path": "/ai-test/general/result" }
           ]
         },
-        { "key": "ai-test-knowledge", "label": "知识库", "path": "/ai-test/knowledge" }
+        {
+          "key": "ai-test-e2e",
+          "label": "E2E测试Agent",
+          "children": [
+            { "key": "ai-test-e2e-app",        "label": "APP E2E测试",     "path": "/ai-test/e2e/app" },
+            { "key": "ai-test-e2e-thirdparty", "label": "三方应用E2E测试", "path": "/ai-test/e2e/thirdparty" },
+            { "key": "ai-test-e2e-ai",         "label": "AI特性E2E测试",   "path": "/ai-test/e2e/ai" }
+          ]
+        },
+        {
+          "key": "ai-test-special",
+          "label": "AI辅助专项测试",
+          "children": [
+            { "key": "ai-test-special-precise", "label": "AI辅助精准测试", "path": "/ai-test/special/precise" }
+          ]
+        },
+        {
+          "key": "ai-test-tools",
+          "label": "Test工具运营",
+          "children": [
+            { "key": "ai-test-tools-user",    "label": "Test用户数据", "path": "/ai-test/tools/user" },
+            { "key": "ai-test-tools-session", "label": "Session分析",  "path": "/ai-test/tools/session" }
+          ]
+        },
+        {
+          "key": "ai-test-system",
+          "label": "系统管理",
+          "children": [
+            { "key": "ai-test-system-metrics", "label": "指标管理",    "path": "/ai-test/system/metrics" },
+            { "key": "ai-test-system-excel",   "label": "Excel看板",   "path": "/ai-test/system/excel" }
+          ]
+        }
       ]
     },
     {
       "key": "feedback",
       "label": "用户反馈",
-      "icon": "message",
+      "path": "/feedback",
       "children": [
         {
           "key": "feedback-inbox",
@@ -53,7 +85,7 @@
     {
       "key": "ops",
       "label": "后台运维",
-      "icon": "server",
+      "path": "/ops",
       "children": [
         {
           "key": "ops-monitor",
@@ -77,7 +109,7 @@
     {
       "key": "settings",
       "label": "系统设置",
-      "icon": "cog",
+      "path": "/settings",
       "children": [
         {
           "key": "settings-account",

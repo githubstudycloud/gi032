@@ -1,57 +1,67 @@
 <script setup lang="ts">
-import type { TopMenuItem } from '~/types/nav';
+import type { Branding, NavItem } from '~/types/nav';
 
-const props = defineProps<{
-  items: TopMenuItem[];
-  pending?: boolean;
-  brandTitle?: string;
+defineProps<{
+  items: NavItem[];
+  activeKey: string | null;
+  brand: Branding | null;
 }>();
-
-const route = useRoute();
-
-function isActive(item: TopMenuItem): boolean {
-  if (!item.path) return false;
-  if (item.path === '/') return route.path === '/';
-  return route.path === item.path || route.path.startsWith(item.path + '/');
-}
 </script>
 
 <template>
-  <header class="h-14 shrink-0 border-b border-ink-200 bg-white">
+  <header class="h-16 shrink-0 bg-white/95 backdrop-blur-sm border-b border-ink-200/80 sticky top-0 z-20">
     <div class="h-full flex items-center px-6 gap-8">
-      <div class="flex items-center gap-2 text-ink-900">
-        <div class="w-7 h-7 rounded-md bg-brand-600 text-white flex items-center justify-center text-xs font-semibold">
-          运
+      <!-- 左：大 LOGO + 标题 -->
+      <NuxtLink to="/" class="flex items-center gap-3 shrink-0 -my-1 px-2 py-1 rounded-lg hover:bg-ink-100/60 transition-colors">
+        <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 text-white flex items-center justify-center font-display text-base font-semibold shadow-[0_4px_10px_-2px_oklch(0.62_0.14_235/0.35)]">
+          {{ brand?.shortName || '运' }}
         </div>
-        <span class="font-display text-base font-semibold tracking-tight">
-          {{ props.brandTitle || '运营看板' }}
-        </span>
-      </div>
+        <div class="leading-none flex flex-col gap-1">
+          <span class="font-display text-[18px] font-semibold text-ink-900 tracking-tight">
+            {{ brand?.title || '运营看板' }}
+          </span>
+          <span v-if="brand?.subtitle" class="text-[10px] text-ink-500 uppercase tracking-[0.18em] font-mono">
+            {{ brand.subtitle }}
+          </span>
+        </div>
+      </NuxtLink>
 
-      <nav v-if="pending" class="text-sm text-ink-500">加载中…</nav>
-      <nav v-else class="flex items-center gap-1">
+      <!-- 中：一级菜单 -->
+      <nav class="flex items-center gap-0.5 h-full">
         <NuxtLink
           v-for="item in items"
           :key="item.key"
           :to="item.path || '#'"
           :class="[
-            'px-3 h-9 inline-flex items-center rounded-md text-sm transition-colors',
-            isActive(item)
-              ? 'bg-ink-900 text-white'
-              : 'text-ink-700 hover:bg-ink-100 hover:text-ink-900',
-            item.disabled ? 'opacity-50 pointer-events-none' : '',
+            'relative h-full px-4 inline-flex items-center text-[14px] font-medium transition-colors',
+            activeKey === item.key
+              ? 'text-brand-700'
+              : 'text-ink-700 hover:text-ink-900',
+            item.disabled ? 'opacity-40 pointer-events-none' : '',
           ]"
         >
-          {{ item.label }}
-          <span v-if="item.badge != null" class="ml-1.5 text-[10px] px-1 rounded bg-brand-500 text-white">
-            {{ item.badge }}
+          <span class="relative">
+            {{ item.label }}
+            <span v-if="item.badge != null" class="absolute -top-1 -right-3 text-[10px] px-1 rounded-full bg-brand-500 text-white leading-tight">
+              {{ item.badge }}
+            </span>
           </span>
+          <!-- 活动项底部蓝条 -->
+          <span
+            v-if="activeKey === item.key"
+            class="absolute left-3 right-3 bottom-0 h-[2.5px] bg-brand-600 rounded-t-full"
+          />
         </NuxtLink>
       </nav>
 
       <div class="flex-1" />
 
-      <div class="text-xs text-ink-500">v0.1.0 · 内部预览</div>
+      <!-- 右：版本号 + 占位 -->
+      <div class="flex items-center gap-3 text-xs text-ink-500">
+        <span class="font-mono">{{ brand?.version || 'v0.1.0' }}</span>
+        <span class="text-ink-300">·</span>
+        <span>内部预览</span>
+      </div>
     </div>
   </header>
 </template>

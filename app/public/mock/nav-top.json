@@ -1,7 +1,0 @@
-{
-  "items": [
-    { "key": "workbench",  "label": "工作台",   "path": "/" },
-    { "key": "monitoring", "label": "监控大盘", "path": "/monitoring" },
-    { "key": "toolbox",    "label": "工具集",   "path": "/toolbox" }
-  ]
-}
