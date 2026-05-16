@@ -17,6 +17,21 @@ export interface OverviewFilters {
 /* —— 核心指标 —— */
 export type TrendDir = 'up' | 'down' | 'flat';
 
+/**
+ * 数值阈值规则（适用于 Metric 与表格单元格）。
+ * - 把字符串里的数字解析出来（"62.4%" → 62.4 / "1,284" → 1284 / "+8.1%" → 8.1）
+ * - 在 [min, max] 区间内取 goodColor，否则取 badColor
+ * - 颜色直接是 Tailwind 颜色类名片段（emerald/rose/amber 等）或 CSS color 字符串
+ */
+export interface Threshold {
+  min?: number;
+  max?: number;
+  /** 达标颜色 token：'emerald' | 'brand' | 'amber' | 'rose' | '#xxx' / oklch(...) */
+  goodColor?: string;
+  /** 不达标颜色 token */
+  badColor?: string;
+}
+
 export interface Metric {
   key: string;
   label: string;
@@ -30,6 +45,8 @@ export interface Metric {
   trend: TrendDir;
   /** 鼠标停留 ? 时显示的解释 */
   description: string;
+  /** 主数值阈值（可选） */
+  threshold?: Threshold;
 }
 
 export interface MetricGroup {
@@ -53,6 +70,16 @@ export interface TableColumn {
   width?: string;
   /** 二级表头 */
   children?: TableColumn[];
+  /** 对齐：默认 center；可显式 left / right */
+  align?: 'left' | 'center' | 'right';
+  /** 列是否可排序（只有叶子列生效） */
+  sortable?: boolean;
+  /** 列是否可在表头里筛选（只有叶子列生效；用枚举下拉） */
+  filterable?: boolean;
+  /** 高亮列：表头与单元格底色突出（只有叶子列生效） */
+  highlight?: boolean;
+  /** 数值阈值（只有叶子列生效） */
+  threshold?: Threshold;
 }
 
 export interface TableRow {

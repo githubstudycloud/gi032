@@ -31,10 +31,12 @@
         "items": [
           { "key": "ai-requirements",       "label": "AI需求数",                  "value": "186",   "mom": "+8.1%",  "trend": "up",   "description": "本月接入 AI 测试设计 / 脚本生成的需求总数。" },
           { "key": "total-requirements",    "label": "需求数",                    "value": "412",   "mom": "+3.2%",  "trend": "up",   "description": "本月所有进入测试环节的需求总数（含 AI 与非 AI）。" },
-          { "key": "design-coverage",       "label": "AI测试设计需求覆盖率",      "value": "62.4%", "mom": "+4.8pp", "trend": "up",   "description": "AI 需求数 / 需求数。环比 +4.8 百分点。" },
+          { "key": "design-coverage",       "label": "AI测试设计需求覆盖率",      "value": "62.4%", "mom": "+4.8pp", "trend": "up",   "description": "AI 需求数 / 需求数。环比 +4.8 百分点。",
+            "threshold": { "min": 60, "goodColor": "emerald", "badColor": "rose" } },
           { "key": "valid-ai-cases",        "label": "AI生成的有效用例数",        "value": "2,148", "mom": "+18.6%", "trend": "up",   "description": "AI 生成且被采纳（标注为有效）的测试用例总数。" },
           { "key": "total-cases",           "label": "用例数",                    "value": "3,560", "mom": "+9.4%",  "trend": "up",   "description": "本月新增的测试用例总数（含 AI 与人工）。" },
-          { "key": "ai-case-ratio",         "label": "AI生成测试用例占比",        "value": "60.3%", "mom": "+5.2pp", "trend": "up",   "description": "AI 生成有效用例数 / 用例总数。" },
+          { "key": "ai-case-ratio",         "label": "AI生成测试用例占比",        "value": "60.3%", "mom": "+5.2pp", "trend": "up",   "description": "AI 生成有效用例数 / 用例总数。",
+            "threshold": { "min": 50, "goodColor": "emerald", "badColor": "amber" } },
           { "key": "ai-defect-ratio",       "label": "AI生成用例发现缺陷占比",    "value": "52.8%", "mom": "+3.1pp", "trend": "up",   "description": "AI 生成用例发现的缺陷数 / 全部用例发现的缺陷数。" }
         ]
       },
@@ -44,7 +46,8 @@
         "items": [
           { "key": "ai-cases-generated",  "label": "AI生成用例数",           "value": "3,420", "mom": "+22.5%", "trend": "up",   "description": "AI 系统本月生成的全部候选用例（含未采纳）。" },
           { "key": "ai-cases-adopted",    "label": "AI生成采纳用例数",       "value": "2,148", "mom": "+18.6%", "trend": "up",   "description": "AI 生成且经评审/试运行后落入正式用例库的数量。" },
-          { "key": "adoption-rate",       "label": "AI生成用例采纳率",       "value": "62.8%", "mom": "-1.2pp", "trend": "down", "description": "AI 生成采纳用例数 / AI 生成用例数。下降可能意味着模型质量或评审口径变化。" },
+          { "key": "adoption-rate",       "label": "AI生成用例采纳率",       "value": "62.8%", "mom": "-1.2pp", "trend": "down", "description": "AI 生成采纳用例数 / AI 生成用例数。下降可能意味着模型质量或评审口径变化。",
+            "threshold": { "min": 65, "goodColor": "emerald", "badColor": "rose" } },
           { "key": "avg-interactions",    "label": "平均每需求交互次数",     "value": "4.6",   "mom": "-0.3",   "trend": "down", "description": "用户在 AI 测试设计上每个需求的平均交互轮数。下降通常意味着首轮命中率提升。" }
         ]
       }
@@ -58,16 +61,18 @@
         "key": "industry",
         "label": "三大先锋产业试点进展",
         "columns": [
-          { "key": "industry", "label": "产业",    "rowspan": 2, "width": "100px" },
-          { "key": "owner",    "label": "接口人",  "rowspan": 2, "width": "90px" },
+          { "key": "industry", "label": "产业",    "rowspan": 2, "width": "100px", "filterable": true },
+          { "key": "owner",    "label": "接口人",  "rowspan": 2, "width": "90px",  "filterable": true },
           {
             "key": "design",
             "label": "测试设计阶段",
             "children": [
-              { "key": "design-coverage-count",     "label": "测试设计覆盖人数" },
-              { "key": "design-landed-requirements","label": "落地需求个数" },
-              { "key": "design-adoption-rate",      "label": "用例采纳率" },
-              { "key": "design-new-ai-case-ratio",  "label": "新用例AI生成占比" }
+              { "key": "design-coverage-count",     "label": "测试设计覆盖人数", "sortable": true },
+              { "key": "design-landed-requirements","label": "落地需求个数", "sortable": true },
+              { "key": "design-adoption-rate",      "label": "用例采纳率", "sortable": true, "highlight": true,
+                "threshold": { "min": 65, "goodColor": "emerald", "badColor": "rose" } },
+              { "key": "design-new-ai-case-ratio",  "label": "新用例AI生成占比", "sortable": true,
+                "threshold": { "min": 55, "goodColor": "emerald", "badColor": "amber" } }
             ]
           },
           {
@@ -85,8 +90,10 @@
             "key": "execution",
             "label": "测试执行阶段",
             "children": [
-              { "key": "execution-accuracy",        "label": "测试执行准确率" },
-              { "key": "execution-result-accuracy", "label": "结果分析准确率" }
+              { "key": "execution-accuracy",        "label": "测试执行准确率", "sortable": true, "highlight": true,
+                "threshold": { "min": 90, "goodColor": "emerald", "badColor": "rose" } },
+              { "key": "execution-result-accuracy", "label": "结果分析准确率", "sortable": true,
+                "threshold": { "min": 85, "goodColor": "emerald", "badColor": "amber" } }
             ]
           },
           { "key": "actions", "label": "操作", "rowspan": 2, "width": "120px" }

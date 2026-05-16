@@ -37,8 +37,8 @@ const isFullBleed = computed<boolean>(
         <div
           v-if="!isFullBleed"
           :class="[
-            'mx-auto px-8 py-8',
-            showSidebar ? 'max-w-[1400px]' : 'max-w-5xl',
+            'mx-auto px-4 lg:px-6 py-6 text-[14px]',
+            showSidebar ? 'max-w-[1680px]' : 'max-w-6xl',
           ]"
         >
           <slot />

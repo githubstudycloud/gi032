@@ -5,6 +5,47 @@
 
 ---
 
+## #011 — 2026-05-16 — 表格排序/筛选/高亮/阈值 + 指标卡换行/阈值 + 字号留白调整
+
+### 用户提问
+
+> 1.整个页面字体有点小，内容页两侧留白过多。
+> 2.表格字段矩阵没有都居中，值也没有。
+> 3.核心指标的页面显示字符样式不美观，覆盖了数量，字符要支持换行显示。
+> 4.表格支持排序，支持设置阈值，支持重点突出某几列，列字段支持筛选。
+> 5.表格支持的表头，颜色要突出重点显示的列，由 json 配置，阈值不达标的表示不同颜色，阈值也由 json 配置，在表格中和核心指标中的数据，修改这些，提交推送。
+
+### 关键决策
+
+- **阈值（Threshold）** 抽成统一类型 `{ min?, max?, goodColor?, badColor? }`，同时供 Metric 与 TableColumn 使用，所有颜色 token 在 `app/utils/threshold.ts` 内部映射到 Tailwind 类（emerald/amber/rose/brand/ink）。
+- **列属性扩展**：`TableColumn` 新增 `align`（默认 center）`sortable` `filterable` `highlight` `threshold`，全部为可选项，老 JSON 不受影响。
+- **MultiLevelTable** 整体重写：
+  - 表头 / 单元格统一默认 `text-center`，叶子列可通过 `align` 覆盖。
+  - 叶子列 `sortable` → 点击表头切换 asc / desc / none，数值列用 `parseNumeric` 解析"62.4%"/"1,284"/"+8.1pp"等。
+  - 叶子列 `filterable` → 表头右侧 ▾ 按钮弹出 checkbox 下拉，按枚举值过滤；多列可叠加。
+  - 叶子列 `highlight` → 表头 `bg-brand-100/70 text-brand-800`、单元格 `bg-brand-50/60`。
+  - 叶子列 `threshold` → 单元格数值按阈值套 `text-emerald-600` / `text-rose-600` / `text-amber-600` 等，并加粗。
+- **MetricCard** 重排版：label 不再 `line-clamp-2`，与数值分离两行；数值升到 28px 并按 metric.threshold 上色，单位单独弱化色。
+- **布局**：`mx-auto px-8 py-8 max-w-[1400px]` → `mx-auto px-4 lg:px-6 py-6 max-w-[1680px]`，明显减少两侧留白。同时主体基础字号显式 14px。
+- **Mock 演示**：在 `ai-test-overview-summary.json`、`ai-test-general-design.json` 给覆盖率 / 采纳率 / 执行准确率类指标和列加阈值；产业 / 部门列加 filterable；采纳率 / 准确率列加 highlight，方便用户直观看到效果。
+
+### 产出
+
+- 修改：
+  - `app/types/overview-summary.ts`（新增 `Threshold`、扩展 `TableColumn`，给 `Metric` 加 `threshold`）
+  - `app/utils/threshold.ts`（**新增**：parseNumeric + thresholdClass + 颜色 token 映射）
+  - `app/components/dashboard/MultiLevelTable.vue`（重写：排序 / 筛选 / 高亮 / 阈值 / 默认居中）
+  - `app/components/dashboard/MetricCard.vue`（去 line-clamp、value 28px、阈值变色、单位弱化）
+  - `app/layouts/default.vue`（max-w-[1680px]、px-4 lg:px-6、py-6、text-[14px]）
+  - `public/mock/pages/ai-test-overview-summary.json`、`public/mock/pages/ai-test-general-design.json`（demo 配置）
+
+### 验证
+
+- `npm run typecheck` 仅剩遗留 `use-data-source.ts:50` 错误（与本次改动无关）。
+- 未跑 lint / 测试（项目没有 test 脚本）。
+
+---
+
 ## #010 — 2026-05-16 — AI辅助测试设计 / 代码生成两页 + 侧栏固定修复
 
 ### 用户提问
