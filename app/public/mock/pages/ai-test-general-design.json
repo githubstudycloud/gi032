@@ -1,0 +1,85 @@
+{
+  "filters": {
+    "timeRanges": [
+      { "key": "7d",     "label": "最近 7 天" },
+      { "key": "30d",    "label": "最近 30 天" },
+      { "key": "90d",    "label": "最近 90 天" },
+      { "key": "custom", "label": "自定义" }
+    ],
+    "departments": [
+      { "key": "all",    "label": "全部部门" },
+      { "key": "dept-1", "label": "智能终端测试部" },
+      { "key": "dept-2", "label": "云服务测试部" },
+      { "key": "dept-3", "label": "网络产品测试部" },
+      { "key": "dept-4", "label": "汽车解决方案测试部" }
+    ]
+  },
+
+  "metrics": {
+    "groups": [
+      {
+        "key": "user",
+        "label": "用户指标",
+        "items": [
+          { "key": "ai-user-count", "label": "AI用户数", "value": "1,284", "mom": "+12.3%", "trend": "up", "description": "本月使用过 AI 测试设计功能的活跃用户数。" }
+        ]
+      },
+      {
+        "key": "business",
+        "label": "业务指标",
+        "items": [
+          { "key": "ai-requirements",    "label": "AI需求数",                  "value": "186",   "mom": "+8.1%",  "trend": "up",   "description": "本月接入 AI 测试设计的需求总数。" },
+          { "key": "total-requirements", "label": "需求数",                    "value": "412",   "mom": "+3.2%",  "trend": "up",   "description": "本月所有进入测试环节的需求总数。" },
+          { "key": "design-coverage",    "label": "AI测试设计需求覆盖率",      "value": "62.4%", "mom": "+4.8pp", "trend": "up",   "description": "AI 需求 / 需求总数。" },
+          { "key": "valid-ai-cases",     "label": "AI生成的有效用例数",        "value": "2,148", "mom": "+18.6%", "trend": "up",   "description": "AI 生成且被采纳的用例总数。" },
+          { "key": "total-cases",        "label": "用例数",                    "value": "3,560", "mom": "+9.4%",  "trend": "up",   "description": "本月新增的测试用例总数。" },
+          { "key": "ai-case-ratio",      "label": "AI生成测试用例占比",        "value": "60.3%", "mom": "+5.2pp", "trend": "up",   "description": "AI 生成有效用例数 / 用例总数。" },
+          { "key": "ai-defect-ratio",    "label": "AI生成用例发现缺陷占比",    "value": "52.8%", "mom": "+3.1pp", "trend": "up",   "description": "AI 生成用例发现缺陷数 / 全部用例发现缺陷数。" }
+        ]
+      },
+      {
+        "key": "capability",
+        "label": "能力指标",
+        "items": [
+          { "key": "ai-cases-generated", "label": "AI生成用例数",       "value": "3,420", "mom": "+22.5%", "trend": "up",   "description": "AI 系统本月生成的全部候选用例（含未采纳）。" },
+          { "key": "ai-cases-adopted",   "label": "AI生成采纳用例数",   "value": "2,148", "mom": "+18.6%", "trend": "up",   "description": "AI 生成且落入正式用例库的数量。" },
+          { "key": "adoption-rate",      "label": "AI生成用例采纳率",   "value": "62.8%", "mom": "-1.2pp", "trend": "down", "description": "AI 生成采纳用例数 / AI 生成用例数。" },
+          { "key": "avg-interactions",   "label": "平均每需求交互次数", "value": "4.6",   "mom": "-0.3",   "trend": "down", "description": "每个需求的 AI 平均交互轮数。" }
+        ]
+      }
+    ],
+    "footnote": "点击卡片可查看明细数字，点击图表元素可下钻到对应维度的明细数据。"
+  },
+
+  "pilots": {
+    "tabs": [
+      {
+        "key": "design-detail",
+        "label": "领域落地进展明细",
+        "columns": [
+          { "key": "rank",          "label": "排名",        "width": "70px" },
+          { "key": "department",    "label": "部门",        "width": "180px" },
+          { "key": "req-total",     "label": "需求总数" },
+          { "key": "ai-req-count",  "label": "Ai设计需求数" },
+          { "key": "coverage",      "label": "覆盖率" },
+          { "key": "ai-cases",      "label": "Ai生成用例数" },
+          { "key": "adopted-cases", "label": "采纳用例数" },
+          { "key": "adoption-rate", "label": "采纳率" },
+          { "key": "defects",       "label": "发现缺陷数" },
+          { "key": "actions",       "label": "操作",        "width": "90px" }
+        ],
+        "rows": [
+          { "rank": 1, "department": "智能终端测试部",   "req-total": 126, "ai-req-count": 92, "coverage": "73.0%", "ai-cases": 1842, "adopted-cases": 1268, "adoption-rate": "68.8%", "defects": 184, "actions": "详情" },
+          { "rank": 2, "department": "汽车解决方案测试部", "req-total": 94,  "ai-req-count": 68, "coverage": "72.3%", "ai-cases": 1364, "adopted-cases":  912, "adoption-rate": "66.9%", "defects": 142, "actions": "详情" },
+          { "rank": 3, "department": "云服务测试部",     "req-total": 86,  "ai-req-count": 58, "coverage": "67.4%", "ai-cases": 1126, "adopted-cases":  742, "adoption-rate": "65.9%", "defects": 108, "actions": "详情" },
+          { "rank": 4, "department": "网络产品测试部",   "req-total": 72,  "ai-req-count": 44, "coverage": "61.1%", "ai-cases":  864, "adopted-cases":  548, "adoption-rate": "63.4%", "defects":  86, "actions": "详情" },
+          { "rank": 5, "department": "计算产品测试部",   "req-total": 58,  "ai-req-count": 34, "coverage": "58.6%", "ai-cases":  624, "adopted-cases":  386, "adoption-rate": "61.9%", "defects":  62, "actions": "详情" },
+          { "rank": 6, "department": "数据通信测试部",   "req-total": 46,  "ai-req-count": 26, "coverage": "56.5%", "ai-cases":  482, "adopted-cases":  294, "adoption-rate": "61.0%", "defects":  48, "actions": "详情" },
+          { "rank": 7, "department": "安全测试部",       "req-total": 38,  "ai-req-count": 20, "coverage": "52.6%", "ai-cases":  346, "adopted-cases":  208, "adoption-rate": "60.1%", "defects":  34, "actions": "详情" },
+          { "rank": 8, "department": "终端云测试部",     "req-total": 32,  "ai-req-count": 16, "coverage": "50.0%", "ai-cases":  268, "adopted-cases":  158, "adoption-rate": "59.0%", "defects":  28, "actions": "详情" }
+        ],
+        "pagination": { "page": 1, "pageSize": 10, "total": 8 }
+      }
+    ]
+  }
+}

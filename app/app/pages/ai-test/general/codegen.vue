@@ -1,0 +1,155 @@
+<script setup lang="ts">
+import { flattenNav } from '~/utils/nav-flat';
+
+const route = useRoute();
+const { items: navItems } = await useNav();
+const { filters, metrics, pilots } = await useGeneralCodegen();
+
+/* —— 面包屑 —— */
+const flat = computed(() => flattenNav(navItems.value));
+const current = computed(() => flat.value.find(i => i.path === route.path));
+useHead({ title: () => current.value?.label ?? 'AI辅助测试代码生成' });
+
+/* —— 筛选 —— */
+const timeRange = ref<string>('7d');
+const department = ref<string>('all');
+function onSearch(): void {
+  // TODO: 接入后端 refresh({ timeRange, department })
+}
+function onReset(): void {
+  timeRange.value = '7d';
+  department.value = 'all';
+}
+
+/* —— Tabs（同总览页） —— */
+const activeTabKey = ref<string>('industry');
+const activeTab = computed(() =>
+  pilots.value?.tabs.find(t => t.key === activeTabKey.value) ?? pilots.value?.tabs[0] ?? null,
+);
+
+function onDrill(metricKey: string): void {
+  console.log('drill:', metricKey);
+}
+function onRowDetail(row: Record<string, unknown>): void {
+  console.log('row detail:', row);
+}
+</script>
+
+<template>
+  <div>
+    <ClientOnly>
+      <PageHeader :title="current?.label ?? 'AI辅助测试代码生成'" :breadcrumb="current?.breadcrumb" />
+      <template #fallback>
+        <div class="pb-5 border-b border-ink-200/70">
+          <div class="h-4 w-32 rounded bg-ink-150" />
+          <div class="mt-3 h-7 w-32 rounded bg-ink-150" />
+        </div>
+      </template>
+    </ClientOnly>
+
+    <ClientOnly>
+      <!-- Div 1: 筛选 -->
+      <section class="mt-6 rounded-xl border border-ink-200/70 bg-surface px-5 py-4 shadow-[var(--shadow-card)]">
+        <header class="flex items-center gap-2 mb-3">
+          <span class="w-1 h-4 rounded-full bg-brand-500" />
+          <h2 class="font-display text-[15px] font-semibold text-ink-900 tracking-tight">
+            AI辅助测试代码生成筛选
+          </h2>
+        </header>
+
+        <div class="flex flex-wrap items-end gap-4">
+          <label class="block text-sm flex-1 min-w-[180px] max-w-[260px]">
+            <span class="block text-ink-600 mb-1.5 text-[11px] font-medium tracking-wide uppercase">
+              时间范围
+            </span>
+            <select
+              v-model="timeRange"
+              class="w-full h-9 rounded-md border border-ink-200 px-3 text-[13px] bg-surface text-ink-900 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
+            >
+              <option
+                v-for="opt in filters?.timeRanges ?? []"
+                :key="opt.key"
+                :value="opt.key"
+              >{{ opt.label }}</option>
+            </select>
+          </label>
+
+          <label class="block text-sm flex-1 min-w-[180px] max-w-[280px]">
+            <span class="block text-ink-600 mb-1.5 text-[11px] font-medium tracking-wide uppercase">
+              部门
+            </span>
+            <select
+              v-model="department"
+              class="w-full h-9 rounded-md border border-ink-200 px-3 text-[13px] bg-surface text-ink-900 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
+            >
+              <option
+                v-for="opt in filters?.departments ?? []"
+                :key="opt.key"
+                :value="opt.key"
+              >{{ opt.label }}</option>
+            </select>
+          </label>
+
+          <div class="flex gap-2">
+            <button
+              type="button"
+              class="h-9 px-4 rounded-md bg-brand-600 text-white text-[13px] font-medium hover:bg-brand-700 active:bg-brand-800 transition-colors shadow-[0_2px_6px_-1px_oklch(0.62_0.14_235/0.35)]"
+              @click="onSearch"
+            >查询</button>
+            <button
+              type="button"
+              class="h-9 px-4 rounded-md border border-ink-200 bg-surface text-[13px] text-ink-700 hover:bg-ink-100 transition-colors"
+              @click="onReset"
+            >重置</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Div 2: 核心指标 -->
+      <div class="mt-6">
+        <MetricsBox :metrics="metrics" @drill="onDrill" />
+      </div>
+
+      <!-- Div 3: 试点进展明细 tabs（同总览） -->
+      <section class="mt-6">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="w-1 h-4 rounded-full bg-brand-500" />
+          <h2 class="font-display text-[15px] font-semibold text-ink-900 tracking-tight">
+            {{ activeTab?.label ?? '试点进展明细' }}
+          </h2>
+        </div>
+
+        <div role="tablist" class="flex items-center gap-1 border-b border-ink-200/60 mb-4">
+          <button
+            v-for="t in pilots?.tabs ?? []"
+            :key="t.key"
+            type="button"
+            role="tab"
+            :aria-selected="activeTabKey === t.key"
+            :class="[
+              'relative h-9 px-4 inline-flex items-center text-[13px] font-medium transition-colors',
+              activeTabKey === t.key ? 'text-brand-700' : 'text-ink-600 hover:text-ink-900',
+            ]"
+            @click="activeTabKey = t.key"
+          >
+            {{ t.label }}
+            <span
+              v-if="activeTabKey === t.key"
+              class="absolute left-3 right-3 -bottom-px h-[2.5px] bg-brand-600 rounded-t-full"
+            />
+          </button>
+        </div>
+
+        <MultiLevelTable v-if="activeTab" :data="activeTab" @detail="onRowDetail" />
+      </section>
+
+      <template #fallback>
+        <div class="mt-6 space-y-6">
+          <div class="h-20 rounded-xl border border-ink-200/70 bg-surface" />
+          <div class="h-80 rounded-xl border border-ink-200/70 bg-surface" />
+          <div class="h-96 rounded-xl border border-ink-200/70 bg-surface" />
+        </div>
+      </template>
+    </ClientOnly>
+  </div>
+</template>

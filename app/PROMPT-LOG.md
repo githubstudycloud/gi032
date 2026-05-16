@@ -5,6 +5,32 @@
 
 ---
 
+## #010 — 2026-05-16 — AI辅助测试设计 / 代码生成两页 + 侧栏固定修复
+
+### 用户提问
+
+> 编写 AI辅助测试设计页（/ai-test/general/design）：div1/2 同产业落地进展，div3 "领域落地进展明细" 单 tab 1 层表头 10 列（排名/部门/需求总数/Ai设计需求数/覆盖率/Ai生成用例数/采纳用例数/采纳率/发现缺陷数/操作）。
+> 编写 AI辅助测试代码生成页（/ai-test/general/codegen）：div1/2 同产业落地进展，div3 同总览（industry + domain 两 tab，多层表头）。
+> 左侧菜单滚动时不能固定，调一下。
+
+### 产出
+
+- `app/pages/ai-test/general/design.vue` + `app/composables/use-general-design.ts` + `public/mock/pages/ai-test-general-design.json`（单 tab，label "领域落地进展明细"，1 层 10 列）
+- `app/pages/ai-test/general/codegen.vue` + `app/composables/use-general-codegen.ts` + `public/mock/pages/ai-test-general-codegen.json`（industry + domain 两 tab，复用总览结构）
+- `app/layouts/default.vue`：根容器 `min-h-screen` → `h-screen`，让 main 自己内部 `overflow-y-auto`，aside 不再随页面整体滚动
+
+### 复用，无新增组件
+
+筛选条 / MetricsBox / MultiLevelTable 全部复用。
+
+### 实测
+
+- `npm run dev` 启 3001 端口 OK
+- typecheck 残留的 `use-data-source.ts:50` TS2345 是历史问题（Nuxt SSR PickFrom 泛型回填），与本次无关
+- 没有 test 脚本
+
+---
+
 ## #009 — 2026-05-16 — 实现"领域落地进展"页（/ai-test/overview/domain）
 
 ### 用户提问

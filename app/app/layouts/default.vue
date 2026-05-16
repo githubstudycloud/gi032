@@ -10,7 +10,7 @@ const isFullBleed = computed<boolean>(
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col">
+  <div class="h-screen flex flex-col">
     <ClientOnly>
       <AppTopBar
         :items="items"
