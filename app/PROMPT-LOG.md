@@ -5,6 +5,41 @@
 
 ---
 
+## #009 — 2026-05-16 — 实现"领域落地进展"页（/ai-test/overview/domain）
+
+### 用户提问
+
+> 编写领域落地进展页：第一/第二 div 跟产业落地进展一样（时间范围+部门 筛选 + 核心指标 MetricsBox），第三 div 领域落地进展明细 — 2 层表头表格。L1：领域 / 测试设计 / 测试脚本生成 / 测试执行 / 结果分析 / 操作；L2 分别给定各自子列。
+
+### 路由
+
+`app/pages/ai-test/overview/domain.vue`（nav.json 中已存在 `/ai-test/overview/domain`）。
+
+### 数据层
+
+- `public/mock/pages/ai-test-overview-domain.json`：复用 OverviewSummaryResponse 形状（filters + metrics + pilots.tabs[0]），单 tab `domain-detail`
+  - L1: 领域 / 测试设计(4) / 测试脚本生成(3) / 测试执行(3) / 结果分析(6) / 操作
+  - 6 行：智能手机 / 平板 / 智能穿戴 / 车机 / 智慧屏 / 智慧办公
+- `app/composables/use-domain-landing.ts`：跟 `use-industry-landing` 同形，jsonPath/apiPath 切换
+
+### 复用，无新增组件
+
+- 筛选 + MetricsBox + MultiLevelTable 都是产业落地进展页已有的
+- 因为只有一个 tab，页面把 tab strip 拿掉，直接渲染 `pilots.tabs[0]`，section 标题用 `detailTab.label`
+
+### 实测
+
+- `curl http://127.0.0.1:3000/ai-test/overview/domain` → 200
+- `/mock/pages/ai-test-overview-domain.json` 静态资源服务 ✓
+
+### 用户下一步可选
+
+- 通用测试 Agent / E2E 测试 Agent / AI 辅助专项测试 下的子页
+- 现有页面卡片下钻 / 表格"详情"接到具体路由
+- 后端接口接入（jsonPath → apiPath 切换走 `dataSourceMode`）
+
+---
+
 ## #008 — 2026-05-16 — 实现"总览"页（/ai-test/overview/summary）
 
 ### 用户提问
