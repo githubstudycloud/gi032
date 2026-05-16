@@ -5,6 +5,59 @@
 
 ---
 
+## #005 — 2026-05-16 — 写样式风格文档 + 切换器模块设计（暂不实现）
+
+### 用户提问
+
+> 单独写一个样式风格文档，介绍当前样式还有介绍一下这类看板的主流样式有哪些，我能否加个样式风格切换功能，在右上角点击风格切换可以变成其他风格，这个模块设计下提交推送
+
+### 解读
+
+- "单独写" → 新文档（不堆进 CLAUDE.md 也不堆进 README）
+- "设计下" → 这轮**只设计**（架构 + 落地清单 + 工作量评估），不写实现代码
+- 提交推送 → 本轮闭环
+
+### 产出
+
+**STYLE-GUIDE.md（约 350 行）三部分：**
+
+1. **当前样式档案**：设计立场（克制 / 编辑 / 内部工具）；OKLCH 主色阶 + ink 中性色阶 + 状态色；字体（思源宋 display + Noto Sans body + JetBrains mono，禁 Inter）；11 档字号阶；圆角 / 阴影 / 边框；中等密度间距；动效仅 transition-colors。
+
+2. **主流看板风格 survey（8 类 + 选型矩阵）**：
+   - Linear 现代极简（我们当前）★★★★★
+   - Stripe 柔和商业 ★★★★
+   - Ant Design 中文后台 ★★★★
+   - Bloomberg Terminal 终端密度 ★★★
+   - Datadog/Grafana 暗黑数据 ★★★
+   - Material 3 ★★
+   - Apple HIG ★★
+   - Glass / Neumorphism ★（已退潮，提一下）
+   - 每个给：视觉特征 / 典型字体 / 色域 / 适用 / 代表产品
+
+3. **切换器设计**：
+   - 推荐方案：**CSS Variables × `@theme` × `<html class>`**（Tailwind v4 CSS-first 天然适合）。卸载方案 B (动态 import css) 和方案 C (Tailwind plugin)，给了理由。
+   - 数据模型：`public/mock/themes.json` 走同一套 useDataSource，每个 preset 给 `key/label/swatch/htmlClass`
+   - 持久化：localStorage `ops-dashboard:theme` + plugin 首屏注入（防 FOUC）
+   - Composable：`useTheme()` 暴露 `themes / current / setTheme`
+   - UI：右上角调色板小按钮 → 下拉列表（swatch + 名称 + 当前项打勾）
+   - 10 步落地清单，工作量 **3.5h（含深色）/ 2.5h（不含深色）**
+   - 风险：深色模式不是简单反白；建议第一版先 minimal + business + ant，深色后置
+
+### 关键决策（写在文档里防止下轮自己又来一遍）
+
+- 切风格**只换 token**（颜色 / 阴影 / 字体可选），**不改密度 / 不改布局**。密度 toggle 跟主题正交，后续 `useDensity()` 单独做。
+- 第一版 3 个 preset：现代极简 / 商务 / 中文后台。深色监控**先不做**（需要重新设计阴影 + 反色检查 + chart 配色板）。
+
+### 同时改
+
+- CLAUDE.md "引用其他文件"节加一条 STYLE-GUIDE 入口
+
+### 用户下一步
+
+如果觉得这个设计 OK，下一轮我就按 §3.7 落地清单实施（≈ 2.5h）。
+
+---
+
 ## #004 — 2026-05-16 — 开局域网访问 + 补 README
 
 ### 用户提问

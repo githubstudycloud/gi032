@@ -93,6 +93,7 @@ app/
 - 详细的 shadcn-vue 组件清单：见 `app/components/ui/` 实际文件
 - API schema 约定：`docs/api-conventions.md`
 - **提问历史 / 决策记录**：`PROMPT-LOG.md` —— 每次开新对话前先翻一下，了解上次做了什么；本轮接到新提问后追加一条（**时间倒序**），格式见文件头。
+- **样式风格档案 / 主流风格 survey / 切换器设计**：`STYLE-GUIDE.md` —— 改样式 / 加主题前先看这里，不要重复决策（OKLCH 色阶、字号阶、字体栈、阴影 token 已固化在 `@theme`）。
 
 ## MCP 与 Skills
 
