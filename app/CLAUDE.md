@@ -92,6 +92,7 @@ app/
 - 设计风格细则：`.claude/skills/frontend-design/SKILL.md`（如果装了官方 frontend-design）
 - 详细的 shadcn-vue 组件清单：见 `app/components/ui/` 实际文件
 - API schema 约定：`docs/api-conventions.md`
+- **提问历史 / 决策记录**：`PROMPT-LOG.md` —— 每次开新对话前先翻一下，了解上次做了什么；本轮接到新提问后追加一条（**时间倒序**），格式见文件头。
 
 ## MCP 与 Skills
 

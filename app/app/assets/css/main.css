@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+@theme {
+  /* 主色：偏冷的蓝（OKLCH 保证暗色 / 强调色感知一致） */
+  --color-brand-50:  oklch(0.98 0.015 235);
+  --color-brand-100: oklch(0.95 0.035 235);
+  --color-brand-200: oklch(0.90 0.060 235);
+  --color-brand-400: oklch(0.72 0.130 235);
+  --color-brand-500: oklch(0.62 0.160 235);
+  --color-brand-600: oklch(0.54 0.165 235);
+  --color-brand-700: oklch(0.45 0.150 235);
+  --color-brand-900: oklch(0.28 0.090 235);
+
+  /* 中性色：暖一点的灰，避免冷冰冰的纯灰 */
+  --color-ink-50:  oklch(0.985 0.003 240);
+  --color-ink-100: oklch(0.965 0.005 240);
+  --color-ink-200: oklch(0.920 0.008 240);
+  --color-ink-300: oklch(0.860 0.010 240);
+  --color-ink-500: oklch(0.620 0.015 240);
+  --color-ink-700: oklch(0.380 0.018 240);
+  --color-ink-900: oklch(0.200 0.015 240);
+
+  /* 字体：禁用 Inter / Roboto 等 AI slop 默认字体 */
+  --font-body:    "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+  --font-display: "Source Han Serif SC", "Noto Serif SC", "Songti SC", serif;
+  --font-mono:    "JetBrains Mono", "SFMono-Regular", ui-monospace, monospace;
+
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+}
+
+html, body {
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: var(--color-ink-50);
+  color: var(--color-ink-900);
+}

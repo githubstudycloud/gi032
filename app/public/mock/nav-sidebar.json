@@ -1,0 +1,96 @@
+{
+  "items": [
+    {
+      "key": "home",
+      "label": "首页",
+      "icon": "home",
+      "path": "/",
+      "single": true
+    },
+    {
+      "key": "ai-test",
+      "label": "AI辅助测试运营",
+      "icon": "robot",
+      "children": [
+        {
+          "key": "ai-test-case",
+          "label": "用例管理",
+          "children": [
+            { "key": "ai-test-case-list",     "label": "用例列表", "path": "/ai-test/case/list" },
+            { "key": "ai-test-case-generate", "label": "智能生成", "path": "/ai-test/case/generate" },
+            { "key": "ai-test-case-review",   "label": "用例评审", "path": "/ai-test/case/review" }
+          ]
+        },
+        {
+          "key": "ai-test-execution",
+          "label": "执行报告",
+          "children": [
+            { "key": "ai-test-execution-overview", "label": "执行概览", "path": "/ai-test/execution/overview" },
+            { "key": "ai-test-execution-detail",   "label": "执行明细", "path": "/ai-test/execution/detail" }
+          ]
+        },
+        { "key": "ai-test-knowledge", "label": "知识库", "path": "/ai-test/knowledge" }
+      ]
+    },
+    {
+      "key": "feedback",
+      "label": "用户反馈",
+      "icon": "message",
+      "children": [
+        {
+          "key": "feedback-inbox",
+          "label": "反馈收件箱",
+          "children": [
+            { "key": "feedback-inbox-all",     "label": "全部反馈", "path": "/feedback/inbox/all" },
+            { "key": "feedback-inbox-pending", "label": "待处理",   "path": "/feedback/inbox/pending" },
+            { "key": "feedback-inbox-closed",  "label": "已关闭",   "path": "/feedback/inbox/closed" }
+          ]
+        },
+        { "key": "feedback-stats", "label": "数据统计", "path": "/feedback/stats" },
+        { "key": "feedback-rules", "label": "分类规则", "path": "/feedback/rules" }
+      ]
+    },
+    {
+      "key": "ops",
+      "label": "后台运维",
+      "icon": "server",
+      "children": [
+        {
+          "key": "ops-monitor",
+          "label": "服务监控",
+          "children": [
+            { "key": "ops-monitor-service",  "label": "服务状态", "path": "/ops/monitor/service" },
+            { "key": "ops-monitor-resource", "label": "资源用量", "path": "/ops/monitor/resource" }
+          ]
+        },
+        {
+          "key": "ops-log",
+          "label": "日志检索",
+          "children": [
+            { "key": "ops-log-search", "label": "日志查询", "path": "/ops/log/search" },
+            { "key": "ops-log-alert",  "label": "告警规则", "path": "/ops/log/alert" }
+          ]
+        },
+        { "key": "ops-task", "label": "定时任务", "path": "/ops/task" }
+      ]
+    },
+    {
+      "key": "settings",
+      "label": "系统设置",
+      "icon": "cog",
+      "children": [
+        {
+          "key": "settings-account",
+          "label": "账号管理",
+          "children": [
+            { "key": "settings-account-user",   "label": "用户列表", "path": "/settings/account/user" },
+            { "key": "settings-account-role",   "label": "角色权限", "path": "/settings/account/role" },
+            { "key": "settings-account-policy", "label": "访问策略", "path": "/settings/account/policy" }
+          ]
+        },
+        { "key": "settings-system", "label": "系统参数", "path": "/settings/system" },
+        { "key": "settings-audit",  "label": "审计日志", "path": "/settings/audit" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+# Nuxt
+.nuxt
+.nitro
+.cache
+.output
+dist
+
+# Node
+node_modules
+*.log
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Editor
+.idea
+.vscode/*
+!.vscode/settings.json
+.DS_Store
