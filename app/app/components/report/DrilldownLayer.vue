@@ -39,7 +39,7 @@ const def = computed<DrilldownDef | null>(() => {
 });
 
 function applyTemplate(tpl: string, c: DrilldownContext): string {
-  return tpl.replace(/\{(row|filter|cell)\.([\w.]+)\}/g, (_m, src, path) => {
+  return tpl.replace(/\{(row|filter|cell)\.([\w.]+)\}/g, (_m: string, src: string, path: string) => {
     const root: Record<string, unknown> | undefined
       = src === 'row'
         ? c.row

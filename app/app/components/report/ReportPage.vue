@@ -13,8 +13,26 @@ const props = defineProps<{
 
 const {
   config, data, error, refresh,
+  filterState,
   pagingMode, compare,
 } = await useReport(props.reportType);
+
+function resetFilters(): void {
+  // 把所有 filter 的当前值清空，再让 useReport 里的 watch 用 default 回填。
+  // 直接给 filterState 赋空对象会触发 immediate watch 回到 default 形态。
+  filterState.value = {};
+  const cfg = config.value;
+  if (!cfg) return;
+  const next: Record<string, unknown> = {};
+  for (const f of cfg.filters ?? []) {
+    if (f.default !== undefined) {
+      if (f.kind === 'date_range') next[f.code] = f.default;
+      else if (f.default && typeof f.default === 'object' && 'value' in (f.default as object)) next[f.code] = (f.default as { value: unknown }).value;
+      else next[f.code] = f.default;
+    }
+  }
+  filterState.value = next;
+}
 
 const drilldownLayer = ref<{ open: (c: { ref: string; row: Record<string, unknown>; cell?: { column?: string; value?: unknown }; filter?: Record<string, unknown> }) => void } | null>(null);
 
@@ -59,9 +77,10 @@ function onDrillKpi(kpiKey: string): void {
         <div class="space-y-6">
           <FilterSection
             v-if="config.filters?.length"
+            v-model="filterState"
             :filters="config.filters"
             @search="refresh"
-            @reset="() => { /* TODO: reset to defaults; simple ref reset 留给 PageHeader 后续做 */ }"
+            @reset="resetFilters"
           />
 
           <KpiSection
