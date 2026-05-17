@@ -20,7 +20,7 @@ defineProps<{
           <span class="font-display text-[18px] font-semibold text-ink-900 tracking-tight">
             {{ brand?.title || '运营看板' }}
           </span>
-          <span v-if="brand?.subtitle" class="text-[10px] text-ink-500 uppercase tracking-[0.18em] font-mono">
+          <span v-if="brand?.subtitle" class="text-[11px] text-ink-500 uppercase tracking-[0.18em] font-mono">
             {{ brand.subtitle }}
           </span>
         </div>
@@ -56,12 +56,18 @@ defineProps<{
 
       <div class="flex-1" />
 
-      <!-- 右：语言切换 + 样式切换 + 版本号 -->
+      <!-- 右：语言切换 + 字体切换 + 样式切换 + 版本号 -->
       <div class="flex items-center gap-2">
         <ClientOnly>
           <LocaleSwitcher />
           <template #fallback>
             <div class="h-9 w-[68px] rounded-md bg-ink-100" />
+          </template>
+        </ClientOnly>
+        <ClientOnly>
+          <FontSwitcher />
+          <template #fallback>
+            <div class="h-9 w-[60px] rounded-md bg-ink-100" />
           </template>
         </ClientOnly>
         <ClientOnly>

@@ -50,7 +50,12 @@ export async function useTheme(): Promise<{
     activeCls.value = cls;
     if (!import.meta.client) return;
 
-    document.documentElement.className = cls;
+    // 用 classList 而不是 className = 直接赋值，避免清掉 font-xxx 等其它正交类。
+    const html = document.documentElement;
+    Array.from(html.classList).forEach((c) => {
+      if (c.startsWith('theme-')) html.classList.remove(c);
+    });
+    if (cls) html.classList.add(cls);
     try {
       localStorage.setItem(STORAGE_KEY, cls);
     }

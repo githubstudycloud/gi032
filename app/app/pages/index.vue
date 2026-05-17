@@ -40,7 +40,7 @@ const updates = [
     <!-- Hero -->
     <section class="relative overflow-hidden rounded-2xl border border-ink-200/60 bg-gradient-to-br from-white via-brand-50/30 to-white px-10 py-12">
       <div class="absolute top-0 right-0 w-72 h-72 -mt-20 -mr-20 rounded-full bg-brand-100/40 blur-3xl pointer-events-none" />
-      <div class="relative max-w-3xl">
+      <div class="relative">
         <p class="text-[11px] font-mono uppercase tracking-[0.22em] text-brand-700">
           Operations Dashboard · v0.1.0
         </p>

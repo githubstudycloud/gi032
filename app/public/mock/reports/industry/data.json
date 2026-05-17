@@ -1,0 +1,134 @@
+{
+  "kpi": {
+    "groups": [
+      {
+        "key":   "user",
+        "items": [
+          { "key": "ai-user-count", "value": "1,284", "mom": "+12.3%", "trend": "up" }
+        ]
+      },
+      {
+        "key":   "business",
+        "items": [
+          { "key": "ai-requirements",    "value": "186",   "mom": "+8.1%",  "trend": "up" },
+          { "key": "total-requirements", "value": "412",   "mom": "+3.2%",  "trend": "up" },
+          { "key": "design-coverage",    "value": "62.4%", "mom": "+4.8pp", "trend": "up" },
+          { "key": "valid-ai-cases",     "value": "2,148", "mom": "+18.6%", "trend": "up" },
+          { "key": "total-cases",        "value": "3,560", "mom": "+9.4%",  "trend": "up" },
+          { "key": "ai-case-ratio",      "value": "60.3%", "mom": "+5.2pp", "trend": "up" },
+          { "key": "ai-defect-ratio",    "value": "52.8%", "mom": "+3.1pp", "trend": "up" }
+        ]
+      },
+      {
+        "key":   "capability",
+        "items": [
+          { "key": "ai-cases-generated", "value": "3,420", "mom": "+22.5%", "trend": "up" },
+          { "key": "ai-cases-adopted",   "value": "2,148", "mom": "+18.6%", "trend": "up" },
+          { "key": "adoption-rate",      "value": "62.8%", "mom": "-1.2pp", "trend": "down" },
+          { "key": "avg-interactions",   "value": "4.6",   "mom": "-0.3",   "trend": "down" }
+        ]
+      }
+    ]
+  },
+  "tabs": {
+    "industry-detail": {
+      "items": [
+        {
+          "industry": "汽车", "owner": "张三", "e2e-eff": "+34%",
+          "sdv-design-efficiency": "+32%", "sdv-design-coverage": "12", "sdv-design-landed": "28", "sdv-design-adoption": "65.4%", "sdv-design-new-ai": "58.2%",
+          "sdv-script-efficiency": "+38%", "sdv-script-coverage": "8", "sdv-script-volume": "1.8", "sdv-script-accuracy": "82.1%",
+          "sdv-exec": "已接入",
+          "sdv-result-accuracy": "88.7%", "sdv-result-users": "10",
+          "sdv-api-volume": "2.1", "sdv-api-accuracy": "84.5%",
+          "sdv-aifeature-new": "61.0%", "sdv-aifeature-half": "✓",
+          "e2e-third-core": "92%", "e2e-third-recall": "91%", "e2e-third-reduce": "-32%",
+          "e2e-precise-detect": "62%", "e2e-precise-recall": "90%",
+          "e2e-doc-top5": "4/5",
+          "e2e-security-nss": "+52%",
+          "e2e-testing": "进行中",
+          "special": "—",
+          "tools": "Jira / FT",
+          "actions": "详情",
+          "_row_key": { "industry": "汽车" }
+        },
+        {
+          "industry": "金融", "owner": "李四", "e2e-eff": "+18%",
+          "sdv-design-efficiency": "+19%", "sdv-design-coverage": "9", "sdv-design-landed": "22", "sdv-design-adoption": "71.2%", "sdv-design-new-ai": "63.5%",
+          "sdv-script-efficiency": "—", "sdv-script-coverage": "—", "sdv-script-volume": "—", "sdv-script-accuracy": "—",
+          "sdv-exec": "—",
+          "sdv-result-accuracy": "—", "sdv-result-users": "—",
+          "sdv-api-volume": "—", "sdv-api-accuracy": "—",
+          "sdv-aifeature-new": "—", "sdv-aifeature-half": "—",
+          "e2e-third-core": "—", "e2e-third-recall": "—", "e2e-third-reduce": "—",
+          "e2e-precise-detect": "—", "e2e-precise-recall": "—",
+          "e2e-doc-top5": "—",
+          "e2e-security-nss": "—",
+          "e2e-testing": "—",
+          "special": "—",
+          "tools": "—",
+          "actions": "不涉及",
+          "_row_key": { "industry": "金融" }
+        },
+        {
+          "industry": "能源", "owner": "王五", "e2e-eff": "+22%",
+          "sdv-design-efficiency": "+25%", "sdv-design-coverage": "6", "sdv-design-landed": "15", "sdv-design-adoption": "59.8%", "sdv-design-new-ai": "52.4%",
+          "sdv-script-efficiency": "+24%", "sdv-script-coverage": "5", "sdv-script-volume": "1.1", "sdv-script-accuracy": "78.4%",
+          "sdv-exec": "建设中",
+          "sdv-result-accuracy": "82.0%", "sdv-result-users": "6",
+          "sdv-api-volume": "0.9", "sdv-api-accuracy": "79.2%",
+          "sdv-aifeature-new": "55.2%", "sdv-aifeature-half": "—",
+          "e2e-third-core": "86%", "e2e-third-recall": "88%", "e2e-third-reduce": "-26%",
+          "e2e-precise-detect": "55%", "e2e-precise-recall": "87%",
+          "e2e-doc-top5": "3/5",
+          "e2e-security-nss": "+44%",
+          "e2e-testing": "未启动",
+          "special": "—",
+          "tools": "Jenkins",
+          "actions": "详情",
+          "_row_key": { "industry": "能源" }
+        }
+      ],
+      "page": 1, "page_size": 10, "total": 3, "has_more": false,
+      "extras": { "totals": {} }
+    },
+    "capability-map": {
+      "items": [
+        {
+          "industry": "汽车", "owner": "张三",
+          "hw-total": "48", "hw-gold-dev": "12", "hw-gold-user": "8",
+          "od-rate": "58.4%", "od-total": "26", "od-gold-dev": "5",
+          "tm-gold-kb": "3", "tm-gold-user": "6", "tm-rate": "52.1%",
+          "_row_key": { "industry": "汽车" }
+        },
+        {
+          "industry": "金融", "owner": "李四",
+          "hw-total": "32", "hw-gold-dev": "7", "hw-gold-user": "4",
+          "od-rate": "41.2%", "od-total": "18", "od-gold-dev": "3",
+          "tm-gold-kb": "2", "tm-gold-user": "3", "tm-rate": "38.5%",
+          "_row_key": { "industry": "金融" }
+        },
+        {
+          "industry": "能源", "owner": "王五",
+          "hw-total": "26", "hw-gold-dev": "5", "hw-gold-user": "3",
+          "od-rate": "44.6%", "od-total": "14", "od-gold-dev": "2",
+          "tm-gold-kb": "1", "tm-gold-user": "2", "tm-rate": "40.9%",
+          "_row_key": { "industry": "能源" }
+        }
+      ],
+      "page": 1, "page_size": 10, "total": 3, "has_more": false,
+      "extras": { "totals": {} }
+    }
+  },
+  "drilldowns": {
+    "industry-row-detail": {
+      "default": {
+        "items": [
+          { "metric_code": "design_adoption_rate", "metric_value": "65.4%", "updated_at": "2026-05-17 10:00" },
+          { "metric_code": "script_accuracy",      "metric_value": "82.1%", "updated_at": "2026-05-17 10:00" },
+          { "metric_code": "execution_accuracy",   "metric_value": "91.5%", "updated_at": "2026-05-17 10:00" }
+        ],
+        "page": 1, "page_size": 50, "total": 3, "has_more": false
+      }
+    }
+  }
+}

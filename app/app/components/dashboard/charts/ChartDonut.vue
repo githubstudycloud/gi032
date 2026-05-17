@@ -48,7 +48,7 @@ const segments = computed(() => {
         />
       </svg>
       <div class="absolute inset-0 flex flex-col items-center justify-center">
-        <span class="text-[10px] text-ink-500">合计</span>
+        <span class="text-[11px] text-ink-500">合计</span>
         <span class="font-display text-[15px] font-semibold text-ink-900 tabular-nums leading-none">{{ total }}</span>
       </div>
     </div>

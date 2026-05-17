@@ -13,6 +13,12 @@
   --color-brand-800: oklch(0.350 0.110 235);
   --color-brand-900: oklch(0.270 0.080 235);
 
+  /* —— accent：跟 brand 正交的暖色（OKLCH 55°），用于 hero 强调 / 关键指标超阈值高光
+       4 套主题各自重写，保证跟主色和谐 —— */
+  --color-accent-300: oklch(0.840 0.090 55);
+  --color-accent-500: oklch(0.720 0.140 55);
+  --color-accent-700: oklch(0.560 0.130 55);
+
   /* —— 卡片表面色（跟 ink 阶解耦）：亮色主题=纯白，深色主题=略浅于页面底的深灰 —— */
   --color-surface: oklch(1 0 0);
 
@@ -48,6 +54,9 @@ html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  /* tabular-nums + slashed-zero：数字等宽 + 斜杠零（区分 O/0），看板必备。
+     ss01: stylistic alternative，部分字体（Geist / IBM Plex 等）会启用更好的英文造型 */
+  font-feature-settings: "tnum" 1, "zero" 1, "ss01" 1;
 }
 
 body {
@@ -111,6 +120,11 @@ html.theme-business {
 
   --shadow-card:  0 1px 3px 0 oklch(0.530 0.200 280 / 0.10), 0 0 0 1px oklch(0.530 0.200 280 / 0.05);
   --shadow-hover: 0 10px 28px -6px oklch(0.530 0.200 280 / 0.18), 0 4px 10px -4px oklch(0.530 0.200 280 / 0.08);
+
+  /* 商务紫蓝配暖橙 accent */
+  --color-accent-300: oklch(0.840 0.090 35);
+  --color-accent-500: oklch(0.720 0.150 30);
+  --color-accent-700: oklch(0.560 0.140 30);
 }
 
 /* —— 中文后台 / Ant Design：Daybreak Blue + 锐角 + 扁平阴影 —— */
@@ -144,6 +158,11 @@ html.theme-ant {
 
   --shadow-card:  0 1px 2px 0 oklch(0.200 0.020 260 / 0.06), 0 0 0 1px oklch(0.200 0.020 260 / 0.06);
   --shadow-hover: 0 2px 6px -1px oklch(0.200 0.020 260 / 0.10), 0 1px 2px 0 oklch(0.200 0.020 260 / 0.05);
+
+  /* Ant Daybreak Blue 配金色 accent（warning / 强调） */
+  --color-accent-300: oklch(0.850 0.105 70);
+  --color-accent-500: oklch(0.730 0.145 60);
+  --color-accent-700: oklch(0.555 0.130 50);
 }
 
 /* —— 深色监控 / Datadog · Grafana 风：暗底 + 亮青蓝主色 + 高光描边阴影 —— */
@@ -185,6 +204,37 @@ html.theme-dark-ops {
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
+
+  /* dark-ops 配亮黄绿 accent（高亮 / 异常阈值上凸） */
+  --color-accent-300: oklch(0.760 0.130 95);
+  --color-accent-500: oklch(0.820 0.155 90);
+  --color-accent-700: oklch(0.880 0.140 85);
+}
+
+/* ============================================================== */
+/* 字体切换器：每个 font-* class 重新声明 --font-body / display / mono */
+/* 跟 theme 正交（同一 <html> 上可以同时挂 theme-business + font-noto） */
+/* ============================================================== */
+
+/* —— 思源 Noto：Noto Sans SC 正文 + Noto Serif SC 衬线 display（编辑感） —— */
+html.font-noto {
+  --font-body: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --font-display: "Noto Serif SC", "Source Han Serif SC", "Songti SC", serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", ui-monospace, monospace;
+}
+
+/* —— 霞鹜文楷：楷书风（中英都用 LXGW WenKai Screen） —— */
+html.font-lxgw {
+  --font-body: "LXGW WenKai Screen", "LXGW WenKai", "KaiTi", "PingFang SC", serif;
+  --font-display: "LXGW WenKai Screen", "LXGW WenKai", "KaiTi", "STKaiti", serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", ui-monospace, monospace;
+}
+
+/* —— Playfair + 思源：英文 Playfair Display + 中文 Noto Sans SC，"杂志感" —— */
+html.font-playfair {
+  --font-body: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --font-display: "Playfair Display", "Noto Serif SC", "Source Han Serif SC", "Songti SC", serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", ui-monospace, monospace;
 }
 
 /* —— 商务 / ant / dark-ops 主题下首页背景渐变跟主色调对齐 —— */

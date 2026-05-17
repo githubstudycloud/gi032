@@ -27,9 +27,11 @@ const isFullBleed = computed<boolean>(
         <AppSidebar v-if="showSidebar && activeTop" :section="activeTop" />
       </ClientOnly>
 
+      <!-- min-w-0：flex item 默认 min-width:auto 会被内容撑开，导致 grid / 长内容反过来挤压
+           sibling sidebar 区域；显式 min-w-0 让 flex-1 真的按可用空间分配。 -->
       <main
         :class="[
-          'flex-1 min-h-0',
+          'flex-1 min-h-0 min-w-0',
           isFullBleed ? 'overflow-hidden flex' : 'overflow-y-auto',
         ]"
       >

@@ -36,6 +36,69 @@ const trendLabel = computed<string>(() =>
     ? '上升' :
     props.metric.trend === 'down' ? '下降' : '持平',
 );
+
+/* —— Tooltip 智能定位：teleport 到 body + position:fixed + 视口内 clamp ——
+   修最左/最右列卡片 tooltip 居中后伸进 sidebar / 视口外被裁的问题。
+   - 默认在卡片下方居中
+   - 下方空间不足时翻到上方
+   - 水平方向左右各保留 8px 安全边距，必要时整体左/右滑动 */
+const TIP_W = 280;
+const SAFE = 8;
+const triggerEl = ref<HTMLButtonElement | null>(null);
+const tipStyle = ref<{ top: string; left: string; placement: 'top' | 'bottom'; arrowLeft: string }>({
+  top: '0px', left: '0px', placement: 'bottom', arrowLeft: '50%',
+});
+
+function recomputeTipPos(): void {
+  const btn = triggerEl.value;
+  if (!btn) return;
+  const r = btn.getBoundingClientRect();
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const tipH = 240; // 估算高度（实际渲染会自适应）
+  // 横向夹取边界：默认 viewport 内，但如果页面有 sidebar，左边夹到 sidebar 右沿之后，
+  // 不让 tooltip 视觉上重叠 / 飘到 sidebar 上面。
+  const aside = document.querySelector('aside');
+  const minLeft = (aside ? aside.getBoundingClientRect().right : 0) + SAFE;
+  const maxLeft = vw - SAFE - TIP_W;
+  // 横向：以触发按钮中心为目标，clamp 到 [minLeft, maxLeft]
+  const idealLeft = r.left + r.width / 2 - TIP_W / 2;
+  const clampedLeft = Math.max(minLeft, Math.min(idealLeft, maxLeft));
+  // 箭头位置：相对 tooltip 左上角的偏移，对应触发按钮中心
+  const triggerCenterX = r.left + r.width / 2;
+  const arrowLeftPx = Math.max(16, Math.min(triggerCenterX - clampedLeft, TIP_W - 16));
+  // 纵向：默认下方，空间不够翻到上方
+  const spaceBelow = vh - r.bottom;
+  const placement: 'top' | 'bottom' = spaceBelow < tipH + 16 && r.top > tipH + 16 ? 'top' : 'bottom';
+  const top = placement === 'bottom' ? r.bottom + 10 : r.top - tipH - 10;
+  tipStyle.value = {
+    top: `${Math.round(top)}px`,
+    left: `${Math.round(clampedLeft)}px`,
+    placement,
+    arrowLeft: `${Math.round(arrowLeftPx)}px`,
+  };
+}
+
+watch(tipOpen, async (open) => {
+  if (open) {
+    await nextTick();
+    recomputeTipPos();
+  }
+});
+
+onMounted(() => {
+  if (import.meta.client) {
+    const onScrollOrResize = (): void => {
+      if (tipOpen.value) recomputeTipPos();
+    };
+    window.addEventListener('scroll', onScrollOrResize, { passive: true, capture: true });
+    window.addEventListener('resize', onScrollOrResize, { passive: true });
+    onBeforeUnmount(() => {
+      window.removeEventListener('scroll', onScrollOrResize, true);
+      window.removeEventListener('resize', onScrollOrResize);
+    });
+  }
+});
 </script>
 
 <template>
@@ -45,6 +108,7 @@ const trendLabel = computed<string>(() =>
     @mouseleave="hovered = false"
   >
     <button
+      ref="triggerEl"
       type="button"
       :class="[
         'w-full text-left rounded-lg border px-3 py-2.5 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-hover)] transition-all focus:outline-none focus:ring-2 focus:ring-brand-200 flex flex-col gap-1',
@@ -100,89 +164,97 @@ const trendLabel = computed<string>(() =>
       </div>
     </button>
 
-    <!-- Editorial 风格悬浮释义卡：v-show 让 tooltip 只 mount 一次，悬浮反复触发只是切 class，
-         避免每张卡每次 hover 都 mount/unmount 整片 DOM。 -->
-    <div
-      v-show="tipOpen"
-      :id="`metric-tip-${metric.key}`"
-      role="tooltip"
-      :class="[
-        'absolute left-1/2 -translate-x-1/2 top-[calc(100%+10px)] z-30 w-[280px] origin-top pointer-events-none transition duration-150 ease-out',
-        tipOpen ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-1 scale-[0.98]',
-      ]"
-    >
-      <!-- 卡片 -->
+    <!-- Editorial 风格悬浮释义卡：teleport 到 body + fixed 定位，避免被 sidebar / overflow 容器裁切。
+         placement 默认下方，下方空间不足翻到上方；水平方向 clamp 到视口内，左右各留 8px 安全边距。
+         v-show 让 tooltip 只 mount 一次，悬浮反复触发只是切 class，避免 mount/unmount 整片 DOM。 -->
+    <Teleport to="body">
       <div
-        class="relative rounded-lg border border-ink-200/80 bg-surface shadow-[0_12px_32px_-12px_oklch(0.2_0.02_240/0.25),0_4px_12px_-4px_oklch(0.2_0.02_240/0.12)] overflow-hidden"
+        v-show="tipOpen"
+        :id="`metric-tip-${metric.key}`"
+        role="tooltip"
+        :style="{ top: tipStyle.top, left: tipStyle.left }"
+        :class="[
+          'fixed z-[60] w-[280px] origin-top pointer-events-none transition duration-150 ease-out',
+          tipOpen ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-1 scale-[0.98]',
+        ]"
       >
-        <!-- 左侧色条 -->
-        <span
-          class="absolute left-0 top-0 bottom-0 w-1"
-          :class="
-            metric.trend === 'up' ? 'bg-emerald-500'
-            : metric.trend === 'down' ? 'bg-rose-500' : 'bg-brand-500'
-          "
-        />
-        <div class="pl-4 pr-3.5 py-3 space-y-2">
-          <div class="flex items-center justify-between gap-2">
-            <span class="text-[10px] tracking-[0.14em] uppercase font-medium text-brand-700">
-              指标释义
-            </span>
-            <span class="text-[10px] text-ink-400 font-mono">{{ metric.key }}</span>
-          </div>
-
-          <div class="font-display text-[14px] font-semibold text-ink-900 leading-snug">
-            {{ metric.label }}
-          </div>
-
-          <p
-            v-for="(line, i) in descLines"
-            :key="i"
-            class="text-[12.5px] leading-relaxed text-ink-700 whitespace-pre-line"
-          >
-            {{ line }}
-          </p>
-
-          <div class="pt-1.5 mt-1 border-t border-dashed border-ink-200 grid grid-cols-2 gap-x-3 gap-y-1 text-[11.5px]">
-            <div class="flex items-center justify-between">
-              <span class="text-ink-500">当前</span>
-              <span class="font-medium text-ink-900 tabular-nums">{{ metric.value }}{{ metric.unit ?? '' }}</span>
+        <div
+          class="relative rounded-lg border border-ink-200/80 bg-surface shadow-[0_12px_32px_-12px_oklch(0.2_0.02_240/0.25),0_4px_12px_-4px_oklch(0.2_0.02_240/0.12)] overflow-hidden"
+        >
+          <span
+            class="absolute left-0 top-0 bottom-0 w-1"
+            :class="
+              metric.trend === 'up' ? 'bg-emerald-500'
+              : metric.trend === 'down' ? 'bg-rose-500' : 'bg-brand-500'
+            "
+          />
+          <div class="pl-4 pr-3.5 py-3 space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-[11px] tracking-[0.14em] uppercase font-medium text-brand-700">
+                指标释义
+              </span>
+              <span class="text-[11px] text-ink-500 font-mono">{{ metric.key }}</span>
             </div>
-            <div class="flex items-center justify-between">
-              <span class="text-ink-500">环比</span>
-              <span
-                class="font-medium tabular-nums"
-                :class="
-                  metric.trend === 'up' ? 'text-emerald-600'
-                  : metric.trend === 'down' ? 'text-rose-600' : 'text-ink-700'
-                "
-              >{{ metric.mom }} <span class="text-ink-400 font-normal">/ {{ trendLabel }}</span></span>
+
+            <div class="font-display text-[14px] font-semibold text-ink-900 leading-snug">
+              {{ metric.label }}
             </div>
-            <template v-if="metric.threshold">
-              <div class="flex items-center justify-between col-span-2">
-                <span class="text-ink-500">阈值</span>
-                <span class="text-ink-700 tabular-nums">
-                  <template v-if="metric.threshold.min !== undefined && metric.threshold.max !== undefined">
-                    {{ metric.threshold.min }} ~ {{ metric.threshold.max }}
-                  </template>
-                  <template v-else-if="metric.threshold.min !== undefined">
-                    ≥ {{ metric.threshold.min }}
-                  </template>
-                  <template v-else-if="metric.threshold.max !== undefined">
-                    ≤ {{ metric.threshold.max }}
-                  </template>
-                </span>
+
+            <p
+              v-for="(line, i) in descLines"
+              :key="i"
+              class="text-[12.5px] leading-relaxed text-ink-700 whitespace-pre-line"
+            >
+              {{ line }}
+            </p>
+
+            <div class="pt-1.5 mt-1 border-t border-dashed border-ink-200 grid grid-cols-2 gap-x-3 gap-y-1 text-[11.5px]">
+              <div class="flex items-center justify-between">
+                <span class="text-ink-500">当前</span>
+                <span class="font-medium text-ink-900 tabular-nums">{{ metric.value }}{{ metric.unit ?? '' }}</span>
               </div>
-            </template>
+              <div class="flex items-center justify-between">
+                <span class="text-ink-500">环比</span>
+                <span
+                  class="font-medium tabular-nums"
+                  :class="
+                    metric.trend === 'up' ? 'text-emerald-600'
+                    : metric.trend === 'down' ? 'text-rose-600' : 'text-ink-700'
+                  "
+                >{{ metric.mom }} <span class="text-ink-500 font-normal">/ {{ trendLabel }}</span></span>
+              </div>
+              <template v-if="metric.threshold">
+                <div class="flex items-center justify-between col-span-2">
+                  <span class="text-ink-500">阈值</span>
+                  <span class="text-ink-700 tabular-nums">
+                    <template v-if="metric.threshold.min !== undefined && metric.threshold.max !== undefined">
+                      {{ metric.threshold.min }} ~ {{ metric.threshold.max }}
+                    </template>
+                    <template v-else-if="metric.threshold.min !== undefined">
+                      ≥ {{ metric.threshold.min }}
+                    </template>
+                    <template v-else-if="metric.threshold.max !== undefined">
+                      ≤ {{ metric.threshold.max }}
+                    </template>
+                  </span>
+                </div>
+              </template>
+            </div>
           </div>
-        </div>
 
-        <!-- 顶部小箭头 -->
-        <span
-          class="absolute -top-[5px] left-1/2 -translate-x-1/2 w-2.5 h-2.5 rotate-45 bg-surface border-l border-t border-ink-200/80"
-          aria-hidden="true"
-        />
+          <!-- 箭头：根据 placement 在顶部或底部，根据 arrowLeft 水平对齐到触发按钮中心 -->
+          <span
+            :style="{ left: tipStyle.arrowLeft }"
+            :class="[
+              'absolute w-2.5 h-2.5 -translate-x-1/2 rotate-45 bg-surface',
+              tipStyle.placement === 'bottom'
+                ? '-top-[5px] border-l border-t border-ink-200/80'
+                : '-bottom-[5px] border-r border-b border-ink-200/80',
+            ]"
+            aria-hidden="true"
+          />
+        </div>
       </div>
-    </div>
+    </Teleport>
   </div>
 </template>
