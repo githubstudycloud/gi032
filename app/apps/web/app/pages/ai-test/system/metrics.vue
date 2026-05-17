@@ -19,7 +19,7 @@ useHead({ title: () => current.value?.label ?? '指标管理' });
 const ds = await useDataSource<MetricsMock, MetricsMock>({
   key: 'admin-metrics',
   jsonPath: '/admin/metrics.json',
-  apiPath: '/admin/metrics',
+  apiPath: '/api/admin/metrics',
   transform: (raw): MetricsMock => raw,
 });
 

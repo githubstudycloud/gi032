@@ -79,3 +79,14 @@ def load_themes() -> dict[str, Any] | None:
     """主题切换器配置。"""
     raw = _read_json(_MOCK_ROOT / "themes.json")
     return raw if isinstance(raw, dict) else None
+
+
+@lru_cache(maxsize=1)
+def load_admin_metrics_page() -> dict[str, Any] | None:
+    """指标管理页 page_config + items 一锅端 —— 跟 chrome 配置一类。
+
+    真接生产时拆成 (page_config from query / items from generation)；现阶段
+    保持单端点降低前端切 api 模式的迁移成本。
+    """
+    raw = _read_json(_MOCK_ROOT / "admin" / "metrics.json")
+    return raw if isinstance(raw, dict) else None

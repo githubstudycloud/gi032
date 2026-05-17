@@ -13,7 +13,10 @@ def client() -> TestClient:
     return TestClient(create_app())
 
 
-@pytest.mark.parametrize("path", ["/api/branding", "/api/nav", "/api/fonts", "/api/themes"])
+@pytest.mark.parametrize(
+    "path",
+    ["/api/branding", "/api/nav", "/api/fonts", "/api/themes", "/api/admin/metrics"],
+)
 def test_chrome_endpoints_return_200_envelope(client: TestClient, path: str) -> None:
     r = client.get(path)
     assert r.status_code == 200, f"{path} returned {r.status_code}"
@@ -48,3 +51,13 @@ def test_themes_has_items(client: TestClient) -> None:
     r = client.get("/api/themes")
     data = r.json()["data"]
     assert isinstance(data.get("items"), list)
+
+
+def test_admin_metrics_page_has_config_and_items(client: TestClient) -> None:
+    """指标管理页一锅端：page_config + 初始 items。"""
+    r = client.get("/api/admin/metrics")
+    data = r.json()["data"]
+    assert "page_config" in data
+    assert "data" in data
+    assert isinstance(data["data"].get("items"), list)
+    assert len(data["data"]["items"]) > 0
