@@ -7,6 +7,28 @@ $ErrorActionPreference = 'Stop'
 $root = Resolve-Path "$PSScriptRoot\.."
 $failed = @()
 
+# uv 不在 PATH 时自动找
+if (-not (Get-Command uv -ErrorAction SilentlyContinue)) {
+  $candidates = @(
+    "$env:APPDATA\Python\Python314\Scripts",
+    "$env:APPDATA\Python\Python313\Scripts",
+    "$env:APPDATA\Python\Python312\Scripts",
+    "$env:LOCALAPPDATA\Programs\Python\Python314\Scripts",
+    "$env:USERPROFILE\.local\bin"
+  )
+  foreach ($cand in $candidates) {
+    if (Test-Path (Join-Path $cand 'uv.exe')) {
+      $env:Path = "$cand;$env:Path"
+      Write-Host "▶  auto-added uv path: $cand" -ForegroundColor Cyan
+      break
+    }
+  }
+}
+if (-not (Get-Command uv -ErrorAction SilentlyContinue)) {
+  Write-Host "✖  uv not found in PATH; install with: pip install --user uv" -ForegroundColor Red
+  exit 1
+}
+
 function Step($name, $block) {
   Write-Host "▶  $name" -ForegroundColor Cyan
   try {

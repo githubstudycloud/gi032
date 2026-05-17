@@ -7,6 +7,7 @@
 
 | 编号 | 主题 |
 |---|---|
+| [#014](#014--2026-05-18--monorepo-拆分--后端双服务--docker-离线部署--文档与核验) | Monorepo 拆分 + 后端双服务（FastAPI 8001/8002）+ Docker 离线部署 + 文档与核验 |
 | [#013](#013--2026-05-17--26-项整体优化批量推进打包整合) | 26 项整体优化（清理 / 表格 / a11y / 安全 / Zod / Vitest / ESLint / i18n / 文档） |
 | [#012](#012--2026-05-16--列筛选下拉-teleport-修复--copilot-批量推进总结) | 列筛选下拉 Teleport 修复 + Copilot 批量推进总结 |
 | [#011](#011--2026-05-16--表格排序筛选高亮阈值--指标卡换行阈值--字号留白调整) | 表格排序/筛选/高亮/阈值 + 指标卡换行/阈值 + 字号留白调整 |
@@ -20,6 +21,64 @@
 | [#003](#003--2026-05-16--重构布局左上-logo--顶部一级--左侧-2-3-级按-section-切换--完整-ai辅助测试运营-菜单--样式打磨) | 重构布局 + 完整 AI辅助测试运营菜单 + 样式打磨 |
 | [#002](#002--2026-05-16--修复启动报错ipv6-only--ssr-worker-oom--组件不解析--hydration-mismatch) | 修复启动报错（IPv6-only / SSR OOM / 组件 / hydration） |
 | [#001](#001--2026-05-16--项目初始化与基础框架) | 项目初始化与基础框架 |
+
+---
+
+## #014 — 2026-05-18 — Monorepo 拆分 + 后端双服务 + Docker 离线部署 + 文档与核验
+
+### 用户提问（多轮汇总）
+
+> 1. 接 gi031 设计建后端，分两个服务（报表查询 + 报表生成），目录改 monorepo。
+> 2. 让生成服务生成数据 / 查询服务动态查；前端 json / api 切换；Docker 不与中间件混部；
+>    准备离线运行；总览无筛选；首页1 提前；首页改"简介示例"；nav 自适应不留空；筛选下拉空了修。
+> 3. 整理需求 / 设计文档 / 所有文件 / 测试用例分文档记录方便核验。
+> 4. 全流程核验，记录给他人参考。
+> 5. 都检查完了吗，还有哪些遗漏？
+
+### 项目状态变化
+
+| | Before | After |
+|---|---|---|
+| 仓库布局 | Nuxt 项目占 git 根 | Monorepo（apps/web + services/{report-query,report-generation} + shared + docs） |
+| 后端 | 无 | FastAPI 双服务（8001 只读 + 8002 写+调度），uv + ruff + mypy + pytest，SQLite/MySQL/PG 兼容 |
+| 部署 | 无 | docker-compose 4 容器（mysql / query / generation / web-nginx）+ vendor-fonts.mjs + 部署 guide |
+| 文档 | 4 篇散落 | 10 篇结构化（REQUIREMENTS / ARCHITECTURE / FILE-MAP / TEST-PLAN / VERIFICATION / VERIFICATION-RUN + 历史 4 + index） |
+| 测试 | 81 | 142 个（前 70 + query 47 + generation 25） |
+| Skills | 11 个 Vue | 11 Vue + 4 Python（fastapi-route / pydantic-schema / pytest-spec / sqlalchemy-model） |
+| 自检脚本 | 无 | scripts/verify-all.{sh,ps1} 自动探测 uv + scripts/init-env.sh 生成 .env |
+
+### 关键决策
+
+- **Monorepo 而非 polyrepo**：让前后端协议同源（schemas.py ↔ types.ts ↔ shared/contracts/ 三处同步），三服务 lint/test/CI 独立但共享 .claude/skills。
+- **DB-first + fixture fallback**：query 服务先查 DB，找不到回落 `apps/web/public/mock/`，使得"DB 空 / DB 挂"都能跑通。
+- **chrome 配置 (branding/nav/fonts/themes/admin-metrics) 也是端点**：方便 api 模式切换；之前漏暴露 → 4 个 404 → 补 `api/chrome.py` + 8 个测试。
+- **/api 前缀放在 apiPath 而非 apiBase**：apiBase 是裸 host，避免 `/api/api/branding` 双前缀。
+- **SSG + nginx 反代**：前端 build 时把 `NUXT_PUBLIC_DATA_SOURCE_MODE` baked，nginx `/api` → 8001、`/api/admin /api/metrics/ingest` → 8002。
+- **APScheduler `--workers 1` 强制**：Dockerfile CMD 写死 + 所有 README / CLAUDE.md 反复提示。
+
+### 核验阶段发现的 bug
+
+| # | 严重 | 描述 | 修复 |
+|---|---|---|---|
+| 1 | low | uv 不在 PATH → verify-all.sh 报 not found | scripts 自动探测 uv 位置 |
+| 2 | high | api 模式 chrome 配置 4 端点 404 | api/chrome.py + 8 tests |
+| 3 | high | FilterSection api 模式拉 dropdown 缺 /api 前缀 | mode==='api' 时前置 /api |
+| 4 | low | VERIFICATION.md 例子 NUXT_PUBLIC_API_BASE 错带 /api | 改对 + 加坑提示 |
+| 5 | high | 指标管理页 /admin/metrics 缺 /api + 后端没暴露 | /api/admin/metrics 加入 chrome.py + 2 tests |
+| 6 | low | SEO Lighthouse 75 因缺 meta description | nuxt.config 加 description + theme-color |
+
+剩 a11y color-contrast / 部分 aria-label 跟可见文本不匹配未修，记入 TODO。
+
+### 产出物（git）
+
+12 commits, 142 tests，全 lint=0 / mypy strict=0。
+docs/VERIFICATION-RUN-2026-05-18.md 含每步实操命令 + 实际输出 + 修复记录。
+verify-screenshots/ 13 张视觉证据。
+
+### 给下一个 reviewer
+
+跑 `bash scripts/verify-all.sh`（任一红 = 不可合并）。
+按 [docs/README.md](../docs/README.md) 翻文档；遇 api 模式坑先翻 [docs/VERIFICATION-RUN-2026-05-18.md](../docs/VERIFICATION-RUN-2026-05-18.md)。
 
 ---
 

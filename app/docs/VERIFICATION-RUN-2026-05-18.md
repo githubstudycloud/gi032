@@ -313,10 +313,14 @@ assert 'healthcheck' in cfg['services']['mysql']
 
 | # | 严重 | 描述 | 修复 |
 |---|---|---|---|
-| 1 | low | uv 不在 PATH，verify-all.sh 直接跑会报 `uv: not found` | VERIFICATION.md 加 "PATH 准备" 步骤 |
+| 1 | low | uv 不在 PATH，verify-all.sh 直接跑会报 `uv: not found` | **第二轮已修**：scripts/verify-all.{sh,ps1} 自动探测 uv 路径 |
 | 2 | high | api 模式下 `/api/branding /nav /fonts /themes` 404（后端没暴露 chrome 配置） | 新增 [api/chrome.py](../services/report-query/app/api/chrome.py) + 8 个测试 |
 | 3 | high | api 模式下 FilterSection 拉 dropdown 缺 `/api` 前缀 | FilterSection 加 `/api` 前置 |
 | 4 | low | VERIFICATION.md 例子里 `NUXT_PUBLIC_API_BASE` 错写成包含 `/api` | 改成 `http://127.0.0.1:8001`（不带 /api） |
+| 5 | high | 指标管理页 `/admin/metrics` 路径缺 `/api` + 后端无对应端点 → 404 | 后端 `/api/admin/metrics` 加入 chrome.py + 2 tests，metrics.vue 改对 apiPath |
+| 6 | low | summary config drilldowns 空时"详情"按钮无操作 | 未修；记入 TODO（UX 改进：drilldown ref 缺失时隐藏按钮） |
+| 7 | low | Lighthouse SEO 75：HTML 缺 meta description | nuxt.config.ts 加 description + theme-color |
+| 8 | low | Lighthouse a11y 96：部分颜色对比度 / aria-label 跟可见文本不匹配 | 未修；记入 TODO（具体元素需进一步审计） |
 
 ## 9. 修复后再核验
 
@@ -350,30 +354,44 @@ assert 'healthcheck' in cfg['services']['mysql']
 | `03-summary-api-mode.png` | bug 2 修完，summary 完整渲染（13 KPI + tab + 表格）|
 | `04-industry-api-mode.png` | bug 3 修复前，filter 下拉空 |
 | `05-industry-api-mode-fixed.png` | bug 3 修完，下拉满血 |
+| `06-summary-tab-domain.png` | tab 切换：四大领域试点进展 4 行数据 |
+| `07-kpi-detail-expanded.png` | KPI 卡 "AI用户数" 展开后 7 个图表（趋势/分布/热力图等） |
+| `08-drilldown.png` | summary drilldown 占位（config 无 drilldowns → 详情按钮 no-op，记入 TODO） |
+| `09-locale-en.png` | 切 EN：chrome 文案变 "Switch language / Refresh / Sort by / Filter / Previous page"，数据/配置标签留中文（设计如此） |
+| `10-metrics-bug-errorpanel.png` | bug 5 现场：metrics 页 `/admin/metrics` 404 → ErrorPanel 中文友好显示 |
+| `11-metric-dialog.png` | "+ 新增" 弹窗：6 个字段 + 取消/保存 |
+| `12-excel-loaded.png` | Excel 4 级表头示例预览：综合通过率/缺陷修复率/用例采纳率 KPI + 表格 |
+| `13-theme-switched.png` | 主题切到 business（html.theme-business） |
 
 ## 11. 结论
 
 | 模块 | 状态 |
 |---|---|
-| 自动化测试 | ✅ 全过（135 个测试） |
+| 自动化测试 | ✅ 全过（142 个测试 = 前 70 + query 47 + generation 25） |
 | Lint / Type | ✅ 全 0 错 |
 | 三服务隔离 | ✅ 3000 / 8001 / 8002 互不冲突 |
 | json 模式（前端默认） | ✅ 10 个路由全 200 |
-| api 模式 | ✅ 修完 3 个 bug 后端到端跑通 |
+| api 模式 | ✅ 修完 5 个 bug 后端到端跑通（含 UI 互动） |
+| **UI 交互**（第二轮补） | ✅ tab 切换 / KPI detail 展开（7 图表）/ i18n 切 EN / 主题切换 4 套 / 字体 4 套 / 指标管理弹窗 / Excel 模板预览 |
 | DB-first 读 | ✅ 注入 DB → 查询读到注入值 |
 | admin 鉴权 | ✅ 4 状态全对 |
 | docker config 语法 | ✅ YAML / Dockerfile / nginx.conf 都合法 |
+| **SSG 静态构建**（第二轮补） | ✅ `pnpm generate` 20 routes / 67 files / 760KB / serve 200 |
+| **Lighthouse**（第二轮补） | ✅ a11y 96 / BP 100 / SEO 75→95（+ meta description）/ Agentic 100 |
+| **ErrorPanel**（第二轮补） | ✅ bug 5 现场触发，中文 "数据加载失败 [GET] xxx: 404 Not Found" + 重试按钮 |
 | 真 docker 部署 | ⏸️ 待在装 docker 的机器上跑 |
 | 离线运行（system 字体） | ✅ 默认零外部依赖 |
 | 离线运行（其它字体） | ⏸️ 需联网机先跑 `vendor-fonts.mjs` |
 
-**整体判定**：可合并 / 可部署。三个 api 模式 bug 修完后所有路径打通。
+**整体判定**：可合并 / 可部署。5 个发现的 bug 全修，UI 互动、SSG、Lighthouse、ErrorPanel 在第二轮都补检过了。
 
 ## 12. 给下一位 reviewer 的 tips
 
-- 跑测试前先 `export PATH+=Roaming/Python/Python314/Scripts`（Windows）或确认 uv 在 PATH
+- ~~跑测试前先 `export PATH+=Roaming/Python/Python314/Scripts`（Windows）或确认 uv 在 PATH~~ → **已修**：verify-all.{sh,ps1} 自动探测
+- 第一次部署机可以跑 `bash scripts/init-env.sh` 自动生成强密码 `.env`（幂等，已存在的字段不动）
 - 用 PowerShell 杀端口比 Git Bash 干净：`Get-NetTCPConnection -LocalPort 3000 | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force }`
 - WebStorm 会锁 src 目录，移动文件前先杀掉 IDE 的 vue-language-server / nuxt cli 进程
 - Chrome MCP 偶尔粘住（"browser already running"），杀掉 `chrome-devtools-mcp` cmd 进程 + `~/.cache/chrome-devtools-mcp/chrome-profile/SingletonLock` 文件
 - frontend `pnpm dev` 改了 env 必须重启（runtimeConfig 是启动时读的）
 - seed 切了 DB URL 后要重启 query / gen，旧 engine 连旧 DB
+- **api 模式 + 自定义 apiBase**：`NUXT_PUBLIC_API_BASE=http://host:8001`（**裸 host，不带 /api**），后面 composables 的 `apiPath` 都会带 `/api/...`

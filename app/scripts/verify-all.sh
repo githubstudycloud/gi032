@@ -8,6 +8,29 @@ set -e
 root="$(cd "$(dirname "$0")/.." && pwd)"
 failed=()
 
+# uv 不在 PATH 时的常见安装位置（pip install --user 装到的 Scripts 目录）
+if ! command -v uv > /dev/null 2>&1; then
+  for cand in \
+    "$HOME/.local/bin" \
+    "$APPDATA/Python/Python314/Scripts" \
+    "$APPDATA/Python/Python313/Scripts" \
+    "$APPDATA/Python/Python312/Scripts" \
+    "/c/Users/$USER/AppData/Roaming/Python/Python314/Scripts" \
+    "/c/Users/$USER/AppData/Roaming/Python/Python313/Scripts" \
+    "/c/Users/$USER/AppData/Roaming/Python/Python312/Scripts"
+  do
+    if [ -x "$cand/uv" ] || [ -x "$cand/uv.exe" ]; then
+      export PATH="$cand:$PATH"
+      echo "▶  auto-added uv path: $cand"
+      break
+    fi
+  done
+fi
+if ! command -v uv > /dev/null 2>&1; then
+  echo "✖  uv not found in PATH; install with: pip install --user uv"
+  exit 1
+fi
+
 green='\033[0;32m'
 red='\033[0;31m'
 cyan='\033[0;36m'
