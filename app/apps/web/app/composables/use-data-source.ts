@@ -1,4 +1,5 @@
 import type { DataSourceMode, DataSourceOptions } from '~/types/data-source';
+import { unwrapEnvelope } from '~/utils/envelope';
 
 /**
  * 统一数据入口：现在读 public/mock 下的 JSON，未来切到后端只需改 runtimeConfig.public.dataSourceMode。
@@ -39,15 +40,9 @@ export async function useDataSource<TRaw = unknown, T = TRaw>(
         url,
         mode === 'api' && opts.params ? { query: opts.params } : undefined,
       );
-      // api 模式下后端统一信封：{ code, message, trace_id, data }；自动解包到 data
-      if (mode === 'api' && resp && typeof resp === 'object' && 'code' in resp && 'data' in resp) {
-        const env = resp as { code: number; message?: string; data?: unknown };
-        if (env.code !== 0) {
-          throw new Error(`api error ${env.code}: ${env.message ?? ''}`);
-        }
-        return env.data as TRaw;
-      }
-      return resp as TRaw;
+      // api 模式下后端统一信封 { code, message, trace_id, data } 自动解包；
+      // json 模式直接通过（fixture 顶层就是数据本身）。
+      return mode === 'api' ? unwrapEnvelope<TRaw>(resp) : (resp as TRaw);
     },
     {
       immediate: opts.immediate ?? true,
