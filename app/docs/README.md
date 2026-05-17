@@ -26,6 +26,7 @@
 |---|---|
 | [TEST-PLAN.md](TEST-PLAN.md) | 测试金字塔 + 用例矩阵 + 覆盖目标 |
 | [VERIFICATION.md](VERIFICATION.md) | 一键自检 + 手工核验清单 + 失败处理 |
+| [VERIFICATION-RUN-2026-05-18.md](VERIFICATION-RUN-2026-05-18.md) | 实际跑过一遍的核验日志（含发现的 3 个 bug + 修复） |
 
 ## 部署
 

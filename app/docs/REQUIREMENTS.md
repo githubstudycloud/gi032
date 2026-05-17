@@ -71,6 +71,10 @@
 | 方法 | 路径 | 行为 |
 |---|---|---|
 | GET | `/api/healthz` | 活性 |
+| GET | `/api/branding` | 平台 logo / 标题 / 副标题 / 版本 |
+| GET | `/api/nav` | 顶部 + 侧边导航树 |
+| GET | `/api/fonts` | 字体切换器配置 |
+| GET | `/api/themes` | 主题切换器配置 |
 | GET | `/api/dropdowns/{code}` | 通用下拉（DB → fixture 回落） |
 | GET | `/api/reports/{type}/config` | 报表配置 |
 | GET | `/api/reports/{type}/data` | 默认数据 |

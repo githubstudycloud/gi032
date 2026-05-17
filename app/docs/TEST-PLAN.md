@@ -66,7 +66,9 @@
 - direction 缺省时默认 higher_better
 - ...
 
-### 3.2 后端 report-query pytest（共 37 个 / 4 个文件）
+### 3.2 后端 report-query pytest（共 45 个 / 5 个文件）
+
+新增 `test_chrome.py`：8 个用例覆盖 `/api/{branding,nav,fonts,themes}` 4 个 chrome 配置端点 + branding/nav/fonts/themes 字段断言。
 
 `services/report-query/tests/test_smoke.py`
 - test_healthz

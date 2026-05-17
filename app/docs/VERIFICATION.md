@@ -158,10 +158,16 @@ cd services/report-generation && uv run uvicorn app.main:app --port 8002 --worke
 ```powershell
 cd apps/web
 $env:NUXT_PUBLIC_DATA_SOURCE_MODE = "api"
-$env:NUXT_PUBLIC_API_BASE = "http://127.0.0.1:8001/api"
+# apiBase 不带 /api —— 因为 composables 的 apiPath 已经带（如 /api/reports/X/config）
+$env:NUXT_PUBLIC_API_BASE = "http://127.0.0.1:8001"
 pnpm dev
 # 浏览器看到的数据现在来自 8001，不是 /mock/*.json
 ```
+
+> ⚠️ 容易踩坑：`NUXT_PUBLIC_API_BASE` 写成 `http://127.0.0.1:8001/api` 会导致请求拼成
+> `/api/api/branding` 双 `/api/`。**正确写法**：base 是裸 host（不含 `/api`），apiPath
+> 由各 composable 内部带 `/api/...` 前缀。已在 [docs/VERIFICATION-RUN-2026-05-18.md](VERIFICATION-RUN-2026-05-18.md)
+> 记录此坑。
 
 打开 DevTools Network，看请求路径都是 `http://127.0.0.1:8001/api/...`。
 
@@ -188,8 +194,8 @@ docker compose exec report-generation python -m app.seed --reset
 | 项 | 预期数 | 出处 |
 |---|---|---|
 | frontend vitest | 70 个（4 个文件） | mock-fixtures + csv-page-parser + threshold + envelope |
-| query pytest | 37 个 | smoke 12 + envelope 13 + repo 6 + drilldown 4 + ... |
-| generation pytest | 20 个 | smoke 4 + admin-auth 6 + seed 3 + ingest 6 + ... |
+| query pytest | 45 个 | smoke 12 + envelope 13 + repo 6 + drilldown 4 + chrome 8 + 2 |
+| generation pytest | 20 个 | smoke 4 + admin-auth 6 + seed 3 + ingest 7 |
 | seed 行数 | 10 / 9 / 12 | snapshots / dropdowns / metrics |
 | 容器数 | 4 | mysql + query + generation + web |
 | 端口 | 3000/8001/8002 (dev) / 80+3306 (prod) | — |
