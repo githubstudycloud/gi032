@@ -1,0 +1,103 @@
+# 三容器分包：mysql (独立中间件) / report-query / report-generation / web (nginx)
+# 中间件与业务容器严格分离，符合 "服务容器和依赖的中间件不放一个 docker 里" 的要求。
+#
+# 启动：docker compose up -d --build
+# 灌种子数据：docker compose exec report-generation python -m app.seed
+# 离线部署：见 docs/deploy-server.md
+
+services:
+  mysql:
+    image: mysql:5.7
+    container_name: ops-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_pwd_change_me}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-report}
+      MYSQL_USER: ${MYSQL_USER:-report_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-report_pwd_change_me}
+      TZ: Asia/Shanghai
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-time-zone=+08:00
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    networks: [internal]
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-p${MYSQL_ROOT_PASSWORD:-root_pwd_change_me}"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
+  report-query:
+    build:
+      context: ./services/report-query
+    image: ops-report-query:${TAG:-latest}
+    container_name: ops-report-query
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: mysql+pymysql://${MYSQL_USER:-report_user}:${MYSQL_PASSWORD:-report_pwd_change_me}@mysql:3306/${MYSQL_DATABASE:-report}?charset=utf8mb4
+      LOG_LEVEL: INFO
+      CORS_ORIGINS: '["http://${SERVER_HOST:-192.168.0.132}", "http://localhost", "http://localhost:3000"]'
+    ports:
+      - "8001:8001"
+    networks: [internal, public]
+
+  report-generation:
+    build:
+      context: ./services/report-generation
+    # seed 命令要读前端 mock 数据 —— 挂只读 bind mount，部署时 docker compose exec 跑 seed
+    volumes:
+      - ./apps/web/public/mock:/seed-mock:ro
+    image: ops-report-generation:${TAG:-latest}
+    container_name: ops-report-generation
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: mysql+pymysql://${MYSQL_USER:-report_user}:${MYSQL_PASSWORD:-report_pwd_change_me}@mysql:3306/${MYSQL_DATABASE:-report}?charset=utf8mb4
+      LOG_LEVEL: INFO
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-}
+      SCHEDULER_ENABLED: "true"
+      INGEST_CRON: "0 */2 * * *"
+      PREAGG_CRON: "10 */2 * * *"
+      CORS_ORIGINS: '["http://${SERVER_HOST:-192.168.0.132}", "http://localhost", "http://localhost:3000"]'
+    ports:
+      - "8002:8002"
+    networks: [internal, public]
+    # APScheduler 是进程内调度 —— 多 worker 会让 job 重复跑
+    # Dockerfile CMD 已经 --workers 1，这里不覆盖
+
+  web:
+    build:
+      context: ./apps/web
+    image: ops-web:${TAG:-latest}
+    container_name: ops-web
+    restart: unless-stopped
+    depends_on:
+      report-query:
+        condition: service_started
+      report-generation:
+        condition: service_started
+    ports:
+      - "${WEB_PORT:-80}:80"
+    networks: [public]
+
+networks:
+  # 内网：服务间互访（mysql / query / generation 互通）
+  internal:
+    driver: bridge
+  # 外网：暴露给宿主机的服务
+  public:
+    driver: bridge
+
+volumes:
+  mysql-data:
+    driver: local
