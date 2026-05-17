@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+.venv/
+.python-version
+
+# 工具缓存
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+
+# 本地配置 / 数据库
+.env
+.env.local
+*.db
+*.db-journal
+
+# 构建产物
+build/
+dist/
