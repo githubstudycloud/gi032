@@ -10,15 +10,15 @@ from fastapi import APIRouter, HTTPException, status
 
 from app.envelope import ok
 from app.schemas import QueryRequest
-from app.services.fixtures import load_report_data
+from app.services.repo import get_report_data
 
 router = APIRouter(prefix="/reports", tags=["report-data"])
 
 
 @router.get("/{report_type}/data")
-def get_report_data(report_type: str) -> dict[str, object]:
+def read_report_data(report_type: str) -> dict[str, object]:
     """无入参拉默认数据。生产建议永远用 POST 携带筛选。"""
-    data = load_report_data(report_type)
+    data = get_report_data(report_type)
     if data is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -31,7 +31,7 @@ def get_report_data(report_type: str) -> dict[str, object]:
 def query_report_data(report_type: str, req: QueryRequest) -> dict[str, object]:
     """带筛选查询。阶段一仍读 fixtures（忽略 req），阶段二接 services.metric_query。"""
     _ = req  # 阶段一占位，避免 lint 警告；真接数据库后会用到
-    data = load_report_data(report_type)
+    data = get_report_data(report_type)
     if data is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

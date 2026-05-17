@@ -29,7 +29,8 @@ class Settings(BaseSettings):
     # MySQL 8.0:  同上（PyMySQL 兼容 5.7/8.0）
     # PostgreSQL: postgresql+psycopg://user:pwd@host:5432/db
     # SQLite:     sqlite:///./report_query.db
-    database_url: str = "sqlite:///./report_query.db"
+    # dev 默认两端共享 sqlite 文件（路径相对 service 目录），prod 用 MySQL/PG
+    database_url: str = "sqlite:///../shared.db"
     database_echo: bool = False
     database_pool_size: int = 5
     database_pool_recycle: int = 1800  # MySQL wait_timeout 默认 28800，提前回收

@@ -5,7 +5,7 @@ from __future__ import annotations
 from fastapi import APIRouter
 
 from app.envelope import ok
-from app.services.fixtures import load_dropdown
+from app.services.repo import get_dropdown
 
 router = APIRouter(tags=["meta"])
 
@@ -17,10 +17,7 @@ def healthz() -> dict[str, object]:
 
 
 @router.get("/dropdowns/{code}")
-def get_dropdown(code: str) -> dict[str, object]:
-    """通用下拉数据。code 对应 fixtures/dropdowns/<code>.json。
-
-    DB 落地后改成查 dim_* 表。
-    """
-    items = load_dropdown(code)
+def read_dropdown(code: str) -> dict[str, object]:
+    """通用下拉数据。DB 优先（dim_dropdown_option），找不到回落 mock JSON。"""
+    items = get_dropdown(code)
     return ok({"items": items})

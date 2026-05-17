@@ -34,7 +34,21 @@ export async function useDataSource<TRaw = unknown, T = TRaw>(
 
   const { data, error, pending, refresh } = await useAsyncData<TRaw>(
     opts.key,
-    () => $fetch<TRaw>(url, mode === 'api' && opts.params ? { query: opts.params } : undefined),
+    async () => {
+      const resp = await $fetch<unknown>(
+        url,
+        mode === 'api' && opts.params ? { query: opts.params } : undefined,
+      );
+      // api 模式下后端统一信封：{ code, message, trace_id, data }；自动解包到 data
+      if (mode === 'api' && resp && typeof resp === 'object' && 'code' in resp && 'data' in resp) {
+        const env = resp as { code: number; message?: string; data?: unknown };
+        if (env.code !== 0) {
+          throw new Error(`api error ${env.code}: ${env.message ?? ''}`);
+        }
+        return env.data as TRaw;
+      }
+      return resp as TRaw;
+    },
     {
       immediate: opts.immediate ?? true,
       // 故意只在客户端拉：
@@ -46,9 +60,6 @@ export async function useDataSource<TRaw = unknown, T = TRaw>(
 
   const transformed = computed<T | null>(() => {
     if (data.value == null) return null;
-    // useAsyncData 的返回类型是 PickFrom<TRaw, KeysOf<TRaw>>（Nuxt 自己加的便利包装），
-    // 跟 transform 期望的 TRaw 不一致；调用方都给的是 OverviewSummaryResponse 这种领域对象，
-    // 这里 cast 安全。
     const raw = data.value as TRaw;
     return opts.transform ? opts.transform(raw) : (raw as unknown as T);
   });

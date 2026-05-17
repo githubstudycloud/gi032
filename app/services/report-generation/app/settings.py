@@ -22,7 +22,8 @@ class Settings(BaseSettings):
     host: str = "127.0.0.1"
     port: int = 8002
 
-    database_url: str = "sqlite:///./report_generation.db"
+    # dev 默认两端共享 sqlite 文件（路径相对 service 目录），prod 用 MySQL/PG
+    database_url: str = "sqlite:///../shared.db"
     database_echo: bool = False
     database_pool_size: int = 5
     database_pool_recycle: int = 1800

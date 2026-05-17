@@ -82,3 +82,16 @@ class PreaggRefreshReq(BaseModel):
 def refresh_preagg(req: PreaggRefreshReq) -> dict[str, object]:
     """手动触发预聚合刷新。"""
     return ok({"queued": True, "scope": req.model_dump()})
+
+
+class SeedReq(BaseModel):
+    reset: bool = False
+
+
+@router.post("/seed")
+def seed_db(req: SeedReq) -> dict[str, object]:
+    """从前端 mock 文件灌 DB。容器内 cli 也可：python -m app.seed [--reset]。"""
+    from app.seed import run
+
+    counts = run(reset=req.reset)
+    return ok({"counts": counts, "reset": req.reset})
