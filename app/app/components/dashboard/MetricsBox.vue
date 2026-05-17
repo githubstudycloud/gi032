@@ -25,7 +25,8 @@ function onCardClick(m: Metric): void {
   // 有 detail → 切换展开；没有 → 透传 drill 让上层处理（跳明细页等）
   if (m.detail) {
     openKey.value = openKey.value === m.key ? null : m.key;
-  } else {
+  }
+  else {
     openKey.value = null;
     emit('drill', m.key);
   }
@@ -62,7 +63,9 @@ function isOpenInGroup(groupKey: string): boolean {
               : 'text-ink-600 hover:text-ink-900',
           ]"
           @click="viewMode = 'grouped'"
-        >分组</button>
+        >
+          分组
+        </button>
         <button
           type="button"
           role="tab"
@@ -74,7 +77,9 @@ function isOpenInGroup(groupKey: string): boolean {
               : 'text-ink-600 hover:text-ink-900',
           ]"
           @click="viewMode = 'flat'"
-        >平铺</button>
+        >
+          平铺
+        </button>
       </div>
     </header>
 

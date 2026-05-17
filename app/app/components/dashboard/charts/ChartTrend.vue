@@ -50,32 +50,44 @@ const hoverIdx = ref<number | null>(null);
 <template>
   <svg v-if="geo" :viewBox="`0 0 ${W} ${H}`" class="w-full h-full" preserveAspectRatio="none">
     <g>
-      <line v-for="(t, i) in geo.yTicks" :key="`g-${i}`"
+      <line
+        v-for="(t, i) in geo.yTicks" :key="`g-${i}`"
         :x1="PAD.left" :x2="W - PAD.right" :y1="t.y" :y2="t.y"
-        stroke="currentColor" class="text-ink-200" stroke-dasharray="2 3" />
+        stroke="currentColor" class="text-ink-200" stroke-dasharray="2 3"
+      />
     </g>
-    <line v-if="geo.thresholdY !== null"
+    <line
+      v-if="geo.thresholdY !== null"
       :x1="PAD.left" :x2="W - PAD.right" :y1="geo.thresholdY" :y2="geo.thresholdY"
-      stroke="currentColor" class="text-amber-500" stroke-dasharray="4 4" stroke-width="1" />
+      stroke="currentColor" class="text-amber-500" stroke-dasharray="4 4" stroke-width="1"
+    />
     <path :d="geo.areaPath" :fill="`url(#${geo.gradId})`" opacity="0.5" />
-    <path :d="geo.linePath" fill="none" stroke="currentColor"
-      class="text-brand-600" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" />
+    <path
+      :d="geo.linePath" fill="none" stroke="currentColor"
+      class="text-brand-600" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"
+    />
     <g>
-      <circle v-for="(p, i) in geo.mapped" :key="`pt-${i}`"
+      <circle
+        v-for="(p, i) in geo.mapped" :key="`pt-${i}`"
         :cx="p.x" :cy="p.y"
         :r="hoverIdx === i ? 4 : 2.5"
         fill="currentColor" class="text-brand-600 cursor-pointer transition-all"
-        @mouseenter="hoverIdx = i" @mouseleave="hoverIdx = null">
+        @mouseenter="hoverIdx = i" @mouseleave="hoverIdx = null"
+      >
         <title>{{ p.raw.x }}: {{ p.raw.y }}{{ chart.unit ?? '' }}</title>
       </circle>
     </g>
     <g class="text-ink-500" style="font-size: 9px;">
-      <text v-for="(t, i) in geo.yTicks" :key="`yt-${i}`"
-        :x="PAD.left - 4" :y="t.y + 3" text-anchor="end" fill="currentColor">{{ t.label }}</text>
+      <text
+        v-for="(t, i) in geo.yTicks" :key="`yt-${i}`"
+        :x="PAD.left - 4" :y="t.y + 3" text-anchor="end" fill="currentColor"
+      >{{ t.label }}</text>
     </g>
     <g class="text-ink-500" style="font-size: 9px;">
-      <text v-for="(t, i) in geo.xLabels" :key="`xt-${i}`"
-        :x="t.x" :y="H - 5" text-anchor="middle" fill="currentColor">{{ t.label }}</text>
+      <text
+        v-for="(t, i) in geo.xLabels" :key="`xt-${i}`"
+        :x="t.x" :y="H - 5" text-anchor="middle" fill="currentColor"
+      >{{ t.label }}</text>
     </g>
     <defs>
       <linearGradient :id="geo.gradId" x1="0" x2="0" y1="0" y2="1">
@@ -84,5 +96,7 @@ const hoverIdx = ref<number | null>(null);
       </linearGradient>
     </defs>
   </svg>
-  <p v-else class="text-[11px] text-ink-500 py-6 text-center">暂无数据</p>
+  <p v-else class="text-[11px] text-ink-500 py-6 text-center">
+    暂无数据
+  </p>
 </template>

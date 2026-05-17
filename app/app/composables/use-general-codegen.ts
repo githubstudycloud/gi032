@@ -4,6 +4,7 @@ import type {
   OverviewMetrics,
   OverviewPilots,
 } from '~/types/overview-summary';
+import { OverviewSummaryResponseSchema } from '~/types/schemas';
 
 /**
  * "AI辅助测试代码生成"页（/ai-test/general/codegen）。
@@ -21,20 +22,21 @@ export async function useGeneralCodegen(params?: {
   pending: Ref<boolean>;
   refresh: () => Promise<void>;
 }> {
-  const ds = await useDataSource<OverviewSummaryResponse, OverviewSummaryResponse>({
+  const ds = await useDataSource<unknown, OverviewSummaryResponse>({
     key: 'general-codegen',
     jsonPath: '/pages/ai-test-general-codegen.json',
     apiPath: '/api/pages/ai-test/general/codegen',
     params,
-    transform: (raw): OverviewSummaryResponse => raw,
+    transform: (raw): OverviewSummaryResponse =>
+      OverviewSummaryResponseSchema.parse(raw) as OverviewSummaryResponse,
   });
 
   return {
-    data:    ds.data,
+    data: ds.data,
     filters: computed(() => ds.data.value?.filters ?? null),
     metrics: computed(() => ds.data.value?.metrics ?? null),
-    pilots:  computed(() => ds.data.value?.pilots ?? null),
-    error:   ds.error,
+    pilots: computed(() => ds.data.value?.pilots ?? null),
+    error: ds.error,
     pending: ds.pending,
     refresh: ds.refresh,
   };

@@ -51,4 +51,4 @@ export interface Branding {
   version?: string;
 }
 
-export interface BrandingResponse extends Branding {}
+export type BrandingResponse = Branding;

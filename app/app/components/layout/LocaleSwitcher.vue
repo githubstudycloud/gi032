@@ -4,7 +4,9 @@ import { onClickOutside } from '@vueuse/core';
 const { locale, locales, setLocale, t } = useI18n();
 const open = ref(false);
 const rootEl = ref<HTMLElement | null>(null);
-onClickOutside(rootEl, () => { open.value = false; });
+onClickOutside(rootEl, () => {
+  open.value = false;
+});
 
 const available = computed(() =>
   (locales.value as { code: string; name?: string }[]).map(l => ({

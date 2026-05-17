@@ -69,15 +69,15 @@ const resolvedCharts = computed<MetricChart[]>(() =>
 /** 图表卡片背景的轻微强调色（按 kind 微调） */
 function cardAccent(kind: MetricChart['kind']): string {
   switch (kind) {
-    case 'trend':        return 'from-brand-50/50 to-surface';
+    case 'trend': return 'from-brand-50/50 to-surface';
     case 'distribution': return 'from-sky-50/50 to-surface';
-    case 'donut':        return 'from-violet-50/50 to-surface';
-    case 'bar':          return 'from-emerald-50/40 to-surface';
-    case 'gauge':        return 'from-amber-50/40 to-surface';
-    case 'stacked':      return 'from-pink-50/30 to-surface';
-    case 'heatmap':      return 'from-sky-50/40 to-surface';
-    case 'radar':        return 'from-violet-50/40 to-surface';
-    default:             return 'from-ink-50/40 to-surface';
+    case 'donut': return 'from-violet-50/50 to-surface';
+    case 'bar': return 'from-emerald-50/40 to-surface';
+    case 'gauge': return 'from-amber-50/40 to-surface';
+    case 'stacked': return 'from-pink-50/30 to-surface';
+    case 'heatmap': return 'from-sky-50/40 to-surface';
+    case 'radar': return 'from-violet-50/40 to-surface';
+    default: return 'from-ink-50/40 to-surface';
   }
 }
 
@@ -118,7 +118,9 @@ function thresholdChip(chart: MetricChart): string | null {
             class="h-6 px-2 pr-6 text-[11.5px] rounded border border-ink-200 bg-surface text-ink-800 focus:outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-400 transition-colors"
             @change="onFilterChange(dim, ($event.target as HTMLSelectElement).value)"
           >
-            <option v-for="opt in dim.options" :key="opt.key" :value="opt.key">{{ opt.label }}</option>
+            <option v-for="opt in dim.options" :key="opt.key" :value="opt.key">
+              {{ opt.label }}
+            </option>
           </select>
         </div>
       </div>
@@ -147,8 +149,12 @@ function thresholdChip(chart: MetricChart): string | null {
       >
         <header class="px-3 pt-2.5 pb-2 flex items-start gap-2">
           <div class="min-w-0 flex-1">
-            <h4 class="text-[12px] font-semibold text-ink-900 leading-tight truncate">{{ chart.title }}</h4>
-            <p v-if="chart.subtitle" class="text-[10.5px] text-ink-500 mt-0.5 leading-snug line-clamp-2">{{ chart.subtitle }}</p>
+            <h4 class="text-[12px] font-semibold text-ink-900 leading-tight truncate">
+              {{ chart.title }}
+            </h4>
+            <p v-if="chart.subtitle" class="text-[10.5px] text-ink-500 mt-0.5 leading-snug line-clamp-2">
+              {{ chart.subtitle }}
+            </p>
           </div>
           <span
             v-if="thresholdChip(chart)"
@@ -157,14 +163,14 @@ function thresholdChip(chart: MetricChart): string | null {
         </header>
         <div class="flex-1 px-3 pb-2.5 min-h-[156px] flex">
           <div class="w-full self-stretch flex items-stretch">
-            <ChartTrend        v-if="chart.kind === 'trend'"             :chart="chart" class="w-full" />
+            <ChartTrend v-if="chart.kind === 'trend'" :chart="chart" class="w-full" />
             <ChartDistribution v-else-if="chart.kind === 'distribution'" :chart="chart" class="w-full self-center" />
-            <ChartDonut        v-else-if="chart.kind === 'donut'"        :chart="chart" class="w-full" />
-            <ChartBar          v-else-if="chart.kind === 'bar'"          :chart="chart" class="w-full" />
-            <ChartGauge        v-else-if="chart.kind === 'gauge'"        :chart="chart" class="w-full" />
-            <ChartStacked      v-else-if="chart.kind === 'stacked'"      :chart="chart" class="w-full" />
-            <ChartHeatmap      v-else-if="chart.kind === 'heatmap'"      :chart="chart" class="w-full" />
-            <ChartRadar        v-else-if="chart.kind === 'radar'"        :chart="chart" class="w-full" />
+            <ChartDonut v-else-if="chart.kind === 'donut'" :chart="chart" class="w-full" />
+            <ChartBar v-else-if="chart.kind === 'bar'" :chart="chart" class="w-full" />
+            <ChartGauge v-else-if="chart.kind === 'gauge'" :chart="chart" class="w-full" />
+            <ChartStacked v-else-if="chart.kind === 'stacked'" :chart="chart" class="w-full" />
+            <ChartHeatmap v-else-if="chart.kind === 'heatmap'" :chart="chart" class="w-full" />
+            <ChartRadar v-else-if="chart.kind === 'radar'" :chart="chart" class="w-full" />
           </div>
         </div>
       </section>

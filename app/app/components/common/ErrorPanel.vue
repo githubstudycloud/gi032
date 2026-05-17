@@ -23,7 +23,7 @@ defineEmits<{
 const detail = computed<{ summary: string; lines: string[] }>(() => {
   const e = props.error;
   if (e instanceof z.ZodError) {
-    const lines = e.issues.slice(0, 8).map(i => {
+    const lines = e.issues.slice(0, 8).map((i) => {
       const path = i.path.length ? i.path.join('.') : '(root)';
       return `${path}: ${i.message}`;
     });
@@ -53,7 +53,9 @@ const detail = computed<{ summary: string; lines: string[] }>(() => {
         <h3 class="font-display text-[14px] font-semibold text-rose-900">
           {{ title ?? '数据加载失败' }}
         </h3>
-        <p class="mt-1 text-[12.5px] text-rose-800 leading-snug break-words">{{ detail.summary }}</p>
+        <p class="mt-1 text-[12.5px] text-rose-800 leading-snug break-words">
+          {{ detail.summary }}
+        </p>
       </div>
       <button
         type="button"
@@ -65,7 +67,9 @@ const detail = computed<{ summary: string; lines: string[] }>(() => {
     </header>
 
     <details v-if="detail.lines.length" class="mt-2">
-      <summary class="text-[11.5px] text-rose-700 cursor-pointer hover:underline">查看详细 ({{ detail.lines.length }} 条)</summary>
+      <summary class="text-[11.5px] text-rose-700 cursor-pointer hover:underline">
+        查看详细 ({{ detail.lines.length }} 条)
+      </summary>
       <pre class="mt-2 text-[11px] leading-relaxed text-rose-800/90 whitespace-pre-wrap font-mono bg-surface/60 border border-rose-200/60 rounded-md p-3 overflow-auto max-h-48">{{ detail.lines.join('\n') }}</pre>
     </details>
   </section>

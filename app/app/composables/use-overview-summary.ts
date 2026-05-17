@@ -39,11 +39,11 @@ export async function useOverviewSummary(params?: {
   });
 
   return {
-    data:    ds.data,
+    data: ds.data,
     filters: computed(() => ds.data.value?.filters ?? null),
     metrics: computed(() => ds.data.value?.metrics ?? null),
-    pilots:  computed(() => ds.data.value?.pilots ?? null),
-    error:   ds.error,
+    pilots: computed(() => ds.data.value?.pilots ?? null),
+    error: ds.error,
     pending: ds.pending,
     refresh: ds.refresh,
   };

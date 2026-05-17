@@ -22,16 +22,16 @@ interface Stat {
 }
 
 const stats: Stat[] = [
-  { key: 'cases',    label: '今日新增用例', value: '128',   hint: '同比 +12%',  trend: 'up' },
-  { key: 'feedback', label: '待处理反馈',   value: '7',     hint: '24h 内回复', trend: 'flat' },
-  { key: 'alerts',   label: '运维告警',     value: '0',     hint: '系统状态正常', trend: 'down' },
-  { key: 'users',    label: '活跃用户',     value: '1,284', hint: '同比 +3.2%', trend: 'up' },
+  { key: 'cases', label: '今日新增用例', value: '128', hint: '同比 +12%', trend: 'up' },
+  { key: 'feedback', label: '待处理反馈', value: '7', hint: '24h 内回复', trend: 'flat' },
+  { key: 'alerts', label: '运维告警', value: '0', hint: '系统状态正常', trend: 'down' },
+  { key: 'users', label: '活跃用户', value: '1,284', hint: '同比 +3.2%', trend: 'up' },
 ];
 
 const updates = [
   { time: '10:24', title: 'AI 测试用例自动生成跑批完成（128 条）', module: 'AI辅助测试运营' },
-  { time: '09:51', title: '收到 3 条高优先级反馈待处理',            module: '用户反馈' },
-  { time: '09:00', title: '昨日服务健康度报告已生成',                module: '后台运维' },
+  { time: '09:51', title: '收到 3 条高优先级反馈待处理', module: '用户反馈' },
+  { time: '09:00', title: '昨日服务健康度报告已生成', module: '后台运维' },
 ];
 </script>
 
@@ -66,15 +66,17 @@ const updates = [
           :key="stat.key"
           class="rounded-xl border border-ink-200/70 bg-surface p-5 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-hover)] transition-shadow"
         >
-          <div class="text-[12px] text-ink-500">{{ stat.label }}</div>
+          <div class="text-[12px] text-ink-500">
+            {{ stat.label }}
+          </div>
           <div class="mt-2 font-display text-[28px] font-semibold text-ink-900 leading-none">
             {{ stat.value }}
           </div>
           <div
             :class="[
               'mt-2 text-[11px] flex items-center gap-1',
-              stat.trend === 'up'   ? 'text-emerald-600' :
-              stat.trend === 'down' ? 'text-rose-600'    : 'text-ink-500',
+              stat.trend === 'up' ? 'text-emerald-600'
+              : stat.trend === 'down' ? 'text-rose-600' : 'text-ink-500',
             ]"
           >
             <span v-if="stat.trend === 'up'">▲</span>
@@ -127,9 +129,13 @@ const updates = [
       </h2>
       <ul class="mt-4 rounded-xl border border-ink-200/70 bg-surface divide-y divide-ink-100">
         <li v-for="u in updates" :key="u.time" class="px-5 py-4 flex items-center gap-4">
-          <div class="font-mono text-[12px] text-ink-500 shrink-0 w-12">{{ u.time }}</div>
+          <div class="font-mono text-[12px] text-ink-500 shrink-0 w-12">
+            {{ u.time }}
+          </div>
           <div class="min-w-0 flex-1">
-            <div class="text-[14px] text-ink-900 truncate">{{ u.title }}</div>
+            <div class="text-[14px] text-ink-900 truncate">
+              {{ u.title }}
+            </div>
           </div>
           <div class="text-[11px] text-ink-500 shrink-0 px-2 py-0.5 rounded-full bg-ink-100">
             {{ u.module }}

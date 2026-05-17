@@ -8,7 +8,7 @@ const data = computed(() => props.chart.stacked);
 
 const rowsView = computed(() => {
   if (!data.value) return [];
-  return data.value.rows.map(row => {
+  return data.value.rows.map((row) => {
     const total = data.value!.series.reduce((s, ser) => s + (row.values[ser.key] ?? 0), 0) || 1;
     const segs = data.value!.series.map((ser, idx) => ({
       key: ser.key,
@@ -37,10 +37,12 @@ const rowsView = computed(() => {
       <div v-for="row in rowsView" :key="row.label" class="flex items-center gap-2 text-[11px]">
         <span class="w-14 shrink-0 truncate text-ink-700" :title="row.label">{{ row.label }}</span>
         <div class="flex-1 h-4 rounded overflow-hidden flex bg-ink-100">
-          <div v-for="seg in row.segs" :key="seg.key"
+          <div
+            v-for="seg in row.segs" :key="seg.key"
             :class="colorClass(seg.color, seg.idx)"
             :style="{ width: `${seg.pct}%`, backgroundColor: 'currentColor' }"
-            class="h-full first:rounded-l last:rounded-r transition-all">
+            class="h-full first:rounded-l last:rounded-r transition-all"
+          >
             <title>{{ seg.label }}: {{ seg.value }}</title>
           </div>
         </div>
@@ -48,5 +50,7 @@ const rowsView = computed(() => {
       </div>
     </div>
   </div>
-  <p v-else class="text-[11px] text-ink-500 py-6 text-center">暂无数据</p>
+  <p v-else class="text-[11px] text-ink-500 py-6 text-center">
+    暂无数据
+  </p>
 </template>

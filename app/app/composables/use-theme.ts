@@ -32,7 +32,8 @@ export async function useTheme(): Promise<{
     if (import.meta.server) return '';
     try {
       return localStorage.getItem(STORAGE_KEY) ?? '';
-    } catch {
+    }
+    catch {
       return '';
     }
   });
@@ -52,7 +53,8 @@ export async function useTheme(): Promise<{
     document.documentElement.className = cls;
     try {
       localStorage.setItem(STORAGE_KEY, cls);
-    } catch {
+    }
+    catch {
       // localStorage 可能被禁 / 配额满；切换仍生效到下次刷新
     }
   }

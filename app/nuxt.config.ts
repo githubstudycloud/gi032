@@ -2,21 +2,6 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: '2026-05-01',
-
-  // 数据获取统一走客户端（useDataSource 内部 useAsyncData({ server: false })）：
-  // 1) 避开 Nitro dev worker 在 Windows + Node 24 上的 OOM；
-  // 2) 跟"未来直接 fetch 后端接口、CORS 由后端配"的产品形态对齐。
-  // SSR 本身仍保留，渲染外壳更快，hydration 后再补数据。
-
-  devServer: {
-    // 0.0.0.0 = 监听所有 IPv4 网卡（含 loopback + 局域网），
-    // 同 WiFi/办公网的同事用 http://<本机 IP>:3000 直接访问。
-    // 也修了之前 nuxt dev 默认只绑 IPv6 ::1 导致 localhost 连不上的问题。
-    // 备注：如果不想外部访问，改回 '127.0.0.1' 即可。
-    host: '0.0.0.0',
-    port: 3000,
-  },
 
   modules: [
     '@vueuse/nuxt',
@@ -26,49 +11,13 @@ export default defineNuxtConfig({
     // SSR payload plugin 会炸 obj.hasOwnProperty。等真用 store 再升级到 0.11+ 再加回。
   ],
 
-  i18n: {
-    // 文件型懒加载：~/i18n/locales/{zh-CN,en-US}.json
-    locales: [
-      { code: 'zh-CN', name: '简体中文', file: 'zh-CN.json' },
-      { code: 'en-US', name: 'English',  file: 'en-US.json' },
-    ],
-    defaultLocale: 'zh-CN',
-    strategy: 'no_prefix',  // URL 不带语言前缀，靠 cookie + localStorage 切换
-    detectBrowserLanguage: {
-      useCookie: true,
-      cookieKey: 'ops-dashboard:locale',
-      redirectOn: 'root',
-    },
-  },
-
-  eslint: {
-    // 用 stylistic 风格规则（缩进 / 引号 / 分号统一）；checker 集成到 Vite 里实时报错。
-    config: {
-      stylistic: { indent: 2, quotes: 'single', semi: true },
-    },
-  },
-
   // 让 components/layout/AppTopBar.vue 直接以 <AppTopBar /> 引用，
   // 默认 Nuxt 4 会带目录前缀（LayoutAppTopBar），我们用扁平命名。
   components: [
     { path: '~/components', pathPrefix: false },
   ],
 
-  css: ['~/assets/css/main.css'],
-
-  vite: {
-    plugins: [tailwindcss()],
-  },
-
-  // 三块导航数据 + 未来的业务数据，统一通过 useDataSource 读取。
-  // 切后端时改 dataSourceMode=api、设置 apiBase 即可，业务代码不动。
-  runtimeConfig: {
-    public: {
-      dataSourceMode: 'json' as 'json' | 'api',
-      apiBase: '',
-      mockBase: '/mock',
-    },
-  },
+  devtools: { enabled: true },
 
   app: {
     head: {
@@ -86,8 +35,8 @@ export default defineNuxtConfig({
           tagPosition: 'head',
           innerHTML:
             '(function(){try{' +
-              'var c=localStorage.getItem("ops-dashboard:theme");' +
-              'if(c)document.documentElement.className=c;' +
+            'var c=localStorage.getItem("ops-dashboard:theme");' +
+            'if(c)document.documentElement.className=c;' +
             '}catch(e){}})();',
         },
       ],
@@ -114,9 +63,16 @@ export default defineNuxtConfig({
     },
   },
 
-  typescript: {
-    strict: true,
-    typeCheck: false,
+  css: ['~/assets/css/main.css'],
+
+  // 三块导航数据 + 未来的业务数据，统一通过 useDataSource 读取。
+  // 切后端时改 dataSourceMode=api、设置 apiBase 即可，业务代码不动。
+  runtimeConfig: {
+    public: {
+      dataSourceMode: 'json' as 'json' | 'api',
+      apiBase: '',
+      mockBase: '/mock',
+    },
   },
 
   // 通用安全 headers：所有 HTML 路由都加。
@@ -135,5 +91,49 @@ export default defineNuxtConfig({
     },
   },
 
-  devtools: { enabled: true },
+  // 数据获取统一走客户端（useDataSource 内部 useAsyncData({ server: false })）：
+  // 1) 避开 Nitro dev worker 在 Windows + Node 24 上的 OOM；
+  // 2) 跟"未来直接 fetch 后端接口、CORS 由后端配"的产品形态对齐。
+  // SSR 本身仍保留，渲染外壳更快，hydration 后再补数据。
+
+  devServer: {
+    // 0.0.0.0 = 监听所有 IPv4 网卡（含 loopback + 局域网），
+    // 同 WiFi/办公网的同事用 http://<本机 IP>:3000 直接访问。
+    // 也修了之前 nuxt dev 默认只绑 IPv6 ::1 导致 localhost 连不上的问题。
+    // 备注：如果不想外部访问，改回 '127.0.0.1' 即可。
+    host: '0.0.0.0',
+    port: 3000,
+  },
+  compatibilityDate: '2026-05-01',
+
+  vite: {
+    plugins: [tailwindcss()],
+  },
+
+  typescript: {
+    strict: true,
+    typeCheck: false,
+  },
+
+  eslint: {
+    // 用 stylistic 风格规则（缩进 / 引号 / 分号统一）；checker 集成到 Vite 里实时报错。
+    config: {
+      stylistic: { indent: 2, quotes: 'single', semi: true },
+    },
+  },
+
+  i18n: {
+    // 文件型懒加载：~/i18n/locales/{zh-CN,en-US}.json
+    locales: [
+      { code: 'zh-CN', name: '简体中文', file: 'zh-CN.json' },
+      { code: 'en-US', name: 'English', file: 'en-US.json' },
+    ],
+    defaultLocale: 'zh-CN',
+    strategy: 'no_prefix', // URL 不带语言前缀，靠 cookie + localStorage 切换
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'ops-dashboard:locale',
+      redirectOn: 'root',
+    },
+  },
 });

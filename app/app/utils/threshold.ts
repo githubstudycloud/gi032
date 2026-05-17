@@ -17,14 +17,14 @@ function colorClasses(token: string | undefined, kind: 'text' | 'bg'): string {
   // 内置 token
   const map: Record<string, { text: string; bg: string }> = {
     emerald: { text: 'text-emerald-600', bg: 'bg-emerald-50' },
-    green:   { text: 'text-emerald-600', bg: 'bg-emerald-50' },
-    brand:   { text: 'text-brand-700',   bg: 'bg-brand-50'   },
-    blue:    { text: 'text-brand-700',   bg: 'bg-brand-50'   },
-    amber:   { text: 'text-amber-600',   bg: 'bg-amber-50'   },
-    yellow:  { text: 'text-amber-600',   bg: 'bg-amber-50'   },
-    rose:    { text: 'text-rose-600',    bg: 'bg-rose-50'    },
-    red:     { text: 'text-rose-600',    bg: 'bg-rose-50'    },
-    ink:     { text: 'text-ink-900',     bg: 'bg-ink-50'     },
+    green: { text: 'text-emerald-600', bg: 'bg-emerald-50' },
+    brand: { text: 'text-brand-700', bg: 'bg-brand-50' },
+    blue: { text: 'text-brand-700', bg: 'bg-brand-50' },
+    amber: { text: 'text-amber-600', bg: 'bg-amber-50' },
+    yellow: { text: 'text-amber-600', bg: 'bg-amber-50' },
+    rose: { text: 'text-rose-600', bg: 'bg-rose-50' },
+    red: { text: 'text-rose-600', bg: 'bg-rose-50' },
+    ink: { text: 'text-ink-900', bg: 'bg-ink-50' },
   };
   const hit = map[token];
   return hit ? hit[kind] : '';

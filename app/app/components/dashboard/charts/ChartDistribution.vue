@@ -23,5 +23,7 @@ const max = computed<number>(() => Math.max(1, ...items.value.map(i => i.value))
       </span>
     </li>
   </ul>
-  <p v-else class="text-[11px] text-ink-500 py-6 text-center">暂无数据</p>
+  <p v-else class="text-[11px] text-ink-500 py-6 text-center">
+    暂无数据
+  </p>
 </template>

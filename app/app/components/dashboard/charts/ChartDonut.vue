@@ -36,7 +36,8 @@ const segments = computed(() => {
     <div class="relative shrink-0">
       <svg :viewBox="`0 0 ${SIZE} ${SIZE}`" :width="SIZE" :height="SIZE" class="-rotate-90">
         <circle :cx="SIZE/2" :cy="SIZE/2" :r="R" fill="none" class="text-ink-100" stroke="currentColor" :stroke-width="STROKE" />
-        <circle v-for="seg in segments" :key="seg.key"
+        <circle
+          v-for="seg in segments" :key="seg.key"
           :cx="SIZE/2" :cy="SIZE/2" :r="R" fill="none"
           stroke="currentColor"
           :class="colorClass(seg.color, seg.idx)"
@@ -59,5 +60,7 @@ const segments = computed(() => {
       </li>
     </ul>
   </div>
-  <p v-else class="text-[11px] text-ink-500 py-6 text-center">暂无数据</p>
+  <p v-else class="text-[11px] text-ink-500 py-6 text-center">
+    暂无数据
+  </p>
 </template>

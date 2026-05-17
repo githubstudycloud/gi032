@@ -26,10 +26,12 @@ function downloadTemplate(variant: '2l' | '4l' | 'current' = 'current'): void {
     body = rawText.value;
     filename = (fileName.value || 'page.csv').replace(/[^\w.-]+/g, '_');
     if (!/\.(csv|txt)$/i.test(filename)) filename += '.csv';
-  } else if (variant === '4l') {
+  }
+  else if (variant === '4l') {
     body = SAMPLE_CSV_4L;
     filename = 'page-template-4level.csv';
-  } else {
+  }
+  else {
     body = SAMPLE_CSV;
     filename = 'page-template-multilevel.csv';
   }
@@ -69,7 +71,8 @@ function doParse(text: string): void {
     if (!r.data || (r.data.metrics.groups.length === 0 && r.data.pilots.tabs.length === 0)) {
       errorMsg.value = '解析未得到任何数据，请检查文件段头（##METRICS / ##COLUMNS / ##ROWS）';
     }
-  } catch (e) {
+  }
+  catch (e) {
     imported.value = null;
     errorMsg.value = e instanceof Error ? e.message : String(e);
   }
@@ -180,7 +183,7 @@ function onRowDetail(row: Record<string, unknown>): void {
           <code class="ml-1 px-1 py-0.5 rounded bg-ink-100 text-ink-800 text-[11.5px]">##METRICS</code>
           <code class="ml-1 px-1 py-0.5 rounded bg-ink-100 text-ink-800 text-[11.5px]">##COLUMNS</code>
           <code class="ml-1 px-1 py-0.5 rounded bg-ink-100 text-ink-800 text-[11.5px]">##ROWS</code>
-                    。<code class="px-1 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[11.5px]">##COLUMNS</code>
+          。<code class="px-1 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[11.5px]">##COLUMNS</code>
           段加 <code class="px-1 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[11.5px]">parent</code> 列可生成多级表头（可任意嵌套，先定义父列、再让子列引用其 key）；
           <code class="px-1 py-0.5 rounded bg-brand-50 text-brand-700 text-[11.5px]">highlight=1</code> 标记重点列，表头与单元格均会高亮。
           Excel 编辑后请用「另存为 → CSV UTF-8」保存；或直接编辑 CSV 文件后拖入下方区域。
@@ -202,8 +205,12 @@ function onRowDetail(row: Record<string, unknown>): void {
             <path d="M12 16V4M12 4l-4 4m4-4l4 4" stroke-linecap="round" stroke-linejoin="round" />
             <path d="M4 14v4a2 2 0 002 2h12a2 2 0 002-2v-4" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
-          <p class="text-[13.5px] text-ink-800 font-medium">把 CSV 文件拖到此处</p>
-          <p class="text-[12px] text-ink-500 mt-1">或点击下方按钮选择文件</p>
+          <p class="text-[13.5px] text-ink-800 font-medium">
+            把 CSV 文件拖到此处
+          </p>
+          <p class="text-[12px] text-ink-500 mt-1">
+            或点击下方按钮选择文件
+          </p>
           <div class="mt-4 flex items-center justify-center gap-2">
             <label class="h-8 px-3 inline-flex items-center gap-1.5 rounded-md border border-ink-200 bg-surface text-ink-800 text-[12px] font-medium hover:bg-ink-50 cursor-pointer transition-colors">
               选择文件
@@ -225,14 +232,18 @@ function onRowDetail(row: Record<string, unknown>): void {
 
         <!-- 直接粘贴 -->
         <div class="rounded-xl border border-ink-200/70 bg-surface p-3 flex flex-col">
-          <div class="text-[12px] text-ink-600 mb-1.5 font-medium">或粘贴 CSV 文本</div>
+          <div class="text-[12px] text-ink-600 mb-1.5 font-medium">
+            或粘贴 CSV 文本
+          </div>
           <textarea
             v-model="rawText"
             placeholder="##META&#10;key,value&#10;title,我的页面&#10;&#10;##METRICS&#10;group_key,group_label,key,label,value,unit,mom,trend,description&#10;..."
             class="flex-1 min-h-[150px] w-full rounded-md border border-ink-200 px-2 py-1.5 text-[11.5px] font-mono leading-relaxed text-ink-800 bg-ink-50/40 outline-none focus:border-brand-400 focus:bg-surface resize-y"
             @blur="onPaste(rawText)"
           />
-          <p class="mt-1.5 text-[10.5px] text-ink-400">粘贴后失焦自动解析</p>
+          <p class="mt-1.5 text-[10.5px] text-ink-400">
+            粘贴后失焦自动解析
+          </p>
         </div>
       </section>
 
@@ -244,7 +255,9 @@ function onRowDetail(row: Record<string, unknown>): void {
           </svg>
           解析提示
         </div>
-        <p v-if="errorMsg" class="mt-1 text-[12px] text-amber-900">{{ errorMsg }}</p>
+        <p v-if="errorMsg" class="mt-1 text-[12px] text-amber-900">
+          {{ errorMsg }}
+        </p>
         <ul v-if="issues.length" class="mt-1.5 space-y-1 text-[11.5px] text-amber-900 list-disc pl-5">
           <li v-for="(it, i) in issues" :key="i">
             [{{ it.section }} 第 {{ it.line }} 行] {{ it.message }}
@@ -265,7 +278,9 @@ function onRowDetail(row: Record<string, unknown>): void {
             · {{ previewPilot?.rows.length ?? 0 }} 行表数据
           </span>
         </div>
-        <p v-if="imported?.meta.subtitle" class="text-[12.5px] text-ink-600 mb-3">{{ imported.meta.subtitle }}</p>
+        <p v-if="imported?.meta.subtitle" class="text-[12.5px] text-ink-600 mb-3">
+          {{ imported.meta.subtitle }}
+        </p>
 
         <div v-if="previewMetrics && previewMetrics.groups.length">
           <MetricsBox :metrics="previewMetrics" :title="imported?.meta.title" @drill="onDrill" />
@@ -284,7 +299,9 @@ function onRowDetail(row: Record<string, unknown>): void {
 
       <!-- 空态 -->
       <section v-else class="mt-6 rounded-xl border border-dashed border-ink-200 bg-ink-50/30 px-6 py-10 text-center">
-        <p class="text-[13px] text-ink-500">导入或粘贴 CSV 后，此处会展示与「概览/通用 Agent」页面相同样式的预览。</p>
+        <p class="text-[13px] text-ink-500">
+          导入或粘贴 CSV 后，此处会展示与「概览/通用 Agent」页面相同样式的预览。
+        </p>
         <button
           type="button"
           class="mt-3 h-8 px-3 inline-flex items-center rounded-md border border-brand-300 bg-brand-50 text-brand-700 text-[12px] font-medium hover:bg-brand-100"

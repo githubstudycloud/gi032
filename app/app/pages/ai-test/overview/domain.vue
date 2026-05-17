@@ -3,7 +3,7 @@ import { flattenNav } from '~/utils/nav-flat';
 
 const route = useRoute();
 const { items: navItems } = await useNav();
-const { filters, metrics, pilots } = await useDomainLanding();
+const { filters, metrics, pilots, error, refresh } = await useDomainLanding();
 
 /* —— 面包屑 —— */
 const flat = computed(() => flattenNav(navItems.value));
@@ -35,6 +35,8 @@ function onRowDetail(row: Record<string, unknown>): void {
 <template>
   <div>
     <ClientOnly>
+      <ErrorPanel v-if="error" :error="error" @retry="refresh" />
+
       <!-- Div 1: 领域落地进展筛选 -->
       <section class="rounded-xl border border-ink-200/70 bg-surface px-5 py-4 shadow-[var(--shadow-card)]">
         <header class="flex items-center gap-2 mb-3">
@@ -82,12 +84,16 @@ function onRowDetail(row: Record<string, unknown>): void {
               type="button"
               class="h-9 px-4 rounded-md bg-brand-600 text-white text-[13px] font-medium hover:bg-brand-700 active:bg-brand-800 transition-colors shadow-[0_2px_6px_-1px_oklch(0.62_0.14_235/0.35)]"
               @click="onSearch"
-            >查询</button>
+            >
+              查询
+            </button>
             <button
               type="button"
               class="h-9 px-4 rounded-md border border-ink-200 bg-surface text-[13px] text-ink-700 hover:bg-ink-100 transition-colors"
               @click="onReset"
-            >重置</button>
+            >
+              重置
+            </button>
           </div>
         </div>
       </section>

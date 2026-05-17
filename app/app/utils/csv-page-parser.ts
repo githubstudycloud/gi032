@@ -57,19 +57,24 @@ function parseCsvLine(line: string): string[] {
         if (line[i + 1] === '"') {
           cur += '"';
           i++;
-        } else {
+        }
+        else {
           inQuote = false;
         }
-      } else {
+      }
+      else {
         cur += ch;
       }
-    } else {
+    }
+    else {
       if (ch === ',') {
         out.push(cur);
         cur = '';
-      } else if (ch === '"' && cur === '') {
+      }
+      else if (ch === '"' && cur === '') {
         inQuote = true;
-      } else {
+      }
+      else {
         cur += ch;
       }
     }
@@ -155,7 +160,8 @@ export function parsePageCsv(text: string): ParseResult {
     const iD = idx('description');
     if (iGk < 0 || iK < 0 || iL < 0 || iV < 0) {
       issues.push({ section: 'METRICS', line: header!.lineNo, message: '缺少必需列 group_key/key/label/value' });
-    } else {
+    }
+    else {
       for (const row of rest) {
         const c = row.cells;
         const gk = c[iGk] ?? '';
@@ -200,7 +206,8 @@ export function parsePageCsv(text: string): ParseResult {
     const iS = ch.indexOf('sortable');
     if (iK < 0 || iL < 0) {
       issues.push({ section: 'COLUMNS', line: header!.lineNo, message: '缺少必需列 key/label' });
-    } else {
+    }
+    else {
       const colMap = new Map<string, TableColumn>();
       const hasChild = new Set<string>();
       // 先扫一遍标记哪些 key 是父
@@ -234,7 +241,8 @@ export function parsePageCsv(text: string): ParseResult {
             continue;
           }
           (parent.children ??= []).push(col);
-        } else {
+        }
+        else {
           columns.push(col);
         }
       }
@@ -264,12 +272,12 @@ export function parsePageCsv(text: string): ParseResult {
   const pilots: OverviewPilots = {
     tabs: columns.length > 0 || rows.length > 0
       ? [{
-          key: 'main',
-          label: meta.title,
-          columns,
-          rows,
-          pagination: { page: 1, pageSize: Math.max(rows.length, 10), total: rows.length },
-        } satisfies PilotTable]
+        key: 'main',
+        label: meta.title,
+        columns,
+        rows,
+        pagination: { page: 1, pageSize: Math.max(rows.length, 10), total: rows.length },
+      } satisfies PilotTable]
       : [],
   };
 
@@ -364,4 +372,3 @@ industry,owner,d-req-in,d-req-conv,d-case-review,d-case-pass,e-run-total,e-run-p
 智能终端,赵六,156,85%,55,68%,1560,91.2%,63,85.7%
 网络产品,孙七,84,76%,33,72%,980,93.8%,35,82.9%
 `;
-

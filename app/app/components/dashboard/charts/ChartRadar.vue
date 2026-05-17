@@ -70,21 +70,29 @@ const seriesPaths = computed(() => {
   <div v-if="data" class="flex flex-col h-full">
     <svg :viewBox="`0 0 ${W} ${H}`" class="flex-1 w-full">
       <!-- 同心环 -->
-      <path v-for="(p, i) in ringPaths" :key="`r-${i}`"
+      <path
+        v-for="(p, i) in ringPaths" :key="`r-${i}`"
         :d="p" fill="none" stroke="currentColor" class="text-ink-200"
-        :stroke-dasharray="i === ringPaths.length - 1 ? undefined : '2 3'" />
+        :stroke-dasharray="i === ringPaths.length - 1 ? undefined : '2 3'"
+      />
       <!-- 轴线 -->
-      <line v-for="a in axesGeo" :key="`ax-${a.key}`"
+      <line
+        v-for="a in axesGeo" :key="`ax-${a.key}`"
         :x1="CX" :y1="CY" :x2="a.x" :y2="a.y"
-        stroke="currentColor" class="text-ink-200" />
+        stroke="currentColor" class="text-ink-200"
+      />
       <!-- series 填充 -->
-      <path v-for="ser in seriesPaths" :key="ser.key"
+      <path
+        v-for="ser in seriesPaths" :key="ser.key"
         :d="ser.path" :class="colorClass(ser.color, ser.idx)"
-        fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-width="1.4" />
+        fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-width="1.4"
+      />
       <!-- 轴标签 -->
-      <text v-for="a in axesGeo" :key="`l-${a.key}`"
+      <text
+        v-for="a in axesGeo" :key="`l-${a.key}`"
         :x="a.lx" :y="a.ly + 3" text-anchor="middle"
-        class="text-ink-600" fill="currentColor" style="font-size: 9.5px;">{{ a.label }}</text>
+        class="text-ink-600" fill="currentColor" style="font-size: 9.5px;"
+      >{{ a.label }}</text>
     </svg>
     <!-- 图例 -->
     <div v-if="data.series.length > 1" class="flex flex-wrap gap-x-3 gap-y-0.5 text-[10.5px] mt-1">
@@ -94,5 +102,7 @@ const seriesPaths = computed(() => {
       </span>
     </div>
   </div>
-  <p v-else class="text-[11px] text-ink-500 py-6 text-center">暂无数据</p>
+  <p v-else class="text-[11px] text-ink-500 py-6 text-center">
+    暂无数据
+  </p>
 </template>

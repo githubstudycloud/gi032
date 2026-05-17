@@ -3,7 +3,7 @@ import { flattenNav } from '~/utils/nav-flat';
 
 const route = useRoute();
 const { items: navItems } = await useNav();
-const { filters, metrics, pilots } = await useIndustryLanding();
+const { filters, metrics, pilots, error, refresh } = await useIndustryLanding();
 
 /* —— 面包屑 —— */
 const flat = computed(() => flattenNav(navItems.value));
@@ -38,6 +38,8 @@ function onRowDetail(row: Record<string, unknown>): void {
 <template>
   <div>
     <ClientOnly>
+      <ErrorPanel v-if="error" :error="error" @retry="refresh" />
+
       <!-- Div 1: 产业落地进展筛选 -->
       <section class="rounded-xl border border-ink-200/70 bg-surface px-5 py-4 shadow-[var(--shadow-card)]">
         <header class="flex items-center gap-2 mb-3">
@@ -50,7 +52,7 @@ function onRowDetail(row: Record<string, unknown>): void {
         <div class="flex flex-wrap items-end gap-4">
           <label class="block text-sm flex-1 min-w-[180px] max-w-[260px]">
             <span class="block text-ink-600 mb-1.5 text-[11px] font-medium tracking-wide uppercase">
-              时间范围
+              {{ $t('filters.timeRange') }}
             </span>
             <select
               v-model="timeRange"
@@ -66,7 +68,7 @@ function onRowDetail(row: Record<string, unknown>): void {
 
           <label class="block text-sm flex-1 min-w-[180px] max-w-[280px]">
             <span class="block text-ink-600 mb-1.5 text-[11px] font-medium tracking-wide uppercase">
-              部门
+              {{ $t('filters.department') }}
             </span>
             <select
               v-model="department"
@@ -85,12 +87,16 @@ function onRowDetail(row: Record<string, unknown>): void {
               type="button"
               class="h-9 px-4 rounded-md bg-brand-600 text-white text-[13px] font-medium hover:bg-brand-700 active:bg-brand-800 transition-colors shadow-[0_2px_6px_-1px_oklch(0.62_0.14_235/0.35)]"
               @click="onSearch"
-            >查询</button>
+            >
+              {{ $t('common.search') }}
+            </button>
             <button
               type="button"
-              class="h-9 px-4 rounded-md border border-ink-200 bg-surface text-[13px] text-ink-700 hover:bg-ink-100 transition-colors"
+              class="h-9 px-4 rounded-md border border-ink-200 bg-surface text-[13px] text-ink-700 hover:bg-ink-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
               @click="onReset"
-            >重置</button>
+            >
+              {{ $t('common.reset') }}
+            </button>
           </div>
         </div>
       </section>

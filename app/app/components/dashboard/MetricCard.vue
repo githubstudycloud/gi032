@@ -32,8 +32,9 @@ const descLines = computed<string[]>(() => {
 });
 
 const trendLabel = computed<string>(() =>
-  props.metric.trend === 'up' ? '上升' :
-  props.metric.trend === 'down' ? '下降' : '持平',
+  props.metric.trend === 'up'
+    ? '上升' :
+    props.metric.trend === 'down' ? '下降' : '持平',
 );
 </script>
 
@@ -79,8 +80,8 @@ const trendLabel = computed<string>(() =>
         <div
           :class="[
             'text-[11px] inline-flex items-baseline gap-0.5 leading-none whitespace-nowrap',
-            metric.trend === 'up'   ? 'text-emerald-600' :
-            metric.trend === 'down' ? 'text-rose-600'    : 'text-ink-500',
+            metric.trend === 'up' ? 'text-emerald-600'
+            : metric.trend === 'down' ? 'text-rose-600' : 'text-ink-500',
           ]"
         >
           <span aria-hidden="true" class="text-[9px] translate-y-[-1px]">{{ metric.trend === 'up' ? '▲' : metric.trend === 'down' ? '▼' : '●' }}</span>
@@ -110,78 +111,78 @@ const trendLabel = computed<string>(() =>
         tipOpen ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-1 scale-[0.98]',
       ]"
     >
-        <!-- 卡片 -->
-        <div
-          class="relative rounded-lg border border-ink-200/80 bg-surface shadow-[0_12px_32px_-12px_oklch(0.2_0.02_240/0.25),0_4px_12px_-4px_oklch(0.2_0.02_240/0.12)] overflow-hidden"
-        >
-          <!-- 左侧色条 -->
-          <span
-            class="absolute left-0 top-0 bottom-0 w-1"
-            :class="
-              metric.trend === 'up'   ? 'bg-emerald-500' :
-              metric.trend === 'down' ? 'bg-rose-500'    : 'bg-brand-500'
-            "
-          />
-          <div class="pl-4 pr-3.5 py-3 space-y-2">
-            <div class="flex items-center justify-between gap-2">
-              <span class="text-[10px] tracking-[0.14em] uppercase font-medium text-brand-700">
-                指标释义
-              </span>
-              <span class="text-[10px] text-ink-400 font-mono">{{ metric.key }}</span>
-            </div>
-
-            <div class="font-display text-[14px] font-semibold text-ink-900 leading-snug">
-              {{ metric.label }}
-            </div>
-
-            <p
-              v-for="(line, i) in descLines"
-              :key="i"
-              class="text-[12.5px] leading-relaxed text-ink-700 whitespace-pre-line"
-            >
-              {{ line }}
-            </p>
-
-            <div class="pt-1.5 mt-1 border-t border-dashed border-ink-200 grid grid-cols-2 gap-x-3 gap-y-1 text-[11.5px]">
-              <div class="flex items-center justify-between">
-                <span class="text-ink-500">当前</span>
-                <span class="font-medium text-ink-900 tabular-nums">{{ metric.value }}{{ metric.unit ?? '' }}</span>
-              </div>
-              <div class="flex items-center justify-between">
-                <span class="text-ink-500">环比</span>
-                <span
-                  class="font-medium tabular-nums"
-                  :class="
-                    metric.trend === 'up'   ? 'text-emerald-600' :
-                    metric.trend === 'down' ? 'text-rose-600'    : 'text-ink-700'
-                  "
-                >{{ metric.mom }} <span class="text-ink-400 font-normal">/ {{ trendLabel }}</span></span>
-              </div>
-              <template v-if="metric.threshold">
-                <div class="flex items-center justify-between col-span-2">
-                  <span class="text-ink-500">阈值</span>
-                  <span class="text-ink-700 tabular-nums">
-                    <template v-if="metric.threshold.min !== undefined && metric.threshold.max !== undefined">
-                      {{ metric.threshold.min }} ~ {{ metric.threshold.max }}
-                    </template>
-                    <template v-else-if="metric.threshold.min !== undefined">
-                      ≥ {{ metric.threshold.min }}
-                    </template>
-                    <template v-else-if="metric.threshold.max !== undefined">
-                      ≤ {{ metric.threshold.max }}
-                    </template>
-                  </span>
-                </div>
-              </template>
-            </div>
+      <!-- 卡片 -->
+      <div
+        class="relative rounded-lg border border-ink-200/80 bg-surface shadow-[0_12px_32px_-12px_oklch(0.2_0.02_240/0.25),0_4px_12px_-4px_oklch(0.2_0.02_240/0.12)] overflow-hidden"
+      >
+        <!-- 左侧色条 -->
+        <span
+          class="absolute left-0 top-0 bottom-0 w-1"
+          :class="
+            metric.trend === 'up' ? 'bg-emerald-500'
+            : metric.trend === 'down' ? 'bg-rose-500' : 'bg-brand-500'
+          "
+        />
+        <div class="pl-4 pr-3.5 py-3 space-y-2">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-[10px] tracking-[0.14em] uppercase font-medium text-brand-700">
+              指标释义
+            </span>
+            <span class="text-[10px] text-ink-400 font-mono">{{ metric.key }}</span>
           </div>
 
-          <!-- 顶部小箭头 -->
-          <span
-            class="absolute -top-[5px] left-1/2 -translate-x-1/2 w-2.5 h-2.5 rotate-45 bg-surface border-l border-t border-ink-200/80"
-            aria-hidden="true"
-          />
+          <div class="font-display text-[14px] font-semibold text-ink-900 leading-snug">
+            {{ metric.label }}
+          </div>
+
+          <p
+            v-for="(line, i) in descLines"
+            :key="i"
+            class="text-[12.5px] leading-relaxed text-ink-700 whitespace-pre-line"
+          >
+            {{ line }}
+          </p>
+
+          <div class="pt-1.5 mt-1 border-t border-dashed border-ink-200 grid grid-cols-2 gap-x-3 gap-y-1 text-[11.5px]">
+            <div class="flex items-center justify-between">
+              <span class="text-ink-500">当前</span>
+              <span class="font-medium text-ink-900 tabular-nums">{{ metric.value }}{{ metric.unit ?? '' }}</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-ink-500">环比</span>
+              <span
+                class="font-medium tabular-nums"
+                :class="
+                  metric.trend === 'up' ? 'text-emerald-600'
+                  : metric.trend === 'down' ? 'text-rose-600' : 'text-ink-700'
+                "
+              >{{ metric.mom }} <span class="text-ink-400 font-normal">/ {{ trendLabel }}</span></span>
+            </div>
+            <template v-if="metric.threshold">
+              <div class="flex items-center justify-between col-span-2">
+                <span class="text-ink-500">阈值</span>
+                <span class="text-ink-700 tabular-nums">
+                  <template v-if="metric.threshold.min !== undefined && metric.threshold.max !== undefined">
+                    {{ metric.threshold.min }} ~ {{ metric.threshold.max }}
+                  </template>
+                  <template v-else-if="metric.threshold.min !== undefined">
+                    ≥ {{ metric.threshold.min }}
+                  </template>
+                  <template v-else-if="metric.threshold.max !== undefined">
+                    ≤ {{ metric.threshold.max }}
+                  </template>
+                </span>
+              </div>
+            </template>
+          </div>
         </div>
+
+        <!-- 顶部小箭头 -->
+        <span
+          class="absolute -top-[5px] left-1/2 -translate-x-1/2 w-2.5 h-2.5 rotate-45 bg-surface border-l border-t border-ink-200/80"
+          aria-hidden="true"
+        />
       </div>
+    </div>
   </div>
 </template>

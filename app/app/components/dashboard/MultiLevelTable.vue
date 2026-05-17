@@ -56,10 +56,12 @@ function thRowCells(cols: TableColumn[], target: number, current = 1): ThCell[] 
     if (current === target) {
       if (c.children?.length) {
         out.push({ col: c, rowspan: 1, colspan: leavesOf(c).length, isLeaf: false });
-      } else {
+      }
+      else {
         out.push({ col: c, rowspan: maxDepth.value - current + 1, colspan: 1, isLeaf: true });
       }
-    } else if (current < target && c.children?.length) {
+    }
+    else if (current < target && c.children?.length) {
       out.push(...thRowCells(c.children, target, current + 1));
     }
   }
@@ -94,9 +96,11 @@ function toggleSort(col: TableColumn): void {
   if (sortKey.value !== col.key) {
     sortKey.value = col.key;
     sortDir.value = 'asc';
-  } else if (sortDir.value === 'asc') {
+  }
+  else if (sortDir.value === 'asc') {
     sortDir.value = 'desc';
-  } else {
+  }
+  else {
     sortKey.value = null;
     sortDir.value = null;
   }
@@ -152,7 +156,8 @@ function activeFilterCount(key: string): number {
 
 function toggleFilterValue(key: string, v: string): void {
   const cur = new Set(selectedFilters.value[key] ?? []);
-  if (cur.has(v)) cur.delete(v); else cur.add(v);
+  if (cur.has(v)) cur.delete(v);
+  else cur.add(v);
   selectedFilters.value = { ...selectedFilters.value, [key]: cur };
 }
 
@@ -172,9 +177,9 @@ function invertFilter(key: string): void {
 }
 
 function clearFilter(key: string): void {
-  const next = { ...selectedFilters.value };
-  delete next[key];
-  selectedFilters.value = next;
+  const { [key]: _omit, ...rest } = selectedFilters.value;
+  void _omit;
+  selectedFilters.value = rest;
 }
 
 function openFilter(key: string): void {
@@ -215,7 +220,8 @@ function recomputePopoverPos(): void {
     // 用 bottom 锚定到触发按钮上方 8px：popover 紧贴上沿，不会留多余空隙
     style.bottom = `${vh - rect.top + 8}px`;
     style.maxHeight = `${Math.min(spaceAbove, POPOVER_MAX_H)}px`;
-  } else {
+  }
+  else {
     style.top = `${rect.bottom + 8}px`;
     style.maxHeight = `${Math.min(spaceBelow, POPOVER_MAX_H)}px`;
   }
@@ -408,8 +414,8 @@ onBeforeUnmount(() => {
               :style="{ width: c.col.width }"
               :aria-sort="c.isLeaf && isSortable(c.col)
                 ? (sortKey === c.col.key
-                    ? (sortDir === 'asc' ? 'ascending' : sortDir === 'desc' ? 'descending' : 'none')
-                    : 'none')
+                  ? (sortDir === 'asc' ? 'ascending' : sortDir === 'desc' ? 'descending' : 'none')
+                  : 'none')
                 : undefined"
               :class="[
                 'relative px-3 whitespace-nowrap align-middle border-b border-ink-200/60 border-r border-r-ink-200/30 last:border-r-0',
@@ -472,7 +478,7 @@ onBeforeUnmount(() => {
                   @click.stop="openFilter(c.col.key)"
                 >
                   <svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                    <path d="M1.5 2.5A1 1 0 0 1 2.5 1.5h11a1 1 0 0 1 .8 1.6l-4.3 5.5v4.4a1 1 0 0 1-.45.83l-2 1.3A1 1 0 0 1 6 14.3V8.6L1.7 3.1a1 1 0 0 1-.2-.6z"/>
+                    <path d="M1.5 2.5A1 1 0 0 1 2.5 1.5h11a1 1 0 0 1 .8 1.6l-4.3 5.5v4.4a1 1 0 0 1-.45.83l-2 1.3A1 1 0 0 1 6 14.3V8.6L1.7 3.1a1 1 0 0 1-.2-.6z" />
                   </svg>
                   <span v-if="isFilterActive(c.col.key)" class="ml-0.5 font-semibold">{{ activeFilterCount(c.col.key) }}</span>
                 </button>
@@ -532,8 +538,8 @@ onBeforeUnmount(() => {
             <td :colspan="allLeaves.length" class="text-center py-12 text-ink-500 text-[13px]">
               <div class="inline-flex flex-col items-center gap-1.5">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" class="text-ink-300">
-                  <rect x="3" y="4" width="18" height="16" rx="2"/>
-                  <path d="M3 9h18M9 4v16"/>
+                  <rect x="3" y="4" width="18" height="16" rx="2" />
+                  <path d="M3 9h18M9 4v16" />
                 </svg>
                 <span>无匹配数据</span>
                 <button
@@ -541,7 +547,9 @@ onBeforeUnmount(() => {
                   type="button"
                   class="text-[12px] text-brand-700 hover:underline"
                   @click="selectedFilters = {}"
-                >清除所有筛选</button>
+                >
+                  清除所有筛选
+                </button>
               </div>
             </td>
           </tr>
@@ -561,7 +569,9 @@ onBeforeUnmount(() => {
           :disabled="currentPage <= 1"
           aria-label="上一页"
           @click="goPrev"
-        >‹</button>
+        >
+          ‹
+        </button>
         <span class="px-2 tabular-nums">{{ currentPage }} / {{ totalPages }}</span>
         <button
           type="button"
@@ -569,7 +579,9 @@ onBeforeUnmount(() => {
           :disabled="currentPage >= totalPages"
           aria-label="下一页"
           @click="goNext"
-        >›</button>
+        >
+          ›
+        </button>
       </div>
     </footer>
   </div>
@@ -600,7 +612,9 @@ onBeforeUnmount(() => {
             class="w-5 h-5 inline-flex items-center justify-center rounded text-ink-400 hover:text-ink-700 hover:bg-ink-200/60 text-[14px] leading-none"
             aria-label="关闭"
             @click="filterOpen = null"
-          >×</button>
+          >
+            ×
+          </button>
         </div>
 
         <div class="px-2.5 pt-2 pb-1.5 shrink-0">
@@ -612,16 +626,22 @@ onBeforeUnmount(() => {
               class="w-full h-7 pl-7 pr-2 text-[12px] rounded-md border border-ink-200 bg-surface placeholder:text-ink-400 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
             >
             <svg class="absolute left-2 top-1/2 -translate-y-1/2 text-ink-400" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
-              <circle cx="7" cy="7" r="4.5"/>
-              <path d="m13.5 13.5-3-3"/>
+              <circle cx="7" cy="7" r="4.5" />
+              <path d="m13.5 13.5-3-3" />
             </svg>
           </div>
         </div>
 
         <div class="flex items-center gap-2 px-3 pb-1.5 text-[11px] shrink-0">
-          <button type="button" class="text-brand-700 hover:underline" @click="selectAllFilter(openCol.key)">全选</button>
-          <button type="button" class="text-ink-600 hover:underline" @click="invertFilter(openCol.key)">反选</button>
-          <button type="button" class="text-ink-500 hover:underline" @click="clearFilter(openCol.key)">清空</button>
+          <button type="button" class="text-brand-700 hover:underline" @click="selectAllFilter(openCol.key)">
+            全选
+          </button>
+          <button type="button" class="text-ink-600 hover:underline" @click="invertFilter(openCol.key)">
+            反选
+          </button>
+          <button type="button" class="text-ink-500 hover:underline" @click="clearFilter(openCol.key)">
+            清空
+          </button>
           <span class="ml-auto text-ink-500">已选 {{ activeFilterCount(openCol.key) }} / {{ uniqueValues(openCol.key).length }}</span>
         </div>
 

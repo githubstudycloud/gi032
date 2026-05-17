@@ -3,14 +3,14 @@
  * 与项目主题 OKLCH 色阶保持一致。
  */
 export const CHART_COLORS = {
-  brand:   'text-brand-500',
+  brand: 'text-brand-500',
   emerald: 'text-emerald-500',
-  amber:   'text-amber-500',
-  rose:    'text-rose-500',
-  violet:  'text-violet-500',
-  sky:     'text-sky-500',
-  pink:    'text-pink-500',
-  slate:   'text-slate-500',
+  amber: 'text-amber-500',
+  rose: 'text-rose-500',
+  violet: 'text-violet-500',
+  sky: 'text-sky-500',
+  pink: 'text-pink-500',
+  slate: 'text-slate-500',
 } as const;
 
 export type ChartColorToken = keyof typeof CHART_COLORS;

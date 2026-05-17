@@ -26,7 +26,7 @@ function descendantActive(items: NavItem[]): boolean {
   return false;
 }
 
-const isLeafActive   = computed<boolean>(() => pathHits(props.item.path));
+const isLeafActive = computed<boolean>(() => pathHits(props.item.path));
 const hasActiveChild = computed<boolean>(() =>
   hasChildren.value ? descendantActive(props.item.children!) : false,
 );

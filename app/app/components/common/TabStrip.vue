@@ -58,11 +58,11 @@ function onKeydown(e: KeyboardEvent, idx: number): void {
   >
     <button
       v-for="(t, i) in tabs"
+      :id="`tab-${t.key}`"
       :key="t.key"
       :ref="(el) => { if (el) tabBtns[i] = el as HTMLButtonElement }"
       type="button"
       role="tab"
-      :id="`tab-${t.key}`"
       :aria-selected="modelValue === t.key"
       :aria-controls="`panel-${t.key}`"
       :tabindex="modelValue === t.key ? 0 : -1"
