@@ -35,8 +35,11 @@ async function ensureOptions(f: FilterSpec): Promise<void> {
     const cfg = useRuntimeConfig();
     const mode = cfg.public.dataSourceMode;
     const base = mode === 'api' ? (cfg.public.apiBase as string) : (cfg.public.mockBase as string);
-    // json 模式下静态文件需要 .json 后缀；api 模式走后端 envelope
-    const ep = f.source.endpoint;
+    // config.json 里 endpoint 形如 '/dropdowns/time-ranges'：
+    //   json 模式 → 加 .json 后缀，base=mockBase（/mock）
+    //   api  模式 → 加 /api 前缀（如果还没有），base=apiBase
+    let ep = f.source.endpoint;
+    if (mode === 'api' && !ep.startsWith('/api/')) ep = `/api${ep}`;
     const url = mode === 'json' && !ep.endsWith('.json') ? `${base}${ep}.json` : `${base}${ep}`;
     type EnvelopeShape = { code?: number; data?: { items?: OptionList } | OptionList };
     type RawShape = { items?: OptionList } | OptionList | EnvelopeShape;

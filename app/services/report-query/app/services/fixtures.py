@@ -49,3 +49,33 @@ def load_dropdown(code: str) -> list[dict[str, Any]]:
     if isinstance(raw, list):
         return list(raw)
     return []
+
+
+# —— chrome 配置：branding / nav / fonts / themes ————————
+
+@lru_cache(maxsize=1)
+def load_branding() -> dict[str, Any] | None:
+    """品牌 logo / 名称 / 版本。"""
+    raw = _read_json(_MOCK_ROOT / "branding.json")
+    return raw if isinstance(raw, dict) else None
+
+
+@lru_cache(maxsize=1)
+def load_nav() -> dict[str, Any] | None:
+    """全站导航树。"""
+    raw = _read_json(_MOCK_ROOT / "nav.json")
+    return raw if isinstance(raw, dict) else None
+
+
+@lru_cache(maxsize=1)
+def load_fonts() -> dict[str, Any] | None:
+    """字体切换器配置。"""
+    raw = _read_json(_MOCK_ROOT / "fonts.json")
+    return raw if isinstance(raw, dict) else None
+
+
+@lru_cache(maxsize=1)
+def load_themes() -> dict[str, Any] | None:
+    """主题切换器配置。"""
+    raw = _read_json(_MOCK_ROOT / "themes.json")
+    return raw if isinstance(raw, dict) else None

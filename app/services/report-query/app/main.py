@@ -18,6 +18,7 @@ from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from app.api import chrome as chrome_router
 from app.api import config as config_router
 from app.api import data as data_router
 from app.api import drilldown as drilldown_router
@@ -58,6 +59,7 @@ def create_app() -> FastAPI:
         )
 
     app.include_router(meta_router.router, prefix=settings.api_prefix)
+    app.include_router(chrome_router.router, prefix=settings.api_prefix)
     app.include_router(config_router.router, prefix=settings.api_prefix)
     app.include_router(data_router.router, prefix=settings.api_prefix)
     app.include_router(drilldown_router.router, prefix=settings.api_prefix)
