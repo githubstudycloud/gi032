@@ -45,6 +45,7 @@ const merged = computed<OverviewMetrics | null>(() => {
         trend: v?.trend ?? 'flat',
         description: it.description ?? '',
         threshold: it.threshold,
+        detail: it.detail,
       };
     }),
   }));

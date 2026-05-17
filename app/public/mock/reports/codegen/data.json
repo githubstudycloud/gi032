@@ -1,0 +1,82 @@
+{
+  "kpi": {
+    "groups": [
+      { "key": "user", "items": [
+        { "key": "ai-user-count", "value": "1,284", "mom": "+12.3%", "trend": "up" }
+      ]},
+      { "key": "business", "items": [
+        { "key": "ai-requirements",    "value": "186",   "mom": "+8.1%",  "trend": "up" },
+        { "key": "total-requirements", "value": "412",   "mom": "+3.2%",  "trend": "up" },
+        { "key": "design-coverage",    "value": "62.4%", "mom": "+4.8pp", "trend": "up" },
+        { "key": "valid-ai-cases",     "value": "2,148", "mom": "+18.6%", "trend": "up" },
+        { "key": "total-cases",        "value": "3,560", "mom": "+9.4%",  "trend": "up" },
+        { "key": "ai-case-ratio",      "value": "60.3%", "mom": "+5.2pp", "trend": "up" },
+        { "key": "ai-defect-ratio",    "value": "52.8%", "mom": "+3.1pp", "trend": "up" }
+      ]},
+      { "key": "capability", "items": [
+        { "key": "ai-cases-generated", "value": "3,420", "mom": "+22.5%", "trend": "up" },
+        { "key": "ai-cases-adopted",   "value": "2,148", "mom": "+18.6%", "trend": "up" },
+        { "key": "adoption-rate",      "value": "62.8%", "mom": "-1.2pp", "trend": "down" },
+        { "key": "avg-interactions",   "value": "4.6",   "mom": "-0.3",   "trend": "down" }
+      ]}
+    ]
+  },
+  "tabs": {
+    "industry": {
+      "items": [
+        { "industry": "汽车", "owner": "张三",
+          "design-coverage-count": "12", "design-landed-requirements": "28", "design-adoption-rate": "65.4%", "design-new-ai-case-ratio": "58.2%",
+          "script-coverage-count": "8", "script-code-volume": "1.8", "script-accuracy": "82.1%", "script-new-ai-ratio": "61.0%", "script-efficiency-gain": "+34%",
+          "execution-accuracy": "91.5%", "execution-result-accuracy": "88.7%",
+          "actions": "详情", "_row_key": { "industry": "汽车" } },
+        { "industry": "金融", "owner": "李四",
+          "design-coverage-count": "9", "design-landed-requirements": "22", "design-adoption-rate": "71.2%", "design-new-ai-case-ratio": "63.5%",
+          "script-coverage-count": "—", "script-code-volume": "—", "script-accuracy": "—", "script-new-ai-ratio": "—", "script-efficiency-gain": "—",
+          "execution-accuracy": "—", "execution-result-accuracy": "—",
+          "actions": "不涉及", "_row_key": { "industry": "金融" } },
+        { "industry": "能源", "owner": "王五",
+          "design-coverage-count": "6", "design-landed-requirements": "15", "design-adoption-rate": "59.8%", "design-new-ai-case-ratio": "52.4%",
+          "script-coverage-count": "5", "script-code-volume": "1.1", "script-accuracy": "78.4%", "script-new-ai-ratio": "55.2%", "script-efficiency-gain": "+22%",
+          "execution-accuracy": "86.3%", "execution-result-accuracy": "82.0%",
+          "actions": "详情", "_row_key": { "industry": "能源" } }
+      ],
+      "page": 1, "page_size": 10, "total": 3, "has_more": false,
+      "extras": { "totals": {} }
+    },
+    "domain": {
+      "items": [
+        { "domain": "智能终端",
+          "req-count": "146", "req-ai-count": "82", "req-ai-coverage": "56.2%", "req-new-cases": "612",
+          "case-ai-count": "388", "case-ai-ratio": "63.4%", "case-ai-adoption": "68.1%",
+          "script-ai-ratio": "58.7%", "script-ai-lines": "12,480", "script-ai-accuracy": "84.2%",
+          "exec-new-ai-ratio": "61.5%", "exec-ai-ratio": "47.3%", "exec-intent-accuracy": "92.1%",
+          "exec-fail-count": "28", "exec-fail-ai-rate": "78.6%", "exec-fail-ai-accuracy": "81.4%",
+          "actions": "详情", "_row_key": { "domain": "智能终端" } },
+        { "domain": "云与计算",
+          "req-count": "98", "req-ai-count": "54", "req-ai-coverage": "55.1%", "req-new-cases": "414",
+          "case-ai-count": "262", "case-ai-ratio": "61.8%", "case-ai-adoption": "65.7%",
+          "script-ai-ratio": "53.2%", "script-ai-lines": "9,150", "script-ai-accuracy": "81.5%",
+          "exec-new-ai-ratio": "57.8%", "exec-ai-ratio": "42.6%", "exec-intent-accuracy": "89.4%",
+          "exec-fail-count": "19", "exec-fail-ai-rate": "73.2%", "exec-fail-ai-accuracy": "76.8%",
+          "actions": "详情", "_row_key": { "domain": "云与计算" } },
+        { "domain": "网络产品",
+          "req-count": "112", "req-ai-count": "61", "req-ai-coverage": "54.5%", "req-new-cases": "498",
+          "case-ai-count": "294", "case-ai-ratio": "59.0%", "case-ai-adoption": "62.4%",
+          "script-ai-ratio": "55.4%", "script-ai-lines": "10,620", "script-ai-accuracy": "82.8%",
+          "exec-new-ai-ratio": "59.2%", "exec-ai-ratio": "44.1%", "exec-intent-accuracy": "90.7%",
+          "exec-fail-count": "22", "exec-fail-ai-rate": "75.5%", "exec-fail-ai-accuracy": "78.9%",
+          "actions": "详情", "_row_key": { "domain": "网络产品" } },
+        { "domain": "汽车解决方案",
+          "req-count": "56", "req-ai-count": "34", "req-ai-coverage": "60.7%", "req-new-cases": "248",
+          "case-ai-count": "164", "case-ai-ratio": "66.1%", "case-ai-adoption": "70.3%",
+          "script-ai-ratio": "61.8%", "script-ai-lines": "6,840", "script-ai-accuracy": "85.6%",
+          "exec-new-ai-ratio": "63.4%", "exec-ai-ratio": "49.2%", "exec-intent-accuracy": "93.6%",
+          "exec-fail-count": "14", "exec-fail-ai-rate": "82.1%", "exec-fail-ai-accuracy": "84.3%",
+          "actions": "详情", "_row_key": { "domain": "汽车解决方案" } }
+      ],
+      "page": 1, "page_size": 10, "total": 4, "has_more": false,
+      "extras": { "totals": {} }
+    }
+  },
+  "drilldowns": {}
+}

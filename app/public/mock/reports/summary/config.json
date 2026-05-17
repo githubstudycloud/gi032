@@ -1,0 +1,1109 @@
+{
+  "meta": {
+    "report_type": "summary",
+    "name": "总览",
+    "subtitle": "三大先锋产业 + 四大领域 AI 测试运营总览",
+    "version": 1,
+    "user_pref_endpoint": "/api/users/me/columns/summary"
+  },
+  "toolbar": {
+    "show_refresh": true
+  },
+  "filters": [
+    {
+      "code": "department",
+      "label": "部门",
+      "kind": "flat_dropdown",
+      "param": {
+        "value": "department_code"
+      },
+      "default": {
+        "value": "all"
+      },
+      "source": {
+        "endpoint": "/dropdowns/departments",
+        "params_in": [
+          "q",
+          "page"
+        ],
+        "supports_favorite": true
+      }
+    }
+  ],
+  "kpi": {
+    "enabled": true,
+    "title": "核心指标",
+    "data_endpoint": "/api/reports/summary/kpi",
+    "layout_mode_default": "grouped",
+    "footnote": "点击卡片可查看明细数字，点击图表元素可下钻到对应维度的明细数据。",
+    "groups": [
+      {
+        "key": "user",
+        "label": "用户指标",
+        "items": [
+          {
+            "key": "ai-user-count",
+            "label": "AI用户数",
+            "description": "本月使用过 AI 测试运营任意功能的活跃用户数。\n口径：月内至少一次发起 AI 调用。\n环比：上个自然月。可点击下钻查看部门 / 角色分布。",
+            "detail": {
+              "filters": [
+                {
+                  "key": "department",
+                  "label": "部门",
+                  "options": [
+                    {
+                      "key": "all",
+                      "label": "全部部门"
+                    },
+                    {
+                      "key": "dept-1",
+                      "label": "智能终端测试部"
+                    },
+                    {
+                      "key": "dept-2",
+                      "label": "云服务测试部"
+                    },
+                    {
+                      "key": "dept-3",
+                      "label": "网络产品测试部"
+                    },
+                    {
+                      "key": "dept-4",
+                      "label": "汽车解决方案测试部"
+                    }
+                  ]
+                },
+                {
+                  "key": "role",
+                  "label": "角色",
+                  "options": [
+                    {
+                      "key": "all",
+                      "label": "全部角色"
+                    },
+                    {
+                      "key": "designer",
+                      "label": "测试设计"
+                    },
+                    {
+                      "key": "dev",
+                      "label": "测试开发"
+                    },
+                    {
+                      "key": "executor",
+                      "label": "测试执行"
+                    },
+                    {
+                      "key": "lead",
+                      "label": "测试主管"
+                    }
+                  ]
+                }
+              ],
+              "charts": [
+                {
+                  "key": "ai-user-trend",
+                  "kind": "trend",
+                  "title": "近 12 周活跃走势",
+                  "subtitle": "周活 AI 调用用户数",
+                  "unit": "人",
+                  "points": [
+                    {
+                      "x": "W14",
+                      "y": 820
+                    },
+                    {
+                      "x": "W15",
+                      "y": 865
+                    },
+                    {
+                      "x": "W16",
+                      "y": 902
+                    },
+                    {
+                      "x": "W17",
+                      "y": 948
+                    },
+                    {
+                      "x": "W18",
+                      "y": 1010
+                    },
+                    {
+                      "x": "W19",
+                      "y": 1052
+                    },
+                    {
+                      "x": "W20",
+                      "y": 1098
+                    },
+                    {
+                      "x": "W21",
+                      "y": 1135
+                    },
+                    {
+                      "x": "W22",
+                      "y": 1180
+                    },
+                    {
+                      "x": "W23",
+                      "y": 1216
+                    },
+                    {
+                      "x": "W24",
+                      "y": 1252
+                    },
+                    {
+                      "x": "W25",
+                      "y": 1284
+                    }
+                  ],
+                  "variants": {
+                    "dept-1|all": {
+                      "subtitle": "智能终端 · 周活",
+                      "points": [
+                        {
+                          "x": "W14",
+                          "y": 240
+                        },
+                        {
+                          "x": "W15",
+                          "y": 258
+                        },
+                        {
+                          "x": "W16",
+                          "y": 270
+                        },
+                        {
+                          "x": "W17",
+                          "y": 288
+                        },
+                        {
+                          "x": "W18",
+                          "y": 306
+                        },
+                        {
+                          "x": "W19",
+                          "y": 322
+                        },
+                        {
+                          "x": "W20",
+                          "y": 340
+                        },
+                        {
+                          "x": "W21",
+                          "y": 356
+                        },
+                        {
+                          "x": "W22",
+                          "y": 372
+                        },
+                        {
+                          "x": "W23",
+                          "y": 388
+                        },
+                        {
+                          "x": "W24",
+                          "y": 400
+                        },
+                        {
+                          "x": "W25",
+                          "y": 412
+                        }
+                      ]
+                    },
+                    "dept-2|all": {
+                      "subtitle": "云服务 · 周活",
+                      "points": [
+                        {
+                          "x": "W14",
+                          "y": 210
+                        },
+                        {
+                          "x": "W15",
+                          "y": 222
+                        },
+                        {
+                          "x": "W16",
+                          "y": 238
+                        },
+                        {
+                          "x": "W17",
+                          "y": 252
+                        },
+                        {
+                          "x": "W18",
+                          "y": 268
+                        },
+                        {
+                          "x": "W19",
+                          "y": 282
+                        },
+                        {
+                          "x": "W20",
+                          "y": 296
+                        },
+                        {
+                          "x": "W21",
+                          "y": 312
+                        },
+                        {
+                          "x": "W22",
+                          "y": 326
+                        },
+                        {
+                          "x": "W23",
+                          "y": 338
+                        },
+                        {
+                          "x": "W24",
+                          "y": 348
+                        },
+                        {
+                          "x": "W25",
+                          "y": 356
+                        }
+                      ]
+                    },
+                    "dept-3|all": {
+                      "subtitle": "网络产品 · 周活",
+                      "points": [
+                        {
+                          "x": "W14",
+                          "y": 180
+                        },
+                        {
+                          "x": "W15",
+                          "y": 192
+                        },
+                        {
+                          "x": "W16",
+                          "y": 204
+                        },
+                        {
+                          "x": "W17",
+                          "y": 218
+                        },
+                        {
+                          "x": "W18",
+                          "y": 232
+                        },
+                        {
+                          "x": "W19",
+                          "y": 246
+                        },
+                        {
+                          "x": "W20",
+                          "y": 256
+                        },
+                        {
+                          "x": "W21",
+                          "y": 268
+                        },
+                        {
+                          "x": "W22",
+                          "y": 278
+                        },
+                        {
+                          "x": "W23",
+                          "y": 286
+                        },
+                        {
+                          "x": "W24",
+                          "y": 294
+                        },
+                        {
+                          "x": "W25",
+                          "y": 298
+                        }
+                      ]
+                    },
+                    "dept-4|all": {
+                      "subtitle": "汽车方案 · 周活",
+                      "points": [
+                        {
+                          "x": "W14",
+                          "y": 140
+                        },
+                        {
+                          "x": "W15",
+                          "y": 148
+                        },
+                        {
+                          "x": "W16",
+                          "y": 156
+                        },
+                        {
+                          "x": "W17",
+                          "y": 164
+                        },
+                        {
+                          "x": "W18",
+                          "y": 174
+                        },
+                        {
+                          "x": "W19",
+                          "y": 182
+                        },
+                        {
+                          "x": "W20",
+                          "y": 188
+                        },
+                        {
+                          "x": "W21",
+                          "y": 196
+                        },
+                        {
+                          "x": "W22",
+                          "y": 202
+                        },
+                        {
+                          "x": "W23",
+                          "y": 208
+                        },
+                        {
+                          "x": "W24",
+                          "y": 214
+                        },
+                        {
+                          "x": "W25",
+                          "y": 218
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "key": "ai-user-by-dept",
+                  "kind": "distribution",
+                  "title": "按部门分布",
+                  "subtitle": "本月活跃 AI 用户",
+                  "unit": "人",
+                  "items": [
+                    {
+                      "key": "dept-1",
+                      "label": "智能终端",
+                      "value": 412,
+                      "color": "brand"
+                    },
+                    {
+                      "key": "dept-2",
+                      "label": "云服务",
+                      "value": 356,
+                      "color": "sky"
+                    },
+                    {
+                      "key": "dept-3",
+                      "label": "网络产品",
+                      "value": 298,
+                      "color": "emerald"
+                    },
+                    {
+                      "key": "dept-4",
+                      "label": "汽车方案",
+                      "value": 218,
+                      "color": "violet"
+                    }
+                  ]
+                },
+                {
+                  "key": "ai-user-by-role",
+                  "kind": "donut",
+                  "title": "按角色构成",
+                  "subtitle": "占比 %",
+                  "items": [
+                    {
+                      "key": "designer",
+                      "label": "测试设计",
+                      "value": 540,
+                      "color": "brand"
+                    },
+                    {
+                      "key": "dev",
+                      "label": "测试开发",
+                      "value": 386,
+                      "color": "violet"
+                    },
+                    {
+                      "key": "executor",
+                      "label": "测试执行",
+                      "value": 248,
+                      "color": "emerald"
+                    },
+                    {
+                      "key": "lead",
+                      "label": "测试主管",
+                      "value": 110,
+                      "color": "amber"
+                    }
+                  ]
+                },
+                {
+                  "key": "ai-user-by-tenure",
+                  "kind": "bar",
+                  "title": "按司龄分组",
+                  "subtitle": "首次使用 AI 距入职月数",
+                  "unit": "人",
+                  "items": [
+                    {
+                      "key": "lt1",
+                      "label": "<1y",
+                      "value": 186,
+                      "color": "sky"
+                    },
+                    {
+                      "key": "1to3",
+                      "label": "1-3y",
+                      "value": 412,
+                      "color": "brand"
+                    },
+                    {
+                      "key": "3to5",
+                      "label": "3-5y",
+                      "value": 364,
+                      "color": "emerald"
+                    },
+                    {
+                      "key": "5to8",
+                      "label": "5-8y",
+                      "value": 232,
+                      "color": "violet"
+                    },
+                    {
+                      "key": "gt8",
+                      "label": ">8y",
+                      "value": 90,
+                      "color": "amber"
+                    }
+                  ]
+                },
+                {
+                  "key": "ai-user-target",
+                  "kind": "gauge",
+                  "title": "渗透率达成度",
+                  "subtitle": "AI 用户数 / 测试团队总人数",
+                  "gauge": {
+                    "value": 64,
+                    "min": 0,
+                    "max": 100,
+                    "target": 70,
+                    "unit": "%",
+                    "display": "64%"
+                  }
+                },
+                {
+                  "key": "ai-user-ai-vs-human",
+                  "kind": "stacked",
+                  "title": "AI vs 纯人工 用户分布",
+                  "subtitle": "按部门",
+                  "stacked": {
+                    "series": [
+                      {
+                        "key": "ai",
+                        "label": "AI 用户",
+                        "color": "brand"
+                      },
+                      {
+                        "key": "human",
+                        "label": "纯人工",
+                        "color": "slate"
+                      }
+                    ],
+                    "rows": [
+                      {
+                        "label": "智能终端",
+                        "values": {
+                          "ai": 412,
+                          "human": 88
+                        }
+                      },
+                      {
+                        "label": "云服务",
+                        "values": {
+                          "ai": 356,
+                          "human": 124
+                        }
+                      },
+                      {
+                        "label": "网络产品",
+                        "values": {
+                          "ai": 298,
+                          "human": 156
+                        }
+                      },
+                      {
+                        "label": "汽车方案",
+                        "values": {
+                          "ai": 218,
+                          "human": 92
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "key": "ai-user-heatmap",
+                  "kind": "heatmap",
+                  "title": "活跃热力图",
+                  "subtitle": "部门 × 工作日",
+                  "unit": "人",
+                  "heatmap": {
+                    "xLabels": [
+                      "一",
+                      "二",
+                      "三",
+                      "四",
+                      "五"
+                    ],
+                    "yLabels": [
+                      "智能终端",
+                      "云服务",
+                      "网络产品",
+                      "汽车方案"
+                    ],
+                    "values": [
+                      [
+                        186,
+                        224,
+                        248,
+                        232,
+                        198
+                      ],
+                      [
+                        156,
+                        198,
+                        220,
+                        212,
+                        178
+                      ],
+                      [
+                        128,
+                        168,
+                        192,
+                        184,
+                        152
+                      ],
+                      [
+                        92,
+                        128,
+                        148,
+                        142,
+                        118
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "key": "ai-user-capability-radar",
+                  "kind": "radar",
+                  "title": "多维使用能力",
+                  "subtitle": "本月 vs 上月",
+                  "radar": {
+                    "axes": [
+                      {
+                        "key": "design",
+                        "label": "设计",
+                        "max": 100
+                      },
+                      {
+                        "key": "script",
+                        "label": "脚本",
+                        "max": 100
+                      },
+                      {
+                        "key": "exec",
+                        "label": "执行",
+                        "max": 100
+                      },
+                      {
+                        "key": "review",
+                        "label": "评审",
+                        "max": 100
+                      },
+                      {
+                        "key": "defect",
+                        "label": "缺陷",
+                        "max": 100
+                      },
+                      {
+                        "key": "report",
+                        "label": "报告",
+                        "max": 100
+                      }
+                    ],
+                    "series": [
+                      {
+                        "key": "cur",
+                        "label": "本月",
+                        "color": "brand",
+                        "values": {
+                          "design": 82,
+                          "script": 74,
+                          "exec": 68,
+                          "review": 60,
+                          "defect": 72,
+                          "report": 78
+                        }
+                      },
+                      {
+                        "key": "prev",
+                        "label": "上月",
+                        "color": "slate",
+                        "values": {
+                          "design": 68,
+                          "script": 62,
+                          "exec": 58,
+                          "review": 52,
+                          "defect": 64,
+                          "report": 70
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "key": "business",
+        "label": "业务指标",
+        "items": [
+          {
+            "key": "ai-requirements",
+            "label": "AI需求数",
+            "description": "本月接入 AI 测试设计 / 脚本生成的需求总数。"
+          },
+          {
+            "key": "total-requirements",
+            "label": "需求数",
+            "description": "本月所有进入测试环节的需求总数（含 AI 与非 AI）。"
+          },
+          {
+            "key": "design-coverage",
+            "label": "AI测试设计需求覆盖率",
+            "description": "公式：AI 需求数 ÷ 需求数 × 100%。\n反映 AI 能力在测试设计阶段的渗透广度。\n参考阈值：≥ 60%为达标，环比 +4.8 pp。",
+            "threshold": {
+              "min": 60,
+              "goodColor": "emerald",
+              "badColor": "rose"
+            },
+            "detail": {
+              "filters": [
+                {
+                  "key": "department",
+                  "label": "部门",
+                  "options": [
+                    {
+                      "key": "all",
+                      "label": "全部部门"
+                    },
+                    {
+                      "key": "dept-1",
+                      "label": "智能终端测试部"
+                    },
+                    {
+                      "key": "dept-2",
+                      "label": "云服务测试部"
+                    },
+                    {
+                      "key": "dept-3",
+                      "label": "网络产品测试部"
+                    },
+                    {
+                      "key": "dept-4",
+                      "label": "汽车解决方案测试部"
+                    }
+                  ]
+                },
+                {
+                  "key": "person",
+                  "label": "接口人",
+                  "options": [
+                    {
+                      "key": "all",
+                      "label": "全部接口人"
+                    },
+                    {
+                      "key": "p1",
+                      "label": "张三"
+                    },
+                    {
+                      "key": "p2",
+                      "label": "李四"
+                    },
+                    {
+                      "key": "p3",
+                      "label": "王五"
+                    }
+                  ]
+                }
+              ],
+              "charts": [
+                {
+                  "key": "design-coverage-trend",
+                  "kind": "trend",
+                  "title": "覆盖率 6 个月走势",
+                  "unit": "%",
+                  "threshold": {
+                    "min": 60
+                  },
+                  "points": [
+                    {
+                      "x": "2025-12",
+                      "y": 48.2
+                    },
+                    {
+                      "x": "2026-01",
+                      "y": 52.6
+                    },
+                    {
+                      "x": "2026-02",
+                      "y": 55.1
+                    },
+                    {
+                      "x": "2026-03",
+                      "y": 57.6
+                    },
+                    {
+                      "x": "2026-04",
+                      "y": 60.1
+                    },
+                    {
+                      "x": "2026-05",
+                      "y": 62.4
+                    }
+                  ]
+                },
+                {
+                  "key": "design-coverage-by-dept",
+                  "kind": "distribution",
+                  "title": "按部门覆盖率分布",
+                  "items": [
+                    {
+                      "key": "dept-1",
+                      "label": "智能终端",
+                      "value": 71.2,
+                      "display": "71.2%"
+                    },
+                    {
+                      "key": "dept-4",
+                      "label": "汽车解决方案",
+                      "value": 65.4,
+                      "display": "65.4%"
+                    },
+                    {
+                      "key": "dept-2",
+                      "label": "云服务",
+                      "value": 60.8,
+                      "display": "60.8%"
+                    },
+                    {
+                      "key": "dept-3",
+                      "label": "网络产品",
+                      "value": 52.3,
+                      "display": "52.3%"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "key": "valid-ai-cases",
+            "label": "AI生成的有效用例数",
+            "description": "AI 生成且被采纳（标注为有效）的测试用例总数。"
+          },
+          {
+            "key": "total-cases",
+            "label": "用例数",
+            "description": "本月新增的测试用例总数（含 AI 与人工）。"
+          },
+          {
+            "key": "ai-case-ratio",
+            "label": "AI生成测试用例占比",
+            "description": "公式：AI 生成有效用例数 ÷ 用例总数。\n反映 AI 对用例资产的实际贡献占比。\n推荐与“采纳率”合看：采纳率高但占比低 → AI 覆盖面不足。",
+            "threshold": {
+              "min": 50,
+              "goodColor": "emerald",
+              "badColor": "amber"
+            }
+          },
+          {
+            "key": "ai-defect-ratio",
+            "label": "AI生成用例发现缺陷占比",
+            "description": "AI 生成用例发现的缺陷数 / 全部用例发现的缺陷数。"
+          }
+        ]
+      },
+      {
+        "key": "capability",
+        "label": "能力指标",
+        "items": [
+          {
+            "key": "ai-cases-generated",
+            "label": "AI生成用例数",
+            "description": "AI 系统本月生成的全部候选用例（含未采纳）。"
+          },
+          {
+            "key": "ai-cases-adopted",
+            "label": "AI生成采纳用例数",
+            "description": "AI 生成且经评审/试运行后落入正式用例库的数量。"
+          },
+          {
+            "key": "adoption-rate",
+            "label": "AI生成用例采纳率",
+            "description": "公式：AI 采纳用例数 ÷ AI 生成用例数。\n下降可能原因：模型质量波动 / 评审口径收紧 / 场景复杂度上升。\n建议结合产业明细定位退步产业。",
+            "threshold": {
+              "min": 65,
+              "goodColor": "emerald",
+              "badColor": "rose"
+            }
+          },
+          {
+            "key": "avg-interactions",
+            "label": "平均每需求交互次数",
+            "description": "用户在 AI 测试设计上每个需求的平均交互轮数。下降通常意味着首轮命中率提升。"
+          }
+        ]
+      }
+    ]
+  },
+  "primary_view": {
+    "enabled": true,
+    "title": "试点进展明细",
+    "endpoint": "/api/reports/summary/summary",
+    "method": "POST",
+    "paging": {
+      "default_mode": "client",
+      "default_page_size": 10
+    },
+    "tabs": [
+      {
+        "key": "industry",
+        "label": "三大先锋产业试点进展",
+        "data_endpoint": "/api/reports/summary/summary?tab=industry",
+        "header_tree": [
+          {
+            "key": "industry",
+            "label": "产业",
+            "rowspan": 2,
+            "width": "100px",
+            "filterable": true
+          },
+          {
+            "key": "owner",
+            "label": "接口人",
+            "rowspan": 2,
+            "width": "90px",
+            "filterable": true
+          },
+          {
+            "key": "design",
+            "label": "测试设计阶段",
+            "children": [
+              {
+                "key": "design-coverage-count",
+                "label": "测试设计覆盖人数",
+                "sortable": true
+              },
+              {
+                "key": "design-landed-requirements",
+                "label": "落地需求个数",
+                "sortable": true
+              },
+              {
+                "key": "design-adoption-rate",
+                "label": "用例采纳率",
+                "sortable": true,
+                "highlight": true,
+                "threshold": {
+                  "min": 65,
+                  "goodColor": "emerald",
+                  "badColor": "rose"
+                }
+              },
+              {
+                "key": "design-new-ai-case-ratio",
+                "label": "新用例AI生成占比",
+                "sortable": true,
+                "threshold": {
+                  "min": 55,
+                  "goodColor": "emerald",
+                  "badColor": "amber"
+                }
+              }
+            ]
+          },
+          {
+            "key": "script",
+            "label": "测试脚本生成阶段",
+            "children": [
+              {
+                "key": "script-coverage-count",
+                "label": "测试脚本覆盖人数"
+              },
+              {
+                "key": "script-code-volume",
+                "label": "生成代码量(k行)"
+              },
+              {
+                "key": "script-accuracy",
+                "label": "生成代码准确率"
+              },
+              {
+                "key": "script-new-ai-ratio",
+                "label": "新增脚本AI生成占比"
+              },
+              {
+                "key": "script-efficiency-gain",
+                "label": "阶段效率提升预估"
+              }
+            ]
+          },
+          {
+            "key": "execution",
+            "label": "测试执行阶段",
+            "children": [
+              {
+                "key": "execution-accuracy",
+                "label": "测试执行准确率",
+                "sortable": true,
+                "highlight": true,
+                "threshold": {
+                  "min": 90,
+                  "goodColor": "emerald",
+                  "badColor": "rose"
+                }
+              },
+              {
+                "key": "execution-result-accuracy",
+                "label": "结果分析准确率",
+                "sortable": true,
+                "threshold": {
+                  "min": 85,
+                  "goodColor": "emerald",
+                  "badColor": "amber"
+                }
+              }
+            ]
+          },
+          {
+            "key": "actions",
+            "label": "操作",
+            "rowspan": 2,
+            "width": "120px"
+          }
+        ]
+      },
+      {
+        "key": "domain",
+        "label": "四大领域试点进展",
+        "data_endpoint": "/api/reports/summary/summary?tab=domain",
+        "header_tree": [
+          {
+            "key": "domain",
+            "label": "领域",
+            "rowspan": 2,
+            "width": "120px"
+          },
+          {
+            "key": "req",
+            "label": "需求覆盖",
+            "children": [
+              {
+                "key": "req-count",
+                "label": "需求个数"
+              },
+              {
+                "key": "req-ai-count",
+                "label": "AI需求个数"
+              },
+              {
+                "key": "req-ai-coverage",
+                "label": "AI涉及需求覆盖率"
+              },
+              {
+                "key": "req-new-cases",
+                "label": "新增用例个数"
+              }
+            ]
+          },
+          {
+            "key": "case",
+            "label": "用例生成",
+            "children": [
+              {
+                "key": "case-ai-count",
+                "label": "AI用例个数"
+              },
+              {
+                "key": "case-ai-ratio",
+                "label": "测试用例AI生成占比"
+              },
+              {
+                "key": "case-ai-adoption",
+                "label": "AI生成用例采纳率"
+              }
+            ]
+          },
+          {
+            "key": "script",
+            "label": "脚本生成",
+            "children": [
+              {
+                "key": "script-ai-ratio",
+                "label": "AI生成脚本代码占比"
+              },
+              {
+                "key": "script-ai-lines",
+                "label": "AI生成代码入库行数"
+              },
+              {
+                "key": "script-ai-accuracy",
+                "label": "AI生成代码准确率"
+              }
+            ]
+          },
+          {
+            "key": "exec",
+            "label": "测试执行",
+            "children": [
+              {
+                "key": "exec-new-ai-ratio",
+                "label": "新增测试脚本AI辅助生成占比"
+              },
+              {
+                "key": "exec-ai-ratio",
+                "label": "AI辅助测试执行比例"
+              },
+              {
+                "key": "exec-intent-accuracy",
+                "label": "测试执行任务意图识别准确率"
+              },
+              {
+                "key": "exec-fail-count",
+                "label": "自动化失败需分析数"
+              },
+              {
+                "key": "exec-fail-ai-rate",
+                "label": "自动化失败AI自主分析率(S级)"
+              },
+              {
+                "key": "exec-fail-ai-accuracy",
+                "label": "自动化失败AI自主分析准确率(S级)"
+              }
+            ]
+          },
+          {
+            "key": "actions",
+            "label": "操作",
+            "rowspan": 2,
+            "width": "120px"
+          }
+        ]
+      }
+    ]
+  },
+  "drilldowns": {}
+}

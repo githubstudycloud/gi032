@@ -1,0 +1,94 @@
+{
+  "meta": {
+    "report_type": "design",
+    "name": "AI辅助测试设计",
+    "subtitle": "各部门 AI 测试设计渗透率排行",
+    "version": 1,
+    "user_pref_endpoint": "/api/users/me/columns/design"
+  },
+
+  "toolbar": { "show_refresh": true },
+
+  "filters": [
+    { "code": "time_range", "label": "时间范围", "kind": "flat_dropdown", "required": true,
+      "param": { "value": "time_range" }, "default": { "value": "7d" },
+      "source": { "endpoint": "/dropdowns/time-ranges", "params_in": ["q"] } },
+    { "code": "department", "label": "部门", "kind": "flat_dropdown",
+      "param": { "value": "department_code" }, "default": { "value": "all" },
+      "source": { "endpoint": "/dropdowns/departments", "params_in": ["q", "page"], "supports_favorite": true } }
+  ],
+
+  "kpi": {
+    "enabled": true,
+    "title": "核心指标",
+    "data_endpoint": "/api/reports/design/kpi",
+    "layout_mode_default": "grouped",
+    "footnote": "点击卡片可查看明细数字。",
+    "groups": [
+      { "key": "user", "label": "用户指标", "items": [
+        { "key": "ai-user-count", "label": "AI用户数", "data_type": "int",
+          "description": "本月使用过 AI 测试设计功能的活跃用户数。" }
+      ]},
+      { "key": "business", "label": "业务指标", "items": [
+        { "key": "ai-requirements",    "label": "AI需求数", "data_type": "int",
+          "description": "本月接入 AI 测试设计的需求总数。" },
+        { "key": "total-requirements", "label": "需求数",   "data_type": "int",
+          "description": "本月所有进入测试环节的需求总数。" },
+        { "key": "design-coverage",    "label": "AI测试设计需求覆盖率", "unit": "%", "data_type": "percent",
+          "description": "公式：AI 需求数 ÷ 需求数 × 100%。\n仅统计进入测试设计阶段的需求。\n参考阈值：≥ 60% 为达标。",
+          "threshold": { "min": 60, "goodColor": "emerald", "badColor": "rose" } },
+        { "key": "valid-ai-cases",     "label": "AI生成的有效用例数", "data_type": "int",
+          "description": "AI 生成且被采纳的用例总数。" },
+        { "key": "total-cases",        "label": "用例数", "data_type": "int",
+          "description": "本月新增的测试用例总数。" },
+        { "key": "ai-case-ratio",      "label": "AI生成测试用例占比", "unit": "%", "data_type": "percent",
+          "description": "AI 生成有效用例数 / 用例总数。",
+          "threshold": { "min": 50, "goodColor": "emerald", "badColor": "amber" } },
+        { "key": "ai-defect-ratio",    "label": "AI生成用例发现缺陷占比", "unit": "%", "data_type": "percent",
+          "description": "AI 生成用例发现缺陷数 / 全部用例发现缺陷数。" }
+      ]},
+      { "key": "capability", "label": "能力指标", "items": [
+        { "key": "ai-cases-generated", "label": "AI生成用例数", "data_type": "int",
+          "description": "AI 系统本月生成的全部候选用例（含未采纳）。" },
+        { "key": "ai-cases-adopted",   "label": "AI生成采纳用例数", "data_type": "int",
+          "description": "AI 生成且落入正式用例库的数量。" },
+        { "key": "adoption-rate",      "label": "AI生成用例采纳率", "unit": "%", "data_type": "percent",
+          "description": "公式：AI 采纳用例数 ÷ AI 生成用例数。\n反映 AI 生成用例的质量。",
+          "threshold": { "min": 65, "goodColor": "emerald", "badColor": "rose" } },
+        { "key": "avg-interactions",   "label": "平均每需求交互次数", "data_type": "decimal",
+          "description": "每个需求的 AI 平均交互轮数。" }
+      ]}
+    ]
+  },
+
+  "primary_view": {
+    "enabled": true,
+    "title": "AI辅助测试设计明细",
+    "endpoint": "/api/reports/design/summary",
+    "method": "POST",
+    "paging": { "default_mode": "client", "default_page_size": 10 },
+    "tabs": [
+      {
+        "key": "design-detail",
+        "label": "AI辅助测试设计明细",
+        "data_endpoint": "/api/reports/design/summary?tab=design-detail",
+        "header_tree": [
+          { "key": "rank",          "label": "排名",         "width": "70px",  "sortable": true },
+          { "key": "department",    "label": "部门",         "width": "200px", "filterable": true, "align": "left" },
+          { "key": "req-total",     "label": "需求总数",     "sortable": true },
+          { "key": "ai-req-count",  "label": "Ai设计需求数", "sortable": true },
+          { "key": "coverage",      "label": "覆盖率",       "sortable": true, "highlight": true,
+            "threshold": { "min": 60, "goodColor": "emerald", "badColor": "rose" } },
+          { "key": "ai-cases",      "label": "Ai生成用例数", "sortable": true },
+          { "key": "adopted-cases", "label": "采纳用例数",   "sortable": true },
+          { "key": "adoption-rate", "label": "采纳率",       "sortable": true, "highlight": true,
+            "threshold": { "min": 65, "goodColor": "emerald", "badColor": "amber" } },
+          { "key": "defects",       "label": "发现缺陷数",   "sortable": true },
+          { "key": "actions",       "label": "操作",         "width": "90px", "cellType": "action" }
+        ]
+      }
+    ]
+  },
+
+  "drilldowns": {}
+}

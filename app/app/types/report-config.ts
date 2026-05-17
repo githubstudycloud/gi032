@@ -7,7 +7,7 @@
  * 跟 overview-summary.ts 的差别：那个是 v0 老形状，本文件是 v2 新形状。
  * 迁移过程中两者并存；新页用 v2，老页继续 v0。
  */
-import type { TableColumn } from './overview-summary';
+import type { TableColumn, MetricDetail } from './overview-summary';
 
 /* —— Meta —— */
 
@@ -89,7 +89,8 @@ export interface KpiItemDef {
   data_type?: 'int' | 'decimal' | 'percent' | 'string';
   description?: string;
   threshold?: Threshold;
-  detail_ref?: string; // 引用 drilldowns
+  detail_ref?: string; // 引用 drilldowns（v2 推荐路径）
+  detail?: MetricDetail; // inline charts —— summary 页旧形状沿用
 }
 
 export interface KpiGroupDef {

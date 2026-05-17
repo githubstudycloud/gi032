@@ -1,0 +1,41 @@
+{
+  "kpi": {
+    "groups": [
+      { "key": "user", "items": [
+        { "key": "ai-user-count", "value": "1,284", "mom": "+12.3%", "trend": "up" }
+      ]},
+      { "key": "business", "items": [
+        { "key": "ai-requirements",    "value": "186",   "mom": "+8.1%",  "trend": "up" },
+        { "key": "total-requirements", "value": "412",   "mom": "+3.2%",  "trend": "up" },
+        { "key": "design-coverage",    "value": "62.4%", "mom": "+4.8pp", "trend": "up" },
+        { "key": "valid-ai-cases",     "value": "2,148", "mom": "+18.6%", "trend": "up" },
+        { "key": "total-cases",        "value": "3,560", "mom": "+9.4%",  "trend": "up" },
+        { "key": "ai-case-ratio",      "value": "60.3%", "mom": "+5.2pp", "trend": "up" },
+        { "key": "ai-defect-ratio",    "value": "52.8%", "mom": "+3.1pp", "trend": "up" }
+      ]},
+      { "key": "capability", "items": [
+        { "key": "ai-cases-generated", "value": "3,420", "mom": "+22.5%", "trend": "up" },
+        { "key": "ai-cases-adopted",   "value": "2,148", "mom": "+18.6%", "trend": "up" },
+        { "key": "adoption-rate",      "value": "62.8%", "mom": "-1.2pp", "trend": "down" },
+        { "key": "avg-interactions",   "value": "4.6",   "mom": "-0.3",   "trend": "down" }
+      ]}
+    ]
+  },
+  "tabs": {
+    "design-detail": {
+      "items": [
+        { "rank": 1, "department": "智能终端测试部",     "req-total": 126, "ai-req-count": 92, "coverage": "73.0%", "ai-cases": 1842, "adopted-cases": 1268, "adoption-rate": "68.8%", "defects": 184, "actions": "详情", "_row_key": { "rank": 1 } },
+        { "rank": 2, "department": "汽车解决方案测试部", "req-total": 94,  "ai-req-count": 68, "coverage": "72.3%", "ai-cases": 1364, "adopted-cases":  912, "adoption-rate": "66.9%", "defects": 142, "actions": "详情", "_row_key": { "rank": 2 } },
+        { "rank": 3, "department": "云服务测试部",       "req-total": 86,  "ai-req-count": 58, "coverage": "67.4%", "ai-cases": 1126, "adopted-cases":  742, "adoption-rate": "65.9%", "defects": 108, "actions": "详情", "_row_key": { "rank": 3 } },
+        { "rank": 4, "department": "网络产品测试部",     "req-total": 72,  "ai-req-count": 44, "coverage": "61.1%", "ai-cases":  864, "adopted-cases":  548, "adoption-rate": "63.4%", "defects":  86, "actions": "详情", "_row_key": { "rank": 4 } },
+        { "rank": 5, "department": "计算产品测试部",     "req-total": 58,  "ai-req-count": 34, "coverage": "58.6%", "ai-cases":  624, "adopted-cases":  386, "adoption-rate": "61.9%", "defects":  62, "actions": "详情", "_row_key": { "rank": 5 } },
+        { "rank": 6, "department": "数据通信测试部",     "req-total": 46,  "ai-req-count": 26, "coverage": "56.5%", "ai-cases":  482, "adopted-cases":  294, "adoption-rate": "61.0%", "defects":  48, "actions": "详情", "_row_key": { "rank": 6 } },
+        { "rank": 7, "department": "安全测试部",         "req-total": 38,  "ai-req-count": 20, "coverage": "52.6%", "ai-cases":  346, "adopted-cases":  208, "adoption-rate": "60.1%", "defects":  34, "actions": "详情", "_row_key": { "rank": 7 } },
+        { "rank": 8, "department": "终端云测试部",       "req-total": 32,  "ai-req-count": 16, "coverage": "50.0%", "ai-cases":  268, "adopted-cases":  158, "adoption-rate": "59.0%", "defects":  28, "actions": "详情", "_row_key": { "rank": 8 } }
+      ],
+      "page": 1, "page_size": 10, "total": 8, "has_more": false,
+      "extras": { "totals": {} }
+    }
+  },
+  "drilldowns": {}
+}

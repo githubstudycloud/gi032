@@ -1,0 +1,81 @@
+{
+  "kpi": {
+    "groups": [
+      { "key": "user", "items": [
+        { "key": "ai-user-count", "value": "1,284", "mom": "+12.3%", "trend": "up" }
+      ]},
+      { "key": "business", "items": [
+        { "key": "ai-requirements",    "value": "186",   "mom": "+8.1%",  "trend": "up" },
+        { "key": "total-requirements", "value": "412",   "mom": "+3.2%",  "trend": "up" },
+        { "key": "design-coverage",    "value": "62.4%", "mom": "+4.8pp", "trend": "up" },
+        { "key": "valid-ai-cases",     "value": "2,148", "mom": "+18.6%", "trend": "up" },
+        { "key": "total-cases",        "value": "3,560", "mom": "+9.4%",  "trend": "up" },
+        { "key": "ai-case-ratio",      "value": "60.3%", "mom": "+5.2pp", "trend": "up" },
+        { "key": "ai-defect-ratio",    "value": "52.8%", "mom": "+3.1pp", "trend": "up" }
+      ]},
+      { "key": "capability", "items": [
+        { "key": "ai-cases-generated", "value": "3,420", "mom": "+22.5%", "trend": "up" },
+        { "key": "ai-cases-adopted",   "value": "2,148", "mom": "+18.6%", "trend": "up" },
+        { "key": "adoption-rate",      "value": "62.8%", "mom": "-1.2pp", "trend": "down" },
+        { "key": "avg-interactions",   "value": "4.6",   "mom": "-0.3",   "trend": "down" }
+      ]}
+    ]
+  },
+  "tabs": {
+    "domain-detail": {
+      "items": [
+        { "domain": "智能手机",
+          "design-req-total": "126", "design-req-ai": "84", "design-req-cov": "66.7%", "design-case-new": "1,248",
+          "script-ai-cases": "742", "script-ai-ratio": "59.5%", "script-ai-adoption": "68.2%",
+          "exec-ai-code-ratio": "61.4%", "exec-ai-code-lines": "12,640", "exec-ai-code-accuracy": "82.5%",
+          "result-new-ai-ratio": "57.8%", "result-ai-exec-ratio": "63.2%", "result-intent-accuracy": "88.4%",
+          "result-auto-fail-count": "184", "result-auto-fail-ai-rate": "72.3%", "result-auto-fail-ai-acc": "86.5%",
+          "actions": "详情",
+          "_row_key": { "domain": "智能手机" } },
+        { "domain": "平板",
+          "design-req-total": "58", "design-req-ai": "32", "design-req-cov": "55.2%", "design-case-new": "486",
+          "script-ai-cases": "248", "script-ai-ratio": "51.0%", "script-ai-adoption": "62.4%",
+          "exec-ai-code-ratio": "48.6%", "exec-ai-code-lines": "4,820", "exec-ai-code-accuracy": "78.1%",
+          "result-new-ai-ratio": "46.5%", "result-ai-exec-ratio": "52.0%", "result-intent-accuracy": "84.2%",
+          "result-auto-fail-count": "68", "result-auto-fail-ai-rate": "64.8%", "result-auto-fail-ai-acc": "81.2%",
+          "actions": "详情",
+          "_row_key": { "domain": "平板" } },
+        { "domain": "智能穿戴",
+          "design-req-total": "42", "design-req-ai": "26", "design-req-cov": "61.9%", "design-case-new": "362",
+          "script-ai-cases": "198", "script-ai-ratio": "54.7%", "script-ai-adoption": "60.1%",
+          "exec-ai-code-ratio": "52.8%", "exec-ai-code-lines": "3,140", "exec-ai-code-accuracy": "79.8%",
+          "result-new-ai-ratio": "50.4%", "result-ai-exec-ratio": "55.6%", "result-intent-accuracy": "85.0%",
+          "result-auto-fail-count": "48", "result-auto-fail-ai-rate": "66.7%", "result-auto-fail-ai-acc": "82.0%",
+          "actions": "详情",
+          "_row_key": { "domain": "智能穿戴" } },
+        { "domain": "车机",
+          "design-req-total": "94", "design-req-ai": "62", "design-req-cov": "66.0%", "design-case-new": "812",
+          "script-ai-cases": "486", "script-ai-ratio": "59.9%", "script-ai-adoption": "70.4%",
+          "exec-ai-code-ratio": "63.5%", "exec-ai-code-lines": "8,920", "exec-ai-code-accuracy": "84.2%",
+          "result-new-ai-ratio": "60.2%", "result-ai-exec-ratio": "66.8%", "result-intent-accuracy": "89.6%",
+          "result-auto-fail-count": "126", "result-auto-fail-ai-rate": "74.6%", "result-auto-fail-ai-acc": "87.8%",
+          "actions": "详情",
+          "_row_key": { "domain": "车机" } },
+        { "domain": "智慧屏",
+          "design-req-total": "36", "design-req-ai": "18", "design-req-cov": "50.0%", "design-case-new": "264",
+          "script-ai-cases": "128", "script-ai-ratio": "48.5%", "script-ai-adoption": "58.6%",
+          "exec-ai-code-ratio": "46.2%", "exec-ai-code-lines": "2,180", "exec-ai-code-accuracy": "76.5%",
+          "result-new-ai-ratio": "44.0%", "result-ai-exec-ratio": "49.5%", "result-intent-accuracy": "82.8%",
+          "result-auto-fail-count": "32", "result-auto-fail-ai-rate": "62.5%", "result-auto-fail-ai-acc": "80.0%",
+          "actions": "详情",
+          "_row_key": { "domain": "智慧屏" } },
+        { "domain": "智慧办公",
+          "design-req-total": "28", "design-req-ai": "14", "design-req-cov": "50.0%", "design-case-new": "198",
+          "script-ai-cases": "96", "script-ai-ratio": "48.5%", "script-ai-adoption": "57.2%",
+          "exec-ai-code-ratio": "44.8%", "exec-ai-code-lines": "1,640", "exec-ai-code-accuracy": "75.6%",
+          "result-new-ai-ratio": "42.1%", "result-ai-exec-ratio": "48.2%", "result-intent-accuracy": "82.0%",
+          "result-auto-fail-count": "24", "result-auto-fail-ai-rate": "60.8%", "result-auto-fail-ai-acc": "79.2%",
+          "actions": "详情",
+          "_row_key": { "domain": "智慧办公" } }
+      ],
+      "page": 1, "page_size": 10, "total": 6, "has_more": false,
+      "extras": { "totals": {} }
+    }
+  },
+  "drilldowns": {}
+}
