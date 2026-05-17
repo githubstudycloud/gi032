@@ -49,7 +49,7 @@ function onRowDetail(row: Record<string, unknown>): void {
         <div class="flex flex-wrap items-end gap-4">
           <label class="block text-sm flex-1 min-w-[180px] max-w-[260px]">
             <span class="block text-ink-600 mb-1.5 text-[11px] font-medium tracking-wide uppercase">
-              时间范围
+              {{ $t('filters.timeRange') }}
             </span>
             <select
               v-model="timeRange"
@@ -65,7 +65,7 @@ function onRowDetail(row: Record<string, unknown>): void {
 
           <label class="block text-sm flex-1 min-w-[180px] max-w-[280px]">
             <span class="block text-ink-600 mb-1.5 text-[11px] font-medium tracking-wide uppercase">
-              部门
+              {{ $t('filters.department') }}
             </span>
             <select
               v-model="department"
@@ -85,14 +85,14 @@ function onRowDetail(row: Record<string, unknown>): void {
               class="h-9 px-4 rounded-md bg-brand-600 text-white text-[13px] font-medium hover:bg-brand-700 active:bg-brand-800 transition-colors shadow-[0_2px_6px_-1px_oklch(0.62_0.14_235/0.35)]"
               @click="onSearch"
             >
-              查询
+              {{ $t('common.search') }}
             </button>
             <button
               type="button"
-              class="h-9 px-4 rounded-md border border-ink-200 bg-surface text-[13px] text-ink-700 hover:bg-ink-100 transition-colors"
+              class="h-9 px-4 rounded-md border border-ink-200 bg-surface text-[13px] text-ink-700 hover:bg-ink-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
               @click="onReset"
             >
-              重置
+              {{ $t('common.reset') }}
             </button>
           </div>
         </div>

@@ -9,9 +9,11 @@
  */
 import { z } from 'zod';
 
+const { t } = useI18n();
+
 const props = defineProps<{
   error: unknown;
-  /** 自定义标题；默认 '数据加载失败' */
+  /** 自定义标题；默认走 i18n 'error.title' */
   title?: string;
 }>();
 
@@ -27,8 +29,8 @@ const detail = computed<{ summary: string; lines: string[] }>(() => {
       const path = i.path.length ? i.path.join('.') : '(root)';
       return `${path}: ${i.message}`;
     });
-    if (e.issues.length > 8) lines.push(`...等共 ${e.issues.length} 项校验失败`);
-    return { summary: '后端返回的数据形状跟约定不一致', lines };
+    if (e.issues.length > 8) lines.push(`+${e.issues.length - 8}`);
+    return { summary: t('error.schema'), lines };
   }
   if (e instanceof Error) {
     return { summary: e.message, lines: e.stack ? [e.stack.split('\n').slice(1, 4).join('\n')] : [] };
@@ -51,7 +53,7 @@ const detail = computed<{ summary: string; lines: string[] }>(() => {
       </div>
       <div class="flex-1 min-w-0">
         <h3 class="font-display text-[14px] font-semibold text-rose-900">
-          {{ title ?? '数据加载失败' }}
+          {{ title ?? t('error.title') }}
         </h3>
         <p class="mt-1 text-[12.5px] text-rose-800 leading-snug break-words">
           {{ detail.summary }}
@@ -62,13 +64,13 @@ const detail = computed<{ summary: string; lines: string[] }>(() => {
         class="shrink-0 h-8 px-3 rounded-md bg-rose-600 text-white text-[12.5px] font-medium hover:bg-rose-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300"
         @click="$emit('retry')"
       >
-        重试
+        {{ t('common.retry') }}
       </button>
     </header>
 
     <details v-if="detail.lines.length" class="mt-2">
       <summary class="text-[11.5px] text-rose-700 cursor-pointer hover:underline">
-        查看详细 ({{ detail.lines.length }} 条)
+        {{ t('error.viewDetail', { count: detail.lines.length }) }}
       </summary>
       <pre class="mt-2 text-[11px] leading-relaxed text-rose-800/90 whitespace-pre-wrap font-mono bg-surface/60 border border-rose-200/60 rounded-md p-3 overflow-auto max-h-48">{{ detail.lines.join('\n') }}</pre>
     </details>

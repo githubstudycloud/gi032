@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onClickOutside } from '@vueuse/core';
 
+const { t } = useI18n();
 const { fonts, activeKey, setFont } = await useFont();
 
 const open = ref(false);
@@ -33,8 +34,8 @@ function onKeydown(e: KeyboardEvent): void {
       ]"
       :aria-haspopup="true"
       :aria-expanded="open"
-      aria-label="切换字体"
-      title="切换字体"
+      :aria-label="t('topbar.switchFont')"
+      :title="t('topbar.switchFont')"
       @click="open = !open"
     >
       <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -60,11 +61,11 @@ function onKeydown(e: KeyboardEvent): void {
       <div
         v-if="open"
         role="menu"
-        aria-label="字体"
+        :aria-label="t('fontSwitcher.title')"
         class="absolute right-0 top-[calc(100%+4px)] w-[320px] rounded-lg border border-ink-200 bg-surface shadow-[var(--shadow-hover)] p-1.5 z-50"
       >
         <div class="px-3 py-2 text-[11px] uppercase tracking-wider text-ink-500 font-mono">
-          字体 · 跟样式正交
+          {{ t('fontSwitcher.title') }}
         </div>
         <button
           v-for="f in fonts"
@@ -114,7 +115,7 @@ function onKeydown(e: KeyboardEvent): void {
           </svg>
         </button>
         <div class="mt-1 px-3 py-2 text-[11px] text-ink-500 border-t border-ink-100">
-          非系统字体首次切换需从 CDN 加载 · localStorage
+          {{ t('fontSwitcher.persistHint') }}
         </div>
       </div>
     </Transition>

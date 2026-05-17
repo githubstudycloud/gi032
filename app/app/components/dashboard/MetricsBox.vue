@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { OverviewMetrics, Metric } from '~/types/overview-summary';
 
+const { t } = useI18n();
+
 const props = defineProps<{
   metrics: OverviewMetrics | null;
   title?: string;
@@ -44,12 +46,12 @@ function isOpenInGroup(groupKey: string): boolean {
     <header class="flex items-center gap-2 mb-3">
       <span class="w-1 h-4 rounded-full bg-brand-500" />
       <h2 class="font-display text-[15px] font-semibold text-ink-900 tracking-tight">
-        {{ title || '核心指标' }}
+        {{ title || t('metric.title') }}
       </h2>
       <div class="flex-1" />
       <div
         role="tablist"
-        aria-label="核心指标视图"
+        :aria-label="t('metric.viewSwitcher')"
         class="inline-flex items-center rounded-md border border-ink-200 bg-ink-50/60 p-0.5 text-[11px]"
       >
         <button
@@ -64,7 +66,7 @@ function isOpenInGroup(groupKey: string): boolean {
           ]"
           @click="viewMode = 'grouped'"
         >
-          分组
+          {{ t('metric.groupedView') }}
         </button>
         <button
           type="button"
@@ -78,7 +80,7 @@ function isOpenInGroup(groupKey: string): boolean {
           ]"
           @click="viewMode = 'flat'"
         >
-          平铺
+          {{ t('metric.flatView') }}
         </button>
       </div>
     </header>

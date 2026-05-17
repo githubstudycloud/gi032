@@ -14,6 +14,8 @@ import type {
   ManagementPageConfig, ManagementColumn, FormField,
 } from '~/types/management';
 
+const { t } = useI18n();
+
 type Row = Record<string, unknown>;
 
 const props = defineProps<{
@@ -121,7 +123,7 @@ function submitForm(): void {
   for (const f of props.config.form_fields) {
     if (!isFieldVisible(f)) continue;
     if (f.required && (formData.value[f.code] === '' || formData.value[f.code] == null)) {
-      formError.value = `「${f.label}」必填`;
+      formError.value = t('management.requiredError', { field: f.label });
       return;
     }
   }
@@ -187,7 +189,7 @@ function formatDatetime(v: unknown): string {
         class="h-9 px-4 rounded-md bg-brand-600 text-white text-[13px] font-medium hover:bg-brand-700 active:bg-brand-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
         @click="openCreate"
       >
-        + 新增
+        + {{ t('common.create') }}
       </button>
     </header>
 
@@ -240,7 +242,7 @@ function formatDatetime(v: unknown): string {
           class="h-9 px-3 rounded-md border border-ink-200 bg-surface text-[12.5px] text-ink-700 hover:bg-ink-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
           @click="filterState = {}"
         >
-          清空筛选
+          {{ t('common.clearFilters') }}
         </button>
       </div>
     </section>
@@ -282,7 +284,7 @@ function formatDatetime(v: unknown): string {
                     class="inline-flex items-center px-2 py-0.5 rounded-md text-brand-700 hover:bg-brand-50 text-[13px] font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
                     @click="openEdit(row)"
                   >
-                    编辑
+                    {{ t('common.edit') }}
                   </button>
                   <button
                     v-if="config.can_delete && col.actions?.includes('delete')"
@@ -290,7 +292,7 @@ function formatDatetime(v: unknown): string {
                     class="ml-1 inline-flex items-center px-2 py-0.5 rounded-md text-rose-700 hover:bg-rose-50 text-[13px] font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300"
                     @click="askDelete(row)"
                   >
-                    删除
+                    {{ t('common.delete') }}
                   </button>
                 </template>
                 <template v-else-if="col.display?.kind === 'badge'">
@@ -310,7 +312,7 @@ function formatDatetime(v: unknown): string {
             </tr>
             <tr v-if="!pagedRows.length">
               <td :colspan="config.columns.length" class="text-center py-12 text-ink-500 text-[13px]">
-                {{ loading ? '加载中…' : '无匹配数据' }}
+                {{ loading ? t('common.loading') : t('table.noMatchData') }}
               </td>
             </tr>
           </tbody>
@@ -318,13 +320,13 @@ function formatDatetime(v: unknown): string {
       </div>
 
       <footer class="border-t border-ink-100 px-4 py-2.5 flex items-center justify-end gap-3 text-[12px] text-ink-600">
-        <span>共 {{ filteredRows.length }} 条 · 每页 {{ PAGE_SIZE }}</span>
+        <span>{{ t('management.pageRangeTotal', { total: filteredRows.length, pageSize: PAGE_SIZE }) }}</span>
         <div class="flex items-center gap-1">
           <button
             type="button"
             class="h-7 w-7 rounded border border-ink-200 bg-surface hover:bg-ink-100 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
             :disabled="currentPage <= 1"
-            aria-label="上一页"
+            :aria-label="t('table.pagePrev')"
             @click="goPrev"
           >
             ‹
@@ -334,7 +336,7 @@ function formatDatetime(v: unknown): string {
             type="button"
             class="h-7 w-7 rounded border border-ink-200 bg-surface hover:bg-ink-100 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
             :disabled="currentPage >= totalPages"
-            aria-label="下一页"
+            :aria-label="t('table.pageNext')"
             @click="goNext"
           >
             ›
@@ -364,13 +366,13 @@ function formatDatetime(v: unknown): string {
             <header class="px-5 py-3 border-b border-ink-100 flex items-center gap-2">
               <span class="w-1 h-4 rounded-full bg-brand-500" />
               <h2 class="font-display text-[15px] font-semibold text-ink-900">
-                {{ formMode === 'create' ? '新增' : '编辑' }} · {{ config.title }}
+                {{ formMode === 'create' ? t('management.createTitle', { entity: config.title }) : t('management.editTitle', { entity: config.title }) }}
               </h2>
               <div class="flex-1" />
               <button
                 type="button"
                 class="w-7 h-7 inline-flex items-center justify-center rounded text-ink-500 hover:text-ink-900 hover:bg-ink-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
-                aria-label="关闭"
+                :aria-label="t('common.close')"
                 @click="formOpen = false"
               >
                 ×
@@ -439,14 +441,14 @@ function formatDatetime(v: unknown): string {
                 class="h-9 px-4 rounded-md border border-ink-200 bg-surface text-[13px] text-ink-700 hover:bg-ink-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
                 @click="formOpen = false"
               >
-                取消
+                {{ t('common.cancel') }}
               </button>
               <button
                 type="button"
                 class="h-9 px-4 rounded-md bg-brand-600 text-white text-[13px] font-medium hover:bg-brand-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
                 @click="submitForm"
               >
-                保存
+                {{ t('common.save') }}
               </button>
             </footer>
           </div>
@@ -473,10 +475,10 @@ function formatDatetime(v: unknown): string {
         >
           <div class="bg-surface rounded-xl border border-ink-200 shadow-2xl w-[420px] max-w-[95vw] p-5">
             <h3 class="font-display text-[15px] font-semibold text-ink-900 mb-2">
-              确认删除
+              {{ t('management.confirmDelete') }}
             </h3>
             <p class="text-[13px] text-ink-700 leading-relaxed">
-              将删除「{{ confirmDelete[config.primary_key] }}」，操作不可撤销。是否继续？
+              {{ t('management.confirmDeleteHint', { id: String(confirmDelete[config.primary_key]) }) }}
             </p>
             <div class="mt-4 flex justify-end gap-2">
               <button
@@ -484,14 +486,14 @@ function formatDatetime(v: unknown): string {
                 class="h-9 px-4 rounded-md border border-ink-200 bg-surface text-[13px] text-ink-700 hover:bg-ink-100"
                 @click="confirmDelete = null"
               >
-                取消
+                {{ t('common.cancel') }}
               </button>
               <button
                 type="button"
                 class="h-9 px-4 rounded-md bg-rose-600 text-white text-[13px] font-medium hover:bg-rose-700"
                 @click="doDelete"
               >
-                删除
+                {{ t('common.delete') }}
               </button>
             </div>
           </div>

@@ -36,6 +36,8 @@ const sandboxAttr = computed<string | undefined>(() => {
   // 空数组就给空字符串 → sandbox="" 是最严格的（不允许任何能力）
   return tokens.join(' ');
 });
+
+const { t } = useI18n();
 </script>
 
 <template>
@@ -57,25 +59,19 @@ const sandboxAttr = computed<string | undefined>(() => {
         rel="noopener noreferrer"
         class="text-brand-700 hover:underline shrink-0"
       >
-        新窗口打开 ↗
+        {{ t('embed.openInNewTab') }} ↗
       </a>
     </header>
 
     <div class="px-4 py-2 bg-amber-50 text-amber-800 text-[12px] border-b border-amber-200/60 flex items-start gap-2">
       <span class="shrink-0 mt-0.5">⚠</span>
-      <span>
-        若下方显示空白：目标站设置了
-        <code class="font-mono">X-Frame-Options</code> /
-        CSP <code class="font-mono">frame-ancestors</code>
-        禁止跨域嵌入（Google / 百度 / 银行类页面常见）。请用上方
-        <strong>"新窗口打开"</strong>，或换成允许嵌入的页面。
-      </span>
+      <span>{{ t('embed.blockedHint') }}</span>
     </div>
 
     <div class="relative w-full bg-ink-50" style="height: calc(100vh - 280px); min-height: 480px;">
       <iframe
         :src="src"
-        :title="title || '嵌入页面'"
+        :title="title || t('embed.iframeTitle')"
         :sandbox="sandboxAttr"
         class="absolute inset-0 w-full h-full border-0"
         referrerpolicy="no-referrer-when-downgrade"
@@ -84,11 +80,11 @@ const sandboxAttr = computed<string | undefined>(() => {
     </div>
   </section>
 
-  <!-- full 变体：iframe 铺满父容器，右上角浮动一个"新窗口打开"按钮兜底 -->
+  <!-- full 变体：iframe 铺满父容器，右上角浮动「新窗口打开」 -->
   <div v-else class="relative w-full h-full bg-ink-50">
     <iframe
       :src="src"
-      :title="title || '嵌入页面'"
+      :title="title || t('embed.iframeTitle')"
       class="absolute inset-0 w-full h-full border-0"
       referrerpolicy="no-referrer-when-downgrade"
       loading="lazy"
@@ -100,7 +96,7 @@ const sandboxAttr = computed<string | undefined>(() => {
       class="absolute top-3 right-3 z-10 inline-flex items-center gap-1.5 h-7 px-3 rounded-md bg-surface/90 backdrop-blur-sm border border-ink-200 text-[12px] text-ink-700 hover:text-brand-700 hover:border-brand-300 shadow-[var(--shadow-card)] transition-colors"
       :title="src"
     >
-      新窗口打开 <span aria-hidden="true">↗</span>
+      {{ t('embed.openInNewTab') }} <span aria-hidden="true">↗</span>
     </a>
   </div>
 </template>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onClickOutside } from '@vueuse/core';
 
+const { t } = useI18n();
 const { themes, activeKey, activeTheme, setTheme } = await useTheme();
 
 const open = ref(false);
@@ -33,8 +34,8 @@ function onKeydown(e: KeyboardEvent): void {
       ]"
       :aria-haspopup="true"
       :aria-expanded="open"
-      aria-label="切换样式风格"
-      title="切换样式风格"
+      :aria-label="t('topbar.switchTheme')"
+      :title="t('topbar.switchTheme')"
       @click="open = !open"
     >
       <span class="flex gap-0.5">
@@ -65,29 +66,29 @@ function onKeydown(e: KeyboardEvent): void {
       <div
         v-if="open"
         role="menu"
-        aria-label="样式风格"
+        :aria-label="t('themeSwitcher.title')"
         class="absolute right-0 top-[calc(100%+4px)] w-[280px] rounded-lg border border-ink-200 bg-surface shadow-[var(--shadow-hover)] p-1.5 z-50"
       >
         <div class="px-3 py-2 text-[11px] uppercase tracking-wider text-ink-500 font-mono">
-          样式风格
+          {{ t('themeSwitcher.title') }}
         </div>
         <button
-          v-for="t in themes"
-          :key="t.key"
+          v-for="th in themes"
+          :key="th.key"
           type="button"
           role="menuitemradio"
-          :aria-checked="activeKey === t.key"
+          :aria-checked="activeKey === th.key"
           :class="[
             'w-full px-3 py-2.5 rounded-md text-left flex items-center gap-3 transition-colors',
-            activeKey === t.key
+            activeKey === th.key
               ? 'bg-brand-50 hover:bg-brand-50'
               : 'hover:bg-ink-100',
           ]"
-          @click="pick(t.key)"
+          @click="pick(th.key)"
         >
           <span class="flex gap-1 shrink-0">
             <span
-              v-for="(c, i) in t.swatch"
+              v-for="(c, i) in th.swatch"
               :key="i"
               :style="{ background: c }"
               class="w-3 h-3 rounded-full ring-1 ring-black/10"
@@ -97,15 +98,15 @@ function onKeydown(e: KeyboardEvent): void {
             <span
               :class="[
                 'block text-[13px] font-medium',
-                activeKey === t.key ? 'text-brand-700' : 'text-ink-900',
+                activeKey === th.key ? 'text-brand-700' : 'text-ink-900',
               ]"
             >
-              {{ t.label }}
+              {{ th.label }}
             </span>
-            <span class="block text-[11px] text-ink-500 truncate">{{ t.subtitle }}</span>
+            <span class="block text-[11px] text-ink-500 truncate">{{ th.subtitle }}</span>
           </span>
           <svg
-            v-if="activeKey === t.key"
+            v-if="activeKey === th.key"
             class="w-4 h-4 text-brand-600 shrink-0"
             viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"
           >
@@ -113,7 +114,7 @@ function onKeydown(e: KeyboardEvent): void {
           </svg>
         </button>
         <div class="mt-1 px-3 py-2 text-[11px] text-ink-500 border-t border-ink-100">
-          切换会保存在本机 · localStorage
+          {{ t('themeSwitcher.persistHint') }}
         </div>
       </div>
     </Transition>

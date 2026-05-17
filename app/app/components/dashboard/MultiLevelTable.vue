@@ -2,6 +2,8 @@
 import type { ActionCell, PilotTable, TableColumn, TableRow } from '~/types/overview-summary';
 import { parseNumeric, thresholdPillClass } from '~/utils/threshold';
 
+const { t } = useI18n();
+
 /* —— action 列归一化：兼容老的 "详情" / "不涉及" 字符串 + 新的 ActionCell 对象 —— */
 function asActionCell(v: unknown): ActionCell {
   if (v && typeof v === 'object' && 'kind' in (v as Record<string, unknown>)) {
@@ -440,7 +442,7 @@ onBeforeUnmount(() => {
                   v-if="c.isLeaf && isSortable(c.col)"
                   type="button"
                   class="inline-flex items-center gap-0.5 rounded text-inherit focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 hover:text-brand-700 transition-colors cursor-pointer group/sort"
-                  :aria-label="`按 ${c.col.label} 排序，当前 ${sortKey === c.col.key && sortDir === 'asc' ? '升序' : sortKey === c.col.key && sortDir === 'desc' ? '降序' : '未排序'}`"
+                  :aria-label="t('table.sortColumn', { label: c.col.label }) + ' · ' + (sortKey === c.col.key && sortDir === 'asc' ? t('table.ascending') : sortKey === c.col.key && sortDir === 'desc' ? t('table.descending') : t('table.unsorted'))"
                   @click="toggleSort(c.col)"
                   @keydown.enter.prevent="toggleSort(c.col)"
                   @keydown.space.prevent="toggleSort(c.col)"
@@ -472,7 +474,7 @@ onBeforeUnmount(() => {
                       ? 'bg-brand-600 text-white shadow-sm hover:bg-brand-700'
                       : 'text-ink-400 hover:text-brand-700 hover:bg-ink-200/60',
                   ]"
-                  :aria-label="`筛选 ${c.col.label}`"
+                  :aria-label="t('table.filterColumn', { label: c.col.label })"
                   :aria-haspopup="'dialog'"
                   :aria-expanded="filterOpen === c.col.key"
                   @click.stop="openFilter(c.col.key)"
@@ -541,14 +543,14 @@ onBeforeUnmount(() => {
                   <rect x="3" y="4" width="18" height="16" rx="2" />
                   <path d="M3 9h18M9 4v16" />
                 </svg>
-                <span>无匹配数据</span>
+                <span>{{ $t('table.noMatchData') }}</span>
                 <button
                   v-if="Object.keys(selectedFilters).length"
                   type="button"
                   class="text-[12px] text-brand-700 hover:underline"
                   @click="selectedFilters = {}"
                 >
-                  清除所有筛选
+                  {{ $t('table.clearFilterShort') }}
                 </button>
               </div>
             </td>
@@ -561,13 +563,13 @@ onBeforeUnmount(() => {
       v-if="data.pagination"
       class="border-t border-ink-100 px-4 py-2.5 flex items-center justify-end gap-3 text-[12px] text-ink-600"
     >
-      <span>共 {{ totalRows }} 条 · 每页 {{ pageSize }}</span>
+      <span>{{ $t('table.total', { total: totalRows, pageSize }) }}</span>
       <div class="flex items-center gap-1">
         <button
           type="button"
           class="h-7 w-7 rounded border border-ink-200 bg-surface hover:bg-ink-100 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
           :disabled="currentPage <= 1"
-          aria-label="上一页"
+          :aria-label="$t('table.pagePrev')"
           @click="goPrev"
         >
           ‹
@@ -577,7 +579,7 @@ onBeforeUnmount(() => {
           type="button"
           class="h-7 w-7 rounded border border-ink-200 bg-surface hover:bg-ink-100 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
           :disabled="currentPage >= totalPages"
-          aria-label="下一页"
+          :aria-label="$t('table.pageNext')"
           @click="goNext"
         >
           ›
@@ -600,17 +602,17 @@ onBeforeUnmount(() => {
         v-if="openCol"
         role="dialog"
         aria-modal="false"
-        :aria-label="`筛选 ${openCol.label}`"
+        :aria-label="t('table.filterColumn', { label: openCol.label })"
         class="fixed z-[60] flex flex-col rounded-xl border border-ink-200 bg-surface shadow-2xl ring-1 ring-ink-900/10 text-left origin-top overflow-hidden"
         :style="popoverStyle"
         @click.stop
       >
         <div class="flex items-center justify-between px-3 py-2 bg-ink-50/80 border-b border-ink-200/60 shrink-0">
-          <span class="text-[12px] font-semibold text-ink-700">筛选 · {{ openCol.label }}</span>
+          <span class="text-[12px] font-semibold text-ink-700">{{ t('filters.title') }} · {{ openCol.label }}</span>
           <button
             type="button"
             class="w-5 h-5 inline-flex items-center justify-center rounded text-ink-400 hover:text-ink-700 hover:bg-ink-200/60 text-[14px] leading-none"
-            aria-label="关闭"
+            :aria-label="t('common.close')"
             @click="filterOpen = null"
           >
             ×
@@ -622,7 +624,7 @@ onBeforeUnmount(() => {
             <input
               v-model="filterSearch"
               type="text"
-              placeholder="搜索..."
+              :placeholder="t('table.search')"
               class="w-full h-7 pl-7 pr-2 text-[12px] rounded-md border border-ink-200 bg-surface placeholder:text-ink-400 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
             >
             <svg class="absolute left-2 top-1/2 -translate-y-1/2 text-ink-400" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
@@ -634,15 +636,15 @@ onBeforeUnmount(() => {
 
         <div class="flex items-center gap-2 px-3 pb-1.5 text-[11px] shrink-0">
           <button type="button" class="text-brand-700 hover:underline" @click="selectAllFilter(openCol.key)">
-            全选
+            {{ t('table.selectAll') }}
           </button>
           <button type="button" class="text-ink-600 hover:underline" @click="invertFilter(openCol.key)">
-            反选
+            {{ t('table.invert') }}
           </button>
           <button type="button" class="text-ink-500 hover:underline" @click="clearFilter(openCol.key)">
-            清空
+            {{ t('table.clear') }}
           </button>
-          <span class="ml-auto text-ink-500">已选 {{ activeFilterCount(openCol.key) }} / {{ uniqueValues(openCol.key).length }}</span>
+          <span class="ml-auto text-ink-500">{{ t('table.selected', { count: activeFilterCount(openCol.key), total: uniqueValues(openCol.key).length }) }}</span>
         </div>
 
         <div class="flex-1 min-h-0 overflow-auto px-1.5 pb-1.5">
@@ -660,7 +662,7 @@ onBeforeUnmount(() => {
             <span class="truncate flex-1">{{ v }}</span>
           </label>
           <div v-if="!filteredValues(openCol.key).length" class="px-2 py-3 text-center text-[12px] text-ink-500">
-            无匹配项
+            {{ t('table.noMatchItems') }}
           </div>
         </div>
       </div>

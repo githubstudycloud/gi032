@@ -7,18 +7,35 @@
     "back": "返回",
     "home": "回到首页",
     "retry": "重试",
+    "save": "保存",
+    "cancel": "取消",
+    "confirm": "确认",
+    "delete": "删除",
+    "edit": "编辑",
+    "create": "新增",
     "noData": "暂无数据",
     "noMatch": "无匹配数据",
     "clearAllFilters": "清除所有筛选",
+    "clearFilters": "清空筛选",
     "loading": "加载中…",
     "version": "v0.1.0",
-    "internalPreview": "内部预览"
+    "internalPreview": "内部预览",
+    "required": "必填"
   },
   "topbar": {
     "switchLocale": "切换语言",
     "switchTheme": "切换样式风格",
+    "switchFont": "切换字体",
     "appTitle": "运营看板",
     "appSubtitle": "Operations Dashboard"
+  },
+  "themeSwitcher": {
+    "title": "样式风格",
+    "persistHint": "切换会保存在本机 · localStorage"
+  },
+  "fontSwitcher": {
+    "title": "字体",
+    "persistHint": "切换会保存在本机 · localStorage"
   },
   "filters": {
     "title": "筛选",
@@ -27,6 +44,19 @@
     "role": "角色",
     "allDepartments": "全部部门",
     "allRoles": "全部角色"
+  },
+  "toolbar": {
+    "refresh": "刷新",
+    "pagingMode": "分页模式",
+    "pagingServer": "服务端",
+    "pagingClient": "前端",
+    "pagingNone": "全部",
+    "compare": "对比",
+    "compareNone": "不对比",
+    "comparePrev": "环比",
+    "compareYear": "同比",
+    "columns": "列定制",
+    "export": "导出"
   },
   "table": {
     "selectAll": "全选",
@@ -41,7 +71,10 @@
     "unsorted": "未排序",
     "pagePrev": "上一页",
     "pageNext": "下一页",
-    "total": "共 {total} 条 · 每页 {pageSize}"
+    "total": "共 {total} 条 · 每页 {pageSize}",
+    "noMatchData": "无匹配数据",
+    "noMatchItems": "无匹配项",
+    "clearFilterShort": "清除所有筛选"
   },
   "metric": {
     "explanation": "指标释义",
@@ -53,19 +86,40 @@
     "viewSwitcher": "核心指标视图",
     "trendUp": "上升",
     "trendDown": "下降",
-    "trendFlat": "持平"
+    "trendFlat": "持平",
+    "title": "核心指标",
+    "closeDetail": "关闭明细"
+  },
+  "management": {
+    "createTitle": "新增 · {entity}",
+    "editTitle": "编辑 · {entity}",
+    "confirmDelete": "确认删除",
+    "confirmDeleteHint": "将删除「{id}」，操作不可撤销。是否继续？",
+    "requiredError": "「{field}」必填",
+    "pageRangeTotal": "共 {total} 条 · 每页 {pageSize}"
   },
   "notImplemented": {
     "title": "{label}还未实现",
-    "description": "当前菜单项已在导航里登记，但页面组件 / mock 数据还在排期。回到上一级或从其它入口继续。"
+    "titleFallback": "该页面",
+    "description": "当前菜单项已在导航里登记，但页面组件 / mock 数据还在排期。回到上一级或从其它入口继续。",
+    "backToParent": "返回 {label}",
+    "backToParentFallback": "上一级"
   },
   "embed": {
     "openInNewTab": "新窗口打开",
-    "blockedHint": "若下方显示空白：目标站设置了 X-Frame-Options / CSP frame-ancestors 禁止跨域嵌入，请用上方「新窗口打开」"
+    "blockedHint": "若下方显示空白：目标站设置了 X-Frame-Options / CSP frame-ancestors 禁止跨域嵌入（Google / 百度 / 银行类页面常见）。请用上方「新窗口打开」，或换成允许嵌入的页面。",
+    "iframeTitle": "嵌入页面"
   },
   "error": {
     "title": "数据加载失败",
     "schema": "后端返回的数据形状跟约定不一致",
-    "viewDetail": "查看详细 ({count} 条)"
+    "viewDetail": "查看详细 ({count} 条)",
+    "viewDetailZero": "查看详细"
+  },
+  "tabs": {
+    "ariaLabel": "明细分组"
+  },
+  "report": {
+    "primaryViewTitle": "试点进展明细"
   }
 }

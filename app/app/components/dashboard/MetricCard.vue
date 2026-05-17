@@ -2,6 +2,8 @@
 import type { Metric } from '~/types/overview-summary';
 import { thresholdClass } from '~/utils/threshold';
 
+const { t } = useI18n();
+
 const props = defineProps<{
   metric: Metric;
   /** 是否处于「展开明细」激活态（由父组件 MetricsBox 控制） */
@@ -33,8 +35,8 @@ const descLines = computed<string[]>(() => {
 
 const trendLabel = computed<string>(() =>
   props.metric.trend === 'up'
-    ? '上升' :
-    props.metric.trend === 'down' ? '下降' : '持平',
+    ? t('metric.trendUp')
+    : props.metric.trend === 'down' ? t('metric.trendDown') : t('metric.trendFlat'),
 );
 
 /* —— Tooltip 智能定位：teleport 到 body + position:fixed + 视口内 clamp ——
@@ -149,7 +151,7 @@ onMounted(() => {
           ]"
         >
           <span aria-hidden="true" class="text-[9px] translate-y-[-1px]">{{ metric.trend === 'up' ? '▲' : metric.trend === 'down' ? '▼' : '●' }}</span>
-          <span class="tabular-nums"><span class="text-ink-400 mr-0.5">环比</span>{{ metric.mom }}</span>
+          <span class="tabular-nums"><span class="text-ink-400 mr-0.5">{{ t('metric.mom') }}</span>{{ metric.mom }}</span>
         </div>
 
         <span v-if="hasDetail" class="flex-1" />
@@ -191,7 +193,7 @@ onMounted(() => {
           <div class="pl-4 pr-3.5 py-3 space-y-2">
             <div class="flex items-center justify-between gap-2">
               <span class="text-[11px] tracking-[0.14em] uppercase font-medium text-brand-700">
-                指标释义
+                {{ t('metric.explanation') }}
               </span>
               <span class="text-[11px] text-ink-500 font-mono">{{ metric.key }}</span>
             </div>
@@ -210,11 +212,11 @@ onMounted(() => {
 
             <div class="pt-1.5 mt-1 border-t border-dashed border-ink-200 grid grid-cols-2 gap-x-3 gap-y-1 text-[11.5px]">
               <div class="flex items-center justify-between">
-                <span class="text-ink-500">当前</span>
+                <span class="text-ink-500">{{ t('metric.current') }}</span>
                 <span class="font-medium text-ink-900 tabular-nums">{{ metric.value }}{{ metric.unit ?? '' }}</span>
               </div>
               <div class="flex items-center justify-between">
-                <span class="text-ink-500">环比</span>
+                <span class="text-ink-500">{{ t('metric.mom') }}</span>
                 <span
                   class="font-medium tabular-nums"
                   :class="
@@ -225,7 +227,7 @@ onMounted(() => {
               </div>
               <template v-if="metric.threshold">
                 <div class="flex items-center justify-between col-span-2">
-                  <span class="text-ink-500">阈值</span>
+                  <span class="text-ink-500">{{ t('metric.threshold') }}</span>
                   <span class="text-ink-700 tabular-nums">
                     <template v-if="metric.threshold.min !== undefined && metric.threshold.max !== undefined">
                       {{ metric.threshold.min }} ~ {{ metric.threshold.max }}

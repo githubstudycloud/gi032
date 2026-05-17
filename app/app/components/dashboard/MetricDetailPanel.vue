@@ -13,6 +13,8 @@
  */
 import type { Metric, MetricChart, MetricFilterDim } from '~/types/overview-summary';
 
+const { t } = useI18n();
+
 const props = defineProps<{
   metric: Metric;
 }>();
@@ -101,7 +103,7 @@ function thresholdChip(chart: MetricChart): string | null {
       <div class="flex items-center gap-2 min-w-0">
         <span class="inline-block w-1 h-3.5 rounded-full bg-brand-500" />
         <h3 class="font-display text-[13px] font-semibold text-ink-900 tracking-tight truncate">
-          {{ metric.label }} · 明细
+          {{ metric.label }} · {{ t('common.detail') }}
         </h3>
         <span class="text-[10.5px] text-ink-500 font-mono">{{ metric.key }}</span>
       </div>
@@ -127,7 +129,7 @@ function thresholdChip(chart: MetricChart): string | null {
 
       <button
         type="button"
-        aria-label="关闭明细"
+        :aria-label="t('metric.closeDetail')"
         :class="['h-6 w-6 inline-flex items-center justify-center rounded text-ink-500 hover:text-ink-900 hover:bg-ink-100 transition-colors', detail.filters?.length ? '' : 'ml-auto']"
         @click="emit('close')"
       >

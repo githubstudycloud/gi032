@@ -1,4 +1,6 @@
 <script setup lang="ts">
+const { t } = useI18n();
+
 defineProps<{
   /** 显示给用户的页面名（来自菜单 label） */
   pageLabel?: string;
@@ -14,7 +16,6 @@ defineProps<{
 <template>
   <section
     class="mt-2 rounded-xl border border-dashed border-ink-300/80 bg-surface px-6 py-10 shadow-[var(--shadow-card)]"
-    aria-label="该页面尚未实现"
   >
     <div class="max-w-xl mx-auto text-center space-y-3">
       <div class="inline-flex w-12 h-12 items-center justify-center rounded-full bg-amber-50 text-amber-600">
@@ -25,10 +26,10 @@ defineProps<{
       </div>
 
       <h2 class="font-display text-[18px] font-semibold text-ink-900 tracking-tight">
-        {{ pageLabel ?? '该页面' }}还未实现
+        {{ t('notImplemented.title', { label: pageLabel ?? t('notImplemented.titleFallback') }) }}
       </h2>
       <p class="text-[13px] text-ink-600 leading-relaxed">
-        当前菜单项已在导航里登记，但页面组件 / mock 数据还在排期。回到上一级或从其它入口继续。
+        {{ t('notImplemented.description') }}
       </p>
 
       <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-ink-50/80 border border-ink-200/80 text-[12px] font-mono text-ink-700">
@@ -44,13 +45,13 @@ defineProps<{
           :to="fallbackPath"
           class="h-9 px-4 rounded-md bg-brand-600 text-white text-[13px] font-medium hover:bg-brand-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
         >
-          返回 {{ fallbackLabel ?? '上一级' }}
+          {{ t('notImplemented.backToParent', { label: fallbackLabel ?? t('notImplemented.backToParentFallback') }) }}
         </NuxtLink>
         <NuxtLink
           to="/"
           class="h-9 px-4 rounded-md border border-ink-200 bg-surface text-[13px] text-ink-700 hover:bg-ink-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 inline-flex items-center"
         >
-          回到首页
+          {{ t('common.home') }}
         </NuxtLink>
       </div>
     </div>
