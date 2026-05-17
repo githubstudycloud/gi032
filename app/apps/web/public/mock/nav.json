@@ -1,17 +1,17 @@
 {
   "items": [
     {
-      "key": "home",
-      "label": "首页",
-      "path": "/",
-      "single": true
-    },
-    {
       "key": "home1",
       "label": "首页1",
       "path": "/embed/home1",
       "single": true,
       "embed": "https://www.google.com/"
+    },
+    {
+      "key": "home",
+      "label": "简介示例",
+      "path": "/",
+      "single": true
     },
     {
       "key": "ai-test",

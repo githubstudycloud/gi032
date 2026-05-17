@@ -10,8 +10,9 @@ defineProps<{
 
 <template>
   <header class="h-16 shrink-0 bg-surface/95 backdrop-blur-sm border-b border-ink-200/80 sticky top-0 z-20">
-    <div class="h-full flex items-center px-6 gap-8">
-      <!-- 左：大 LOGO + 标题 -->
+    <!-- max-w 跟主内容区一致，宽屏不再留几百像素空白；mx-auto 居中 -->
+    <div class="h-full max-w-[1680px] mx-auto flex items-center px-4 gap-3">
+      <!-- 左：LOGO + 标题 -->
       <NuxtLink to="/" class="flex items-center gap-3 shrink-0 -my-1 px-2 py-1 rounded-lg hover:bg-ink-100/60 transition-colors">
         <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 text-white flex items-center justify-center font-display text-base font-semibold shadow-[0_4px_10px_-2px_oklch(0.62_0.14_235/0.35)]">
           {{ brand?.shortName || '运' }}
@@ -26,14 +27,14 @@ defineProps<{
         </div>
       </NuxtLink>
 
-      <!-- 中：一级菜单 -->
-      <nav class="flex items-center gap-0.5 h-full">
+      <!-- 中：一级菜单。紧贴 logo 后，不留大空缺。窄屏可横向滚动 -->
+      <nav class="flex items-center h-full min-w-0 overflow-x-auto scrollbar-none">
         <NuxtLink
           v-for="item in items"
           :key="item.key"
           :to="item.path || '#'"
           :class="[
-            'relative h-full px-4 inline-flex items-center text-[14px] font-medium transition-colors',
+            'relative h-full px-3 inline-flex items-center text-[14px] font-medium transition-colors whitespace-nowrap',
             activeKey === item.key
               ? 'text-brand-700'
               : 'text-ink-700 hover:text-ink-900',
@@ -49,15 +50,13 @@ defineProps<{
           <!-- 活动项底部蓝条 -->
           <span
             v-if="activeKey === item.key"
-            class="absolute left-3 right-3 bottom-0 h-[2.5px] bg-brand-600 rounded-t-full"
+            class="absolute left-2 right-2 bottom-0 h-[2.5px] bg-brand-600 rounded-t-full"
           />
         </NuxtLink>
       </nav>
 
-      <div class="flex-1" />
-
-      <!-- 右：语言切换 + 字体切换 + 样式切换 + 版本号 -->
-      <div class="flex items-center gap-2">
+      <!-- 右：语言 / 字体 / 主题 / 版本。ml-auto 推到右边但不超过 1680px 容器 -->
+      <div class="ml-auto flex items-center gap-2 shrink-0">
         <ClientOnly>
           <LocaleSwitcher />
           <template #fallback>

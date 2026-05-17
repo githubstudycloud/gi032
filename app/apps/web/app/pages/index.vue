@@ -1,9 +1,9 @@
 <script setup lang="ts">
-useHead({ title: '首页' });
+useHead({ title: '简介示例' });
 
 const { items } = await useNav();
 
-/* 把除"首页"外的一级菜单做成入口卡片 */
+/* 把所有非 single 的一级菜单做成入口卡片 */
 const entries = computed(() =>
   items.value.filter(i => !i.single && i.path).map(i => ({
     key: i.key,

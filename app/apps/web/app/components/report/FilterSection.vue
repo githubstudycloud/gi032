@@ -31,15 +31,31 @@ async function ensureOptions(f: FilterSpec): Promise<void> {
   if (dropdownOptions[f.code]) return;
   dropdownLoading[f.code] = true;
   try {
-    // 用 useDataSource 拉数据来源（mock 路径或 api 路径自动切换）
+    // mock 路径或 api 路径自动切换
     const cfg = useRuntimeConfig();
     const mode = cfg.public.dataSourceMode;
     const base = mode === 'api' ? (cfg.public.apiBase as string) : (cfg.public.mockBase as string);
-    const url = base + f.source.endpoint;
-    const raw = await $fetch<{ items?: OptionList } | OptionList>(url).catch(() => null);
-    dropdownOptions[f.code] = Array.isArray(raw)
-      ? raw
-      : (raw?.items ?? []);
+    // json 模式下静态文件需要 .json 后缀；api 模式走后端 envelope
+    const ep = f.source.endpoint;
+    const url = mode === 'json' && !ep.endsWith('.json') ? `${base}${ep}.json` : `${base}${ep}`;
+    type EnvelopeShape = { code?: number; data?: { items?: OptionList } | OptionList };
+    type RawShape = { items?: OptionList } | OptionList | EnvelopeShape;
+    const raw = await $fetch<RawShape>(url).catch(() => null);
+    let list: OptionList = [];
+    if (Array.isArray(raw)) {
+      list = raw;
+    }
+    else if (raw && typeof raw === 'object') {
+      // 后端 envelope: { code, data: { items: [...] } | [...] }
+      const envData = (raw as EnvelopeShape).data;
+      if (envData !== undefined) {
+        list = Array.isArray(envData) ? envData : (envData?.items ?? []);
+      }
+      else {
+        list = (raw as { items?: OptionList }).items ?? [];
+      }
+    }
+    dropdownOptions[f.code] = list;
   }
   catch {
     dropdownOptions[f.code] = [];
