@@ -9,6 +9,17 @@ dist
 node_modules
 *.log
 
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+.venv/
+.python-version
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+
 # Env
 .env
 .env.local
@@ -25,3 +36,7 @@ dev.log
 install.log
 .tmp-*
 .playwright-mcp/
+
+# Local SQLite snapshots
+*.db
+*.db-journal
