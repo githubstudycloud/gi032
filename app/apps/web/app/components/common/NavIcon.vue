@@ -1,92 +1,68 @@
 <script setup lang="ts">
 /**
- * 内联 SVG 图标集 —— 给左侧二级菜单组用。
- * 风格统一: stroke 1.75 / round caps / 24×24 viewBox / w-4 h-4。
- * 取自 lucide-style，单一文件维护，没引图标库。
+ * 左侧菜单图标。
+ *
+ * 加载顺序（同一 name 只尝试一次 custom，缓存到模块级 Set）：
+ *   1. /nav-icons/custom/<name>.svg   ← 业务方放自定义图标
+ *   2. /nav-icons/default/<name>.svg  ← 仓库内置默认图标
+ *   3. 兜底小圆点
+ *
+ * 详细约定见 apps/web/public/nav-icons/README.md。
  */
-defineProps<{ name?: string }>();
+const props = defineProps<{ name?: string }>();
+
+/** 模块级缓存：已确认 custom/<name>.svg 不存在的，不再请求 */
+const customMissing = useState<Set<string>>('nav-icon-custom-missing', () => new Set<string>());
+
+const customPath = (n: string): string => `/nav-icons/custom/${n}.svg`;
+const defaultPath = (n: string): string => `/nav-icons/default/${n}.svg`;
+
+const src = ref<string>('');
+const broken = ref<boolean>(false);
+
+watchEffect(() => {
+  const n = props.name;
+  broken.value = false;
+  if (!n) {
+    src.value = '';
+    return;
+  }
+  src.value = customMissing.value.has(n) ? defaultPath(n) : customPath(n);
+});
+
+function onError(): void {
+  const n = props.name;
+  if (!n) {
+    broken.value = true;
+    return;
+  }
+  if (src.value === customPath(n)) {
+    // custom 不存在 → 缓存 + 回落到 default
+    customMissing.value.add(n);
+    src.value = defaultPath(n);
+  }
+  else {
+    // default 也加载失败 → 兜底
+    broken.value = true;
+  }
+}
 </script>
 
 <template>
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="1.75"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    class="w-3.5 h-3.5 shrink-0"
+  <img
+    v-if="name && !broken"
+    :src="src"
+    alt=""
+    class="w-3.5 h-3.5 shrink-0 select-none"
+    draggable="false"
+    aria-hidden="true"
+    @error="onError"
+  >
+  <span
+    v-else
+    class="w-3.5 h-3.5 shrink-0 inline-flex items-center justify-center"
     aria-hidden="true"
   >
-    <!-- overview / bar-chart -->
-    <g v-if="name === 'overview'">
-      <path d="M3 3v18h18" />
-      <path d="M7 14v4" /><path d="M11 10v8" /><path d="M15 6v12" /><path d="M19 12v6" />
-    </g>
-    <!-- agent / cpu -->
-    <g v-else-if="name === 'agent'">
-      <rect x="5" y="5" width="14" height="14" rx="2" />
-      <rect x="9" y="9" width="6" height="6" />
-      <path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 15h3M1 9h3M1 15h3" />
-    </g>
-    <!-- flow / e2e -->
-    <g v-else-if="name === 'flow'">
-      <rect x="3" y="3" width="6" height="6" rx="1" />
-      <rect x="15" y="15" width="6" height="6" rx="1" />
-      <path d="M9 6h6a3 3 0 013 3v3a3 3 0 003 3" />
-    </g>
-    <!-- target -->
-    <g v-else-if="name === 'target'">
-      <circle cx="12" cy="12" r="9" />
-      <circle cx="12" cy="12" r="5" />
-      <circle cx="12" cy="12" r="1.5" fill="currentColor" />
-    </g>
-    <!-- tools / wrench -->
-    <g v-else-if="name === 'tools'">
-      <path d="M14.7 6.3a4 4 0 1 0 5 5l-3 3 2 2-3 3-2-2-3 3a4 4 0 1 1-5-5l3-3-2-2 3-3 2 2z" />
-    </g>
-    <!-- settings / sliders -->
-    <g v-else-if="name === 'settings'">
-      <path d="M4 6h10M18 6h2" /><circle cx="16" cy="6" r="2" />
-      <path d="M4 12h2M10 12h10" /><circle cx="8" cy="12" r="2" />
-      <path d="M4 18h12M20 18h0" /><circle cx="18" cy="18" r="2" />
-    </g>
-    <!-- inbox -->
-    <g v-else-if="name === 'inbox'">
-      <path d="M22 12h-6l-2 3h-4l-2-3H2" />
-      <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11Z" />
-    </g>
-    <!-- monitor / pulse -->
-    <g v-else-if="name === 'monitor'">
-      <path d="M3 12h4l3 9 6-18 3 9h2" />
-    </g>
-    <!-- log / file-text -->
-    <g v-else-if="name === 'log'">
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" />
-      <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" />
-    </g>
-    <!-- users -->
-    <g v-else-if="name === 'users'">
-      <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-      <circle cx="8.5" cy="7" r="4" />
-      <path d="M22 21v-2a4 4 0 0 0-3-3.87M17 3.13a4 4 0 0 1 0 7.75" />
-    </g>
-    <!-- task / calendar-check -->
-    <g v-else-if="name === 'task'">
-      <rect x="3" y="4" width="18" height="18" rx="2" />
-      <path d="M16 2v4M8 2v4M3 10h18" />
-      <path d="m9 16 2 2 4-4" />
-    </g>
-    <!-- rules / scale -->
-    <g v-else-if="name === 'rules'">
-      <path d="M16 16.5 21 11l-5-5.5M8 7.5 3 13l5 5.5M12 4l-2 16" />
-    </g>
-    <!-- knowledge / book -->
-    <g v-else-if="name === 'book'">
-      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5V4.5A2.5 2.5 0 0 1 6.5 2Z" />
-    </g>
-    <!-- 兜底：小圆点 -->
-    <circle v-else cx="12" cy="12" r="2" fill="currentColor" stroke="none" />
-  </svg>
+    <span class="w-1.5 h-1.5 rounded-full bg-current opacity-50" />
+  </span>
 </template>

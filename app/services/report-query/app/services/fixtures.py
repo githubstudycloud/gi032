@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import json
+import os
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -13,9 +14,20 @@ from typing import Any
 # 服务目录: services/report-query/
 # 仓库根:   ../../
 # 前端 mock: ../../apps/web/public/mock/
+#
+# 容器内布局是 /app/app/services/fixtures.py，_SERVICE_ROOT=/app，
+# 没有 parents[1]，硬算会 IndexError 让模块 import 直接挂。
+# 这里两种形态都能兜：
+#   - dev：parents[2].parents[1]/apps/web/public/mock 命中
+#   - docker：路径不存在 → _read_json 自动返回 None；env REPORT_MOCK_PATH 可显式覆盖
 _SERVICE_ROOT = Path(__file__).resolve().parents[2]
-_REPO_ROOT = _SERVICE_ROOT.parents[1]
-_MOCK_ROOT = _REPO_ROOT / "apps" / "web" / "public" / "mock"
+_repo_parents = _SERVICE_ROOT.parents
+_default_mock = (
+    _repo_parents[1] / "apps" / "web" / "public" / "mock"
+    if len(_repo_parents) >= 2
+    else Path("/nonexistent-mock")
+)
+_MOCK_ROOT = Path(os.environ.get("REPORT_MOCK_PATH") or _default_mock)
 
 
 def _read_json(path: Path) -> Any | None:

@@ -59,7 +59,7 @@ function onDrillKpi(kpiKey: string): void {
       <template v-else-if="config">
         <PageHeader
           :name="config.meta.name"
-          :subtitle="config.meta.subtitle"
+          :subtitle="config.meta.show_subtitle ? config.meta.subtitle : undefined"
           :description="config.meta.description"
         >
           <template #right>

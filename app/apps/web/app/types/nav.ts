@@ -8,8 +8,14 @@
 export interface NavItem {
   /** 唯一 key（路由匹配 + Vue key） */
   key: string;
-  /** 菜单显示文案 */
+  /** 菜单显示文案（默认中文兜底；当 locale 不在 label_i18n 时也用它） */
   label: string;
+  /**
+   * 各语言下的菜单文案。key 是 i18n locale 码（`zh-CN`、`en-US` 等），value 是显示文案。
+   * 命中当前 locale → 用它；未命中 → 回落到 `label_i18n["zh-CN"]` → 最后回落到 `label`。
+   * 见 `localizedLabel()`（composables/use-nav.ts）。
+   */
+  label_i18n?: Record<string, string>;
   /** 路由路径（叶子必填；非叶子可选） */
   path?: string;
   /** 图标名（预留，后期接 Iconify） */

@@ -4,6 +4,7 @@ import type { NavItem } from '~/types/nav';
 
 const route = useRoute();
 const { items } = await useNav();
+const { locale } = useI18n();
 
 const currentPath = computed<string>(() => {
   const slug = route.params.slug;
@@ -13,6 +14,7 @@ const currentPath = computed<string>(() => {
 
 const flat = computed(() => flattenNav(items.value));
 const current = computed(() => flat.value.find(i => i.path === currentPath.value));
+const currentLabel = computed<string>(() => localizedLabel(current.value, locale.value));
 
 /** 父级菜单 path（找当前路径所属的一级 section 顶层），用于"返回上一级"按钮 */
 const fallback = computed<{ path: string; label: string } | null>(() => {
@@ -23,7 +25,7 @@ const fallback = computed<{ path: string; label: string } | null>(() => {
     return null;
   }
   const top = findTop(items.value);
-  return top && top.path ? { path: top.path, label: top.label } : null;
+  return top && top.path ? { path: top.path, label: localizedLabel(top, locale.value) } : null;
 });
 
 /** 顶部 single + embed 的页：铺满 iframe，不要标题/面包屑/边框 */
@@ -32,7 +34,7 @@ const isFullEmbed = computed<boolean>(() =>
 );
 
 useHead({
-  title: () => current.value?.label ?? '页面',
+  title: () => currentLabel.value || '页面',
 });
 </script>
 
@@ -42,7 +44,7 @@ useHead({
     v-if="isFullEmbed && current?.embed"
     variant="full"
     :src="current.embed"
-    :title="current.label"
+    :title="currentLabel"
     :sandbox="current.embedSandbox"
   />
 
@@ -52,13 +54,13 @@ useHead({
       <EmbedFrame
         v-if="current?.embed"
         :src="current.embed"
-        :title="current.label"
+        :title="currentLabel"
         :sandbox="current.embedSandbox"
       />
       <!-- 路由在 nav 里登记了但没专属 page：显示"未实现"占位 —— 不再 fake 表格 -->
       <NotImplemented
         v-else
-        :page-label="current?.label"
+        :page-label="currentLabel"
         :path="currentPath"
         :fallback-path="fallback?.path"
         :fallback-label="fallback?.label"

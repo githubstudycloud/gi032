@@ -35,23 +35,33 @@ services:
   report-query:
     build:
       context: ./services/report-query
+      args:
+        PIP_INDEX_URL: ${PIP_INDEX_URL:-https://pypi.tuna.tsinghua.edu.cn/simple}
+        APT_MIRROR: ${APT_MIRROR:-mirrors.aliyun.com}
     image: ops-report-query:${TAG:-latest}
     container_name: ops-report-query
     restart: unless-stopped
     depends_on:
       mysql:
         condition: service_healthy
+    volumes:
+      # 兜底：DB 没数据时 fixtures.py 回落到读这里
+      - ./apps/web/public/mock:/seed-mock:ro
     environment:
       DATABASE_URL: mysql+pymysql://${MYSQL_USER:-report_user}:${MYSQL_PASSWORD:-report_pwd_change_me}@mysql:3306/${MYSQL_DATABASE:-report}?charset=utf8mb4
       LOG_LEVEL: INFO
+      REPORT_MOCK_PATH: /seed-mock
       CORS_ORIGINS: '["http://${SERVER_HOST:-192.168.0.132}", "http://localhost", "http://localhost:3000"]'
     ports:
-      - "8001:8001"
+      - "${QUERY_PORT:-8001}:8001"
     networks: [internal, public]
 
   report-generation:
     build:
       context: ./services/report-generation
+      args:
+        PIP_INDEX_URL: ${PIP_INDEX_URL:-https://pypi.tuna.tsinghua.edu.cn/simple}
+        APT_MIRROR: ${APT_MIRROR:-mirrors.aliyun.com}
     # seed 命令要读前端 mock 数据 —— 挂只读 bind mount，部署时 docker compose exec 跑 seed
     volumes:
       - ./apps/web/public/mock:/seed-mock:ro
@@ -70,7 +80,7 @@ services:
       PREAGG_CRON: "10 */2 * * *"
       CORS_ORIGINS: '["http://${SERVER_HOST:-192.168.0.132}", "http://localhost", "http://localhost:3000"]'
     ports:
-      - "8002:8002"
+      - "${GEN_PORT:-8002}:8002"
     networks: [internal, public]
     # APScheduler 是进程内调度 —— 多 worker 会让 job 重复跑
     # Dockerfile CMD 已经 --workers 1，这里不覆盖
@@ -78,6 +88,11 @@ services:
   web:
     build:
       context: ./apps/web
+      args:
+        NPM_REGISTRY: ${NPM_REGISTRY:-https://registry.npmmirror.com}
+        NUXT_PUBLIC_DATA_SOURCE_MODE: ${NUXT_PUBLIC_DATA_SOURCE_MODE:-api}
+        NUXT_PUBLIC_API_BASE: ${NUXT_PUBLIC_API_BASE:-/api}
+        NUXT_PUBLIC_MOCK_BASE: ${NUXT_PUBLIC_MOCK_BASE:-/mock}
     image: ops-web:${TAG:-latest}
     container_name: ops-web
     restart: unless-stopped

@@ -43,13 +43,13 @@ defineProps<{
         <NuxtLink
           v-if="fallbackPath"
           :to="fallbackPath"
-          class="h-9 px-4 rounded-md bg-brand-600 text-white text-[13px] font-medium hover:bg-brand-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
+          class="h-9 px-4 rounded-md bg-brand-600 text-white text-[13px] font-medium hover:bg-brand-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 inline-flex items-center justify-center"
         >
           {{ t('notImplemented.backToParent', { label: fallbackLabel ?? t('notImplemented.backToParentFallback') }) }}
         </NuxtLink>
         <NuxtLink
           to="/"
-          class="h-9 px-4 rounded-md border border-ink-200 bg-surface text-[13px] text-ink-700 hover:bg-ink-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 inline-flex items-center"
+          class="h-9 px-4 rounded-md border border-ink-200 bg-surface text-[13px] text-ink-700 hover:bg-ink-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 inline-flex items-center justify-center"
         >
           {{ t('common.home') }}
         </NuxtLink>

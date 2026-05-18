@@ -1,16 +1,23 @@
 <script setup lang="ts">
+const { locale } = useI18n();
+
 useHead({ title: '简介示例' });
 
 const { items } = await useNav();
 
-/* 把所有非 single 的一级菜单做成入口卡片 */
+/* 把所有非 single 的一级菜单做成入口卡片；卡片跳第一个可用叶子，避免落到无页面的中转路径 */
 const entries = computed(() =>
-  items.value.filter(i => !i.single && i.path).map(i => ({
-    key: i.key,
-    label: i.label,
-    path: i.path!,
-    sub: i.children?.length ? `${i.children.length} 个分组` : '查看详情',
-  })),
+  items.value
+    .filter(i => !i.single && (i.path || i.children?.length))
+    .map((i) => {
+      const target = firstLeafPath(i) ?? i.path ?? '/';
+      return {
+        key: i.key,
+        label: localizedLabel(i, locale.value),
+        path: target,
+        sub: i.children?.length ? `${i.children.length} 个分组` : '查看详情',
+      };
+    }),
 );
 
 interface Stat {

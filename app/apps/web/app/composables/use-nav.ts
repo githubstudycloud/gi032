@@ -71,3 +71,39 @@ function isPathUnderItem(currentPath: string, item: NavItem): boolean {
   }
   return false;
 }
+
+/**
+ * 取菜单项在某 locale 下的显示文案。
+ * 解析顺序：label_i18n[locale] → label_i18n["zh-CN"] → label
+ *
+ * 不依赖 Vue 反应性，纯函数；在模板里配合 `useI18n().locale.value` 直接调用即可。
+ */
+export function localizedLabel(item: { label: string; label_i18n?: Record<string, string> } | null | undefined, locale: string): string {
+  if (!item) return '';
+  const map = item.label_i18n;
+  if (map) {
+    if (map[locale]) return map[locale];
+    if (map['zh-CN']) return map['zh-CN'];
+  }
+  return item.label;
+}
+
+/**
+ * 把一个菜单节点解析为「点击它应该跳的路径」。
+ * - single（顶部独立页，如首页1）：用自身 path
+ * - 叶子：用自身 path
+ * - 中间节点（有 children）：递归找第一个未 disabled 的叶子；找不到再回退到自身 path
+ *
+ * 给顶部菜单 & 侧栏二级分组用，避免出现 /ai-test 这种无页面路径。
+ */
+export function firstLeafPath(item: NavItem): string | null {
+  if (!item) return null;
+  if (item.disabled) return null;
+  if (item.single && item.path) return item.path;
+  if (!item.children?.length) return item.path ?? null;
+  for (const c of item.children) {
+    const p = firstLeafPath(c);
+    if (p) return p;
+  }
+  return item.path ?? null;
+}

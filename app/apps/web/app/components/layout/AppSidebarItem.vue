@@ -7,6 +7,8 @@ const props = defineProps<{
 }>();
 
 const route = useRoute();
+const { locale } = useI18n();
+const displayLabel = computed<string>(() => localizedLabel(props.item, locale.value));
 
 const hasChildren = computed<boolean>(
   () => Array.isArray(props.item.children) && props.item.children.length > 0,
@@ -41,6 +43,12 @@ function toggle(): void {
   if (hasChildren.value) expanded.value = !expanded.value;
 }
 
+/* 二级分组（depth=0）点击 → 跳第一个可用叶子；保持展开。
+   三级及更深的中间节点（暂未出现）→ 保留 toggle 行为。 */
+const groupTarget = computed<string | null>(() =>
+  props.depth === 0 && hasChildren.value ? firstLeafPath(props.item) : null,
+);
+
 /* 深度 0 = 二级菜单（分组头）；深度 1+ = 三级菜单（叶子） */
 const padLeftPx = computed<string>(() => {
   // 二级（depth=0）：紧贴左 + 字号略大 + 字重略重
@@ -59,7 +67,7 @@ const padLeftPx = computed<string>(() => {
       v-if="!hasChildren && item.path"
       :to="item.path"
       :class="[
-        'relative flex items-center h-9 rounded-md text-[13px] pr-3 transition-colors',
+        'relative flex items-center gap-1.5 h-9 rounded-md text-[13px] pr-3 transition-colors',
         isLeafActive
           ? 'bg-brand-50 text-brand-700 font-medium'
           : 'text-ink-700 hover:bg-ink-100/80 hover:text-ink-900',
@@ -71,50 +79,58 @@ const padLeftPx = computed<string>(() => {
         v-if="isLeafActive"
         class="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-full bg-brand-600"
       />
-      <span class="truncate flex-1">{{ item.label }}</span>
+      <!-- 叶子图标（depth >= 1） -->
+      <NavIcon
+        v-if="item.icon"
+        :name="item.icon"
+        :class="isLeafActive ? 'text-brand-600' : 'text-ink-500'"
+      />
+      <span class="truncate flex-1">{{ displayLabel }}</span>
       <span v-if="item.badge != null" class="text-[10px] px-1.5 rounded-full bg-ink-200 text-ink-700">
         {{ item.badge }}
       </span>
     </NuxtLink>
 
-    <!-- 有子项 = 可展开按钮 -->
+    <!-- 二级分组（depth=0）：渲染成链接，点击跳第一个叶子，保持展开 -->
+    <NuxtLink
+      v-else-if="depth === 0 && groupTarget"
+      :to="groupTarget"
+      :class="[
+        'w-full flex items-center gap-1.5 h-8 rounded-md pr-3 transition-colors mt-3 first:mt-1',
+        'text-[12px] font-semibold tracking-wide',
+        hasActiveChild ? 'text-ink-700' : 'text-ink-500 hover:text-ink-700',
+      ]"
+      :style="{ paddingLeft: padLeftPx }"
+    >
+      <NavIcon
+        v-if="item.icon"
+        :name="item.icon"
+        class="text-ink-500"
+      />
+      <span class="truncate flex-1 text-left">{{ displayLabel }}</span>
+    </NuxtLink>
+
+    <!-- 深层中间节点（暂无；保留 toggle 行为） -->
     <button
       v-else
       type="button"
       :class="[
         'w-full flex items-center gap-1.5 h-8 rounded-md pr-3 transition-colors',
-        depth === 0
-          ? 'text-[12px] font-semibold tracking-wide text-ink-500 hover:text-ink-700 mt-3 first:mt-1'
-          : 'text-[13px] text-ink-700 hover:bg-ink-100/80 hover:text-ink-900',
-        hasActiveChild && depth > 0 ? 'text-ink-900 font-medium' : '',
+        'text-[13px] text-ink-700 hover:bg-ink-100/80 hover:text-ink-900',
+        hasActiveChild ? 'text-ink-900 font-medium' : '',
       ]"
       :style="{ paddingLeft: padLeftPx }"
       @click="toggle"
     >
-      <!-- 二级菜单的图标（depth=0） -->
-      <NavIcon
-        v-if="depth === 0 && item.icon"
-        :name="item.icon"
-        class="text-ink-500"
-      />
-      <span class="truncate flex-1 text-left">{{ item.label }}</span>
+      <span class="truncate flex-1 text-left">{{ displayLabel }}</span>
       <svg
-        v-if="hasChildren && depth > 0"
+        v-if="hasChildren"
         :class="['w-3.5 h-3.5 transition-transform shrink-0', expanded ? 'rotate-90' : '']"
         viewBox="0 0 20 20"
         fill="currentColor"
         aria-hidden="true"
       >
         <path d="M7 5l6 5-6 5V5z" />
-      </svg>
-      <svg
-        v-else-if="hasChildren"
-        :class="['w-3 h-3 transition-transform shrink-0 text-ink-400', expanded ? '' : '-rotate-90']"
-        viewBox="0 0 20 20"
-        fill="currentColor"
-        aria-hidden="true"
-      >
-        <path d="M5 7l5 6 5-6H5z" />
       </svg>
     </button>
 

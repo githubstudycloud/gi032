@@ -3,6 +3,7 @@
     {
       "key": "home1",
       "label": "首页1",
+      "label_i18n": { "zh-CN": "首页1", "en-US": "Home 1" },
       "path": "/embed/home1",
       "single": true,
       "embed": "https://www.google.com/"
@@ -10,78 +11,88 @@
     {
       "key": "home",
       "label": "简介示例",
+      "label_i18n": { "zh-CN": "简介示例", "en-US": "Intro" },
       "path": "/",
       "single": true
     },
     {
       "key": "ai-test",
       "label": "AI辅助测试运营",
+      "label_i18n": { "zh-CN": "AI辅助测试运营", "en-US": "AI Test Ops" },
       "path": "/ai-test",
       "children": [
         {
           "key": "ai-test-overview",
           "label": "概览",
+          "label_i18n": { "zh-CN": "概览", "en-US": "Overview" },
           "icon": "overview",
           "children": [
-            { "key": "ai-test-overview-summary",  "label": "总览",         "path": "/ai-test/overview/summary" },
-            { "key": "ai-test-overview-industry", "label": "产业落地进展", "path": "/ai-test/overview/industry" },
-            { "key": "ai-test-overview-domain",   "label": "领域落地进展", "path": "/ai-test/overview/domain" }
+            { "key": "ai-test-overview-summary",  "label": "总览",         "label_i18n": { "zh-CN": "总览",         "en-US": "Summary" },         "icon": "dashboard", "path": "/ai-test/overview/summary" },
+            { "key": "ai-test-overview-industry", "label": "产业落地进展", "label_i18n": { "zh-CN": "产业落地进展", "en-US": "Industry Adoption" },"icon": "factory",   "path": "/ai-test/overview/industry" },
+            { "key": "ai-test-overview-domain",   "label": "领域落地进展", "label_i18n": { "zh-CN": "领域落地进展", "en-US": "Domain Adoption" },  "icon": "layers",    "path": "/ai-test/overview/domain" }
           ]
         },
         {
           "key": "ai-test-general",
           "label": "通用测试Agent",
+          "label_i18n": { "zh-CN": "通用测试Agent", "en-US": "General Test Agent" },
           "icon": "agent",
           "children": [
-            { "key": "ai-test-general-design",  "label": "AI辅助测试设计",     "path": "/ai-test/general/design" },
-            { "key": "ai-test-general-codegen", "label": "AI辅助测试代码生成", "path": "/ai-test/general/codegen" },
-            { "key": "ai-test-general-exec",    "label": "AI辅助测试执行",     "path": "/ai-test/general/exec" },
-            { "key": "ai-test-general-result",  "label": "AI辅助结果分析",     "path": "/ai-test/general/result" }
+            { "key": "ai-test-general-design",  "label": "AI辅助测试设计",     "label_i18n": { "zh-CN": "AI辅助测试设计",     "en-US": "AI Test Design" },         "icon": "blueprint", "path": "/ai-test/general/design" },
+            { "key": "ai-test-general-codegen", "label": "AI辅助测试代码生成", "label_i18n": { "zh-CN": "AI辅助测试代码生成", "en-US": "AI Test Code Generation" },"icon": "code",      "path": "/ai-test/general/codegen" },
+            { "key": "ai-test-general-exec",    "label": "AI辅助测试执行",     "label_i18n": { "zh-CN": "AI辅助测试执行",     "en-US": "AI Test Execution" },      "icon": "play",      "path": "/ai-test/general/exec" },
+            { "key": "ai-test-general-result",  "label": "AI辅助结果分析",     "label_i18n": { "zh-CN": "AI辅助结果分析",     "en-US": "AI Result Analysis" },     "icon": "report",    "path": "/ai-test/general/result" }
           ]
         },
         {
           "key": "ai-test-e2e",
           "label": "E2E测试Agent",
+          "label_i18n": { "zh-CN": "E2E测试Agent", "en-US": "E2E Test Agent" },
           "icon": "flow",
           "children": [
-            { "key": "ai-test-e2e-app",        "label": "APP E2E测试",     "path": "/ai-test/e2e/app" },
-            { "key": "ai-test-e2e-thirdparty", "label": "三方应用E2E测试", "path": "/ai-test/e2e/thirdparty" },
-            { "key": "ai-test-e2e-ai",         "label": "AI特性E2E测试",   "path": "/ai-test/e2e/ai" }
+            { "key": "ai-test-e2e-app",        "label": "APP E2E测试",     "label_i18n": { "zh-CN": "APP E2E测试",     "en-US": "App E2E Test" },          "icon": "smartphone", "path": "/ai-test/e2e/app" },
+            { "key": "ai-test-e2e-thirdparty", "label": "三方应用E2E测试", "label_i18n": { "zh-CN": "三方应用E2E测试", "en-US": "Third-party E2E Test" },  "icon": "puzzle",     "path": "/ai-test/e2e/thirdparty" },
+            { "key": "ai-test-e2e-ai",         "label": "AI特性E2E测试",   "label_i18n": { "zh-CN": "AI特性E2E测试",   "en-US": "AI Feature E2E Test" },   "icon": "sparkles",   "path": "/ai-test/e2e/ai" }
           ]
         },
         {
           "key": "ai-test-special",
           "label": "AI辅助专项测试",
+          "label_i18n": { "zh-CN": "AI辅助专项测试", "en-US": "AI Specialized Tests" },
           "icon": "target",
           "children": [
-            { "key": "ai-test-special-precise",  "label": "AI辅助精准测试",     "path": "/ai-test/special/precise" },
-            { "key": "ai-test-special-dts",      "label": "AI辅助DTS问题分析",  "path": "/ai-test/special/dts" },
-            { "key": "ai-test-special-voc",      "label": "AI辅助VOC问题分析",  "path": "/ai-test/special/voc" },
-            { "key": "ai-test-special-beta",     "label": "AI辅助Beta问题分析", "path": "/ai-test/special/beta" },
-            { "key": "ai-test-special-security", "label": "AI辅助安全测试",     "path": "/ai-test/special/security" },
-            { "key": "ai-test-special-doc",      "label": "AI辅助资料测试",     "path": "/ai-test/special/doc" },
-            { "key": "ai-test-special-perf",     "label": "AI辅助性能测试",     "path": "/ai-test/special/perf" }
+            { "key": "ai-test-special-precise",  "label": "AI辅助精准测试",     "label_i18n": { "zh-CN": "AI辅助精准测试",     "en-US": "AI Precise Test" },         "icon": "crosshair", "path": "/ai-test/special/precise" },
+            { "key": "ai-test-special-dts",      "label": "AI辅助DTS问题分析",  "label_i18n": { "zh-CN": "AI辅助DTS问题分析",  "en-US": "AI DTS Issue Analysis" },   "icon": "bug",       "path": "/ai-test/special/dts" },
+            { "key": "ai-test-special-voc",      "label": "AI辅助VOC问题分析",  "label_i18n": { "zh-CN": "AI辅助VOC问题分析",  "en-US": "AI VOC Issue Analysis" },   "icon": "message",   "path": "/ai-test/special/voc" },
+            { "key": "ai-test-special-beta",     "label": "AI辅助Beta问题分析", "label_i18n": { "zh-CN": "AI辅助Beta问题分析", "en-US": "AI Beta Issue Analysis" },  "icon": "flask",     "path": "/ai-test/special/beta" },
+            { "key": "ai-test-special-security", "label": "AI辅助安全测试",     "label_i18n": { "zh-CN": "AI辅助安全测试",     "en-US": "AI Security Test" },        "icon": "shield",    "path": "/ai-test/special/security" },
+            { "key": "ai-test-special-doc",      "label": "AI辅助资料测试",     "label_i18n": { "zh-CN": "AI辅助资料测试",     "en-US": "AI Doc Test" },             "icon": "book",      "path": "/ai-test/special/doc" },
+            { "key": "ai-test-special-perf",     "label": "AI辅助性能测试",     "label_i18n": { "zh-CN": "AI辅助性能测试",     "en-US": "AI Performance Test" },     "icon": "gauge",     "path": "/ai-test/special/perf" }
           ]
         },
         {
           "key": "ai-test-tools",
           "label": "Test工具运营",
+          "label_i18n": { "zh-CN": "Test工具运营", "en-US": "Test Tools Ops" },
           "icon": "tools",
           "children": [
-            { "key": "ai-test-tools-user",    "label": "Test用户数据", "path": "/ai-test/tools/user" },
-            { "key": "ai-test-tools-session", "label": "Session分析",  "path": "/ai-test/tools/session" }
+            { "key": "ai-test-tools-user",    "label": "Test用户数据", "label_i18n": { "zh-CN": "Test用户数据", "en-US": "Test User Data" }, "icon": "user",     "path": "/ai-test/tools/user" },
+            { "key": "ai-test-tools-session", "label": "Session分析",  "label_i18n": { "zh-CN": "Session分析",  "en-US": "Session Analysis" }, "icon": "activity", "path": "/ai-test/tools/session" }
           ]
         },
         {
           "key": "ai-test-system",
           "label": "系统管理",
+          "label_i18n": { "zh-CN": "系统管理", "en-US": "System Admin" },
           "icon": "settings",
           "children": [
-            { "key": "ai-test-system-metrics", "label": "指标管理",    "path": "/ai-test/system/metrics" },
-            { "key": "ai-test-system-excel",   "label": "Excel看板",   "path": "/ai-test/system/excel" },
+            { "key": "ai-test-system-metrics", "label": "指标管理",    "label_i18n": { "zh-CN": "指标管理", "en-US": "Metric Admin" },    "icon": "chart",  "path": "/ai-test/system/metrics" },
+            { "key": "ai-test-system-excel",   "label": "Excel看板",   "label_i18n": { "zh-CN": "Excel看板", "en-US": "Excel Dashboard" }, "icon": "table",  "path": "/ai-test/system/excel" },
             {
               "key": "ai-test-system-search",
               "label": "搜索页面",
+              "label_i18n": { "zh-CN": "搜索页面", "en-US": "Search Page" },
+              "icon": "search",
               "path": "/ai-test/system/search",
               "embed": "https://www.google.com/"
             }
@@ -92,65 +103,72 @@
     {
       "key": "feedback",
       "label": "用户反馈",
+      "label_i18n": { "zh-CN": "用户反馈", "en-US": "User Feedback" },
       "path": "/feedback",
       "children": [
         {
           "key": "feedback-inbox",
           "label": "反馈收件箱",
+          "label_i18n": { "zh-CN": "反馈收件箱", "en-US": "Feedback Inbox" },
           "icon": "inbox",
           "children": [
-            { "key": "feedback-inbox-all",     "label": "全部反馈", "path": "/feedback/inbox/all" },
-            { "key": "feedback-inbox-pending", "label": "待处理",   "path": "/feedback/inbox/pending" },
-            { "key": "feedback-inbox-closed",  "label": "已关闭",   "path": "/feedback/inbox/closed" }
+            { "key": "feedback-inbox-all",     "label": "全部反馈", "label_i18n": { "zh-CN": "全部反馈", "en-US": "All Feedback" }, "icon": "inbox-all", "path": "/feedback/inbox/all" },
+            { "key": "feedback-inbox-pending", "label": "待处理",   "label_i18n": { "zh-CN": "待处理",   "en-US": "Pending" },      "icon": "clock",     "path": "/feedback/inbox/pending" },
+            { "key": "feedback-inbox-closed",  "label": "已关闭",   "label_i18n": { "zh-CN": "已关闭",   "en-US": "Closed" },       "icon": "check",     "path": "/feedback/inbox/closed" }
           ]
         },
-        { "key": "feedback-stats", "label": "数据统计", "icon": "overview", "path": "/feedback/stats" },
-        { "key": "feedback-rules", "label": "分类规则", "icon": "rules",    "path": "/feedback/rules" }
+        { "key": "feedback-stats", "label": "数据统计", "label_i18n": { "zh-CN": "数据统计", "en-US": "Statistics" },     "icon": "pie-chart", "path": "/feedback/stats" },
+        { "key": "feedback-rules", "label": "分类规则", "label_i18n": { "zh-CN": "分类规则", "en-US": "Category Rules" }, "icon": "rules",     "path": "/feedback/rules" }
       ]
     },
     {
       "key": "ops",
       "label": "后台运维",
+      "label_i18n": { "zh-CN": "后台运维", "en-US": "Backend Ops" },
       "path": "/ops",
       "children": [
         {
           "key": "ops-monitor",
           "label": "服务监控",
+          "label_i18n": { "zh-CN": "服务监控", "en-US": "Service Monitor" },
           "icon": "monitor",
           "children": [
-            { "key": "ops-monitor-service",  "label": "服务状态", "path": "/ops/monitor/service" },
-            { "key": "ops-monitor-resource", "label": "资源用量", "path": "/ops/monitor/resource" }
+            { "key": "ops-monitor-service",  "label": "服务状态", "label_i18n": { "zh-CN": "服务状态", "en-US": "Service Status" }, "icon": "server", "path": "/ops/monitor/service" },
+            { "key": "ops-monitor-resource", "label": "资源用量", "label_i18n": { "zh-CN": "资源用量", "en-US": "Resource Usage" }, "icon": "cpu",    "path": "/ops/monitor/resource" }
           ]
         },
         {
           "key": "ops-log",
           "label": "日志检索",
+          "label_i18n": { "zh-CN": "日志检索", "en-US": "Log Search" },
           "icon": "log",
           "children": [
-            { "key": "ops-log-search", "label": "日志查询", "path": "/ops/log/search" },
-            { "key": "ops-log-alert",  "label": "告警规则", "path": "/ops/log/alert" }
+            { "key": "ops-log-search", "label": "日志查询", "label_i18n": { "zh-CN": "日志查询", "en-US": "Log Query" },  "icon": "search", "path": "/ops/log/search" },
+            { "key": "ops-log-alert",  "label": "告警规则", "label_i18n": { "zh-CN": "告警规则", "en-US": "Alert Rules" }, "icon": "bell",   "path": "/ops/log/alert" }
           ]
         },
-        { "key": "ops-task", "label": "定时任务", "icon": "task", "path": "/ops/task" }
+        { "key": "ops-task", "label": "定时任务", "label_i18n": { "zh-CN": "定时任务", "en-US": "Scheduled Tasks" }, "icon": "task", "path": "/ops/task" }
       ]
     },
     {
       "key": "settings",
       "label": "系统设置",
+      "label_i18n": { "zh-CN": "系统设置", "en-US": "Settings" },
       "path": "/settings",
       "children": [
         {
           "key": "settings-account",
           "label": "账号管理",
+          "label_i18n": { "zh-CN": "账号管理", "en-US": "Accounts" },
           "icon": "users",
           "children": [
-            { "key": "settings-account-user",   "label": "用户列表", "path": "/settings/account/user" },
-            { "key": "settings-account-role",   "label": "角色权限", "path": "/settings/account/role" },
-            { "key": "settings-account-policy", "label": "访问策略", "path": "/settings/account/policy" }
+            { "key": "settings-account-user",   "label": "用户列表", "label_i18n": { "zh-CN": "用户列表", "en-US": "User List" },           "icon": "user",         "path": "/settings/account/user" },
+            { "key": "settings-account-role",   "label": "角色权限", "label_i18n": { "zh-CN": "角色权限", "en-US": "Roles & Permissions" }, "icon": "shield-check", "path": "/settings/account/role" },
+            { "key": "settings-account-policy", "label": "访问策略", "label_i18n": { "zh-CN": "访问策略", "en-US": "Access Policy" },       "icon": "key",          "path": "/settings/account/policy" }
           ]
         },
-        { "key": "settings-system", "label": "系统参数", "icon": "settings", "path": "/settings/system" },
-        { "key": "settings-audit",  "label": "审计日志", "icon": "log",      "path": "/settings/audit" }
+        { "key": "settings-system", "label": "系统参数", "label_i18n": { "zh-CN": "系统参数", "en-US": "System Params" }, "icon": "sliders", "path": "/settings/system" },
+        { "key": "settings-audit",  "label": "审计日志", "label_i18n": { "zh-CN": "审计日志", "en-US": "Audit Log" },     "icon": "history", "path": "/settings/audit" }
       ]
     }
   ]

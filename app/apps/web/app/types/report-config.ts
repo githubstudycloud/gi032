@@ -15,6 +15,8 @@ export interface ReportMeta {
   report_type: string;
   name: string;
   subtitle?: string;
+  /** 是否展示 subtitle（默认 false 隐藏）。要露出副标题在 config.json 里显式置 true */
+  show_subtitle?: boolean;
   description?: string;
   version: number;
   user_pref_endpoint?: string;

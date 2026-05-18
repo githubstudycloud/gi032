@@ -6,7 +6,16 @@ defineProps<{
   activeKey: string | null;
   brand: Branding | null;
 }>();
-</script>
+
+const { locale } = useI18n();
+
+/** 顶部菜单点击 → 跳第一个可用叶子；single/叶子保留自身 path */
+function targetPath(item: NavItem): string {
+  return firstLeafPath(item) ?? item.path ?? '#';
+}
+function label(item: NavItem): string {
+  return localizedLabel(item, locale.value);
+}</script>
 
 <template>
   <header class="h-16 shrink-0 bg-surface/95 backdrop-blur-sm border-b border-ink-200/80 sticky top-0 z-20">
@@ -27,12 +36,12 @@ defineProps<{
         </div>
       </NuxtLink>
 
-      <!-- 中：一级菜单。紧贴 logo 后，不留大空缺。窄屏可横向滚动 -->
-      <nav class="flex items-center h-full min-w-0 overflow-x-auto scrollbar-none">
+      <!-- 中：一级菜单。flex-1 撑开占据可用空间，菜单项居中显示，让左中右视觉间距均衡。窄屏可横向滚动 -->
+      <nav class="flex-1 flex items-center justify-center h-full min-w-0 overflow-x-auto scrollbar-none">
         <NuxtLink
           v-for="item in items"
           :key="item.key"
-          :to="item.path || '#'"
+          :to="targetPath(item)"
           :class="[
             'relative h-full px-3 inline-flex items-center text-[14px] font-medium transition-colors whitespace-nowrap',
             activeKey === item.key
@@ -42,7 +51,7 @@ defineProps<{
           ]"
         >
           <span class="relative">
-            {{ item.label }}
+            {{ label(item) }}
             <span v-if="item.badge != null" class="absolute -top-1 -right-3 text-[10px] px-1 rounded-full bg-brand-500 text-white leading-tight">
               {{ item.badge }}
             </span>
@@ -55,8 +64,8 @@ defineProps<{
         </NuxtLink>
       </nav>
 
-      <!-- 右：语言 / 字体 / 主题 / 版本。ml-auto 推到右边但不超过 1680px 容器 -->
-      <div class="ml-auto flex items-center gap-2 shrink-0">
+      <!-- 右：语言 / 字体 / 主题 / 版本 -->
+      <div class="flex items-center gap-2 shrink-0">
         <ClientOnly>
           <LocaleSwitcher />
           <template #fallback>

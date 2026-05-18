@@ -177,11 +177,15 @@ app/
 
 ```jsonc
 {
-  "key":      "ai-test-overview-summary",    // 唯一 ID
-  "label":    "总览",                         // 展示文案
-  "path":     "/ai-test/overview/summary",   // 路由（叶子必填）
+  "key":        "ai-test-overview-summary",  // 唯一 ID
+  "label":      "总览",                       // 默认/兜底文案（中文）
+  "label_i18n": {                            // 可选：多语言文案；命中当前 locale 用它，
+    "zh-CN": "总览",                          //   否则回落 label_i18n["zh-CN"] → label
+    "en-US": "Summary"
+  },
+  "path":     "/ai-test/overview/summary",   // 路由（叶子必填；非叶子可不填，点击会跳第一个可用叶子）
   "single":   true,                           // （仅一级）标记为单页，不出侧栏（"首页"用）
-  "icon":     "robot",                        // 预留，目前没接图标库
+  "icon":     "dashboard",                    // 图标名，对应 public/nav-icons/<default|custom>/<name>.svg
   "badge":    3,                              // 角标
   "disabled": false,                          // 禁用
   "children": [ ... ]                         // 子菜单
@@ -189,6 +193,19 @@ app/
 ```
 
 存盘后 dev 自动 HMR，浏览器**手动刷一下**即可（JSON 不会触发 Vite 热更）。
+
+**导航行为细节**：
+- 点击**顶部一级菜单**（如「AI辅助测试运营」）或**侧栏二级分组**（如「概览」），自动跳到该分支下**第一个可用叶子**的 `path`，不会落到无页面的中转路径。
+- 顶部 `single: true` 项（如「首页」）直接走自身 `path`。
+
+### 1.5 换/加菜单图标
+
+图标走 `public/nav-icons/` 目录，详见 [public/nav-icons/README.md](public/nav-icons/README.md)。
+
+简言之：
+- 仓库自带默认图标在 `public/nav-icons/default/<icon>.svg`
+- 想覆盖某个，把同名 SVG 丢到 `public/nav-icons/custom/<icon>.svg`，无需改代码
+- nav.json 里 `icon` 字段填文件名（不带 .svg 后缀），分组和叶子都生效
 
 ### 2. 切样式风格
 

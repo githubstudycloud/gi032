@@ -1,0 +1,7 @@
+# 自定义菜单图标目录
+#
+# 把 SVG 文件放在这里（命名要跟 nav.json 里的 icon 字段一致），
+# 例如要覆盖默认的「概览」图标，就放 overview.svg。
+#
+# 加载顺序: custom/<name>.svg → default/<name>.svg → 兜底小圆点
+# 详见同级目录 ../README.md
