@@ -1,8 +1,8 @@
 """数据 seed —— 把前端 mock 文件灌入 DB，让查询服务有真东西可读。
 
 调用方式：
-    uv run python -m app.seed              # 默认 SQLite，幂等
-    uv run python -m app.seed --reset      # 先 drop 全部表再灌
+    uv run python -m app.business.seed              # 默认 SQLite，幂等
+    uv run python -m app.business.seed --reset      # 先 drop 全部表再灌
 
 也通过 POST /api/admin/seed 暴露，方便容器里调用。
 """
@@ -20,8 +20,8 @@ from pathlib import Path
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
-from app.db import Base, SessionLocal, engine
-from app.models import DimDropdownOption, MetricDef, ReportSnapshot
+from app.framework.db import Base, SessionLocal, engine
+from app.framework.models import DimDropdownOption, MetricDef, ReportSnapshot
 
 log = logging.getLogger("seed")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -33,7 +33,9 @@ if _ENV_PATH:
 elif Path("/seed-mock").is_dir():
     _MOCK_ROOT = Path("/seed-mock")
 else:
-    _REPO_ROOT = Path(__file__).resolve().parents[3]
+    # __file__ = services/report-generation/app/business/seed.py
+    # parents[4] = monorepo 根（Phase 4 拆分后比之前多一层 business/）
+    _REPO_ROOT = Path(__file__).resolve().parents[4]
     _MOCK_ROOT = _REPO_ROOT / "apps" / "web" / "public" / "mock"
 
 REPORT_TYPES = ("summary", "industry", "domain", "design", "codegen")

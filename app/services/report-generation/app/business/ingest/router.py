@@ -11,8 +11,8 @@ from typing import Annotated, Any
 from fastapi import APIRouter, Depends, File, UploadFile
 from pydantic import BaseModel, Field
 
-from app.envelope import ok
-from app.security import require_admin
+from app.framework.envelope import ok
+from app.framework.security import require_admin
 
 router = APIRouter(prefix="/metrics", tags=["ingest"], dependencies=[Depends(require_admin)])
 

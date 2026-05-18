@@ -15,7 +15,7 @@ from datetime import date, datetime
 from sqlalchemy import BigInteger, Date, DateTime, Index, Integer, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.db import Base
+from app.framework.db import Base
 
 
 class ReportSnapshot(Base):

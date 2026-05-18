@@ -19,8 +19,8 @@ def isolated_db(monkeypatch: pytest.MonkeyPatch) -> Iterator[str]:
     url = f"sqlite:///{path}"
     monkeypatch.setenv("DATABASE_URL", url)
 
-    from app import db as db_module
-    from app import seed as seed_module
+    from app.business import seed as seed_module
+    from app.framework import db as db_module
 
     new_engine = create_engine(url, future=True)
     NewSession = sessionmaker(
@@ -28,7 +28,7 @@ def isolated_db(monkeypatch: pytest.MonkeyPatch) -> Iterator[str]:
     )
     monkeypatch.setattr(db_module, "engine", new_engine)
     monkeypatch.setattr(db_module, "SessionLocal", NewSession)
-    # seed.py 顶层 `from app.db import Base, SessionLocal, engine`，要同步替换它的局部引用
+    # seed.py 顶层 `from app.framework.db import Base, SessionLocal, engine`，要同步替换它的局部引用
     monkeypatch.setattr(seed_module, "engine", new_engine)
     monkeypatch.setattr(seed_module, "SessionLocal", NewSession)
 
@@ -43,7 +43,7 @@ def isolated_db(monkeypatch: pytest.MonkeyPatch) -> Iterator[str]:
 
 
 def _counts(url: str) -> dict[str, int]:
-    from app.models import DimDropdownOption, MetricDef, ReportSnapshot
+    from app.framework.models import DimDropdownOption, MetricDef, ReportSnapshot
 
     engine = create_engine(url, future=True)
     Session = sessionmaker(bind=engine)
@@ -57,7 +57,7 @@ def _counts(url: str) -> dict[str, int]:
 
 def test_seed_creates_expected_counts(isolated_db: str) -> None:
     """从空 DB 灌入后，三张表都有预期数量。"""
-    from app.seed import run
+    from app.business.seed import run
 
     counts = run(reset=True)
     assert counts["reports"] == 10  # 5 type × 2 kind
@@ -71,7 +71,7 @@ def test_seed_creates_expected_counts(isolated_db: str) -> None:
 
 def test_seed_is_idempotent(isolated_db: str) -> None:
     """第二次跑相同 mock，行数不变（upsert 行为）。"""
-    from app.seed import run
+    from app.business.seed import run
 
     run(reset=True)
     counts_first = _counts(isolated_db)
@@ -86,9 +86,9 @@ def test_seed_is_idempotent(isolated_db: str) -> None:
 
 def test_seed_reset_drops_old_data(isolated_db: str) -> None:
     """--reset 应该清掉之前的数据，不会累加。"""
-    from app.db import SessionLocal
-    from app.models import DimDropdownOption
-    from app.seed import run
+    from app.business.seed import run
+    from app.framework.db import SessionLocal
+    from app.framework.models import DimDropdownOption
 
     run(reset=True)
     # 手插一条无关数据

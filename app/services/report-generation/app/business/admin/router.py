@@ -8,8 +8,8 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
 
-from app.envelope import ok
-from app.security import require_admin
+from app.framework.envelope import ok
+from app.framework.security import require_admin
 
 router = APIRouter(prefix="/admin", tags=["admin"], dependencies=[Depends(require_admin)])
 
@@ -90,8 +90,8 @@ class SeedReq(BaseModel):
 
 @router.post("/seed")
 def seed_db(req: SeedReq) -> dict[str, object]:
-    """从前端 mock 文件灌 DB。容器内 cli 也可：python -m app.seed [--reset]。"""
-    from app.seed import run
+    """从前端 mock 文件灌 DB。容器内 cli 也可：python -m app.business.seed [--reset]。"""
+    from app.business.seed import run
 
     counts = run(reset=req.reset)
     return ok({"counts": counts, "reset": req.reset})

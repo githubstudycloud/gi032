@@ -5,6 +5,10 @@
 
 **绝对不要** `--workers > 1`：APScheduler 是进程内调度器，
 多 worker 会让 ingest / preagg 重复执行，数据写入倍增。
+
+分层（Phase 4 framework/business 拆分后）：
+    - ``app/framework/``: envelope / db / models / scheduler / security / exceptions
+    - ``app/business/``:  admin / ingest / meta + seed.py
 """
 
 from __future__ import annotations
@@ -12,16 +16,14 @@ from __future__ import annotations
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException, Request, status
-from fastapi.exceptions import RequestValidationError
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 
-from app.api import admin as admin_router
-from app.api import ingest as ingest_router
-from app.api import meta as meta_router
-from app.envelope import fail
-from app.scheduler import start_scheduler, stop_scheduler
+from app.business.admin import router as admin_router
+from app.business.ingest import router as ingest_router
+from app.business.meta import router as meta_router
+from app.framework import exceptions as exception_handlers
+from app.framework.scheduler import start_scheduler, stop_scheduler
 from app.settings import get_settings
 
 
@@ -53,32 +55,7 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    @app.exception_handler(HTTPException)
-    async def http_exception_handler(_req: Request, exc: HTTPException) -> JSONResponse:
-        return JSONResponse(
-            status_code=exc.status_code,
-            content=fail(code=exc.status_code, message=str(exc.detail)),
-        )
-
-    @app.exception_handler(RequestValidationError)
-    async def validation_exception_handler(
-        _req: Request, exc: RequestValidationError,
-    ) -> JSONResponse:
-        return JSONResponse(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            content=fail(
-                code=40001,
-                message="请求参数校验失败",
-                data={"issues": exc.errors()},
-            ),
-        )
-
-    @app.exception_handler(Exception)
-    async def unhandled_exception_handler(_req: Request, exc: Exception) -> JSONResponse:
-        return JSONResponse(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content=fail(code=500, message=f"未捕获异常: {exc.__class__.__name__}"),
-        )
+    exception_handlers.register(app)
 
     app.include_router(meta_router.router, prefix=settings.api_prefix)
     app.include_router(ingest_router.router, prefix=settings.api_prefix)
