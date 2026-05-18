@@ -40,3 +40,9 @@ install.log
 # Local SQLite snapshots
 *.db
 *.db-journal
+
+# 用户自定义数据覆盖层（详见 apps/web/public/user-data/README.md）
+# 只跟踪 README 和 _examples/ 模板；用户自己拷出来的覆盖文件不进 git。
+apps/web/public/user-data/*
+!apps/web/public/user-data/README.md
+!apps/web/public/user-data/_examples/

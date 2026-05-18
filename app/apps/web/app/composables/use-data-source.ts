@@ -2,7 +2,16 @@ import type { DataSourceMode, DataSourceOptions } from '~/types/data-source';
 import { unwrapEnvelope } from '~/utils/envelope';
 
 /**
+ * 用户覆盖路径的会话级"已确认缺失"集合：第一次试探 /user-data/<path> 返回 404 后记一笔，
+ * 同会话里同一路径不再重复试探。详见 README：apps/web/public/user-data/README.md。
+ */
+const missingUserPaths = new Set<string>();
+
+/**
  * 统一数据入口：现在读 public/mock 下的 JSON，未来切到后端只需改 runtimeConfig.public.dataSourceMode。
+ *
+ * JSON 模式下增加"用户自定义层"：先试 `${userDataBase}${jsonPath}`，404 则回落到 `${mockBase}${jsonPath}`。
+ * 用户在 public/user-data/ 里放同名文件即可整文件替换，不动项目源 mock。
  *
  * 设计要点：
  * 1. params 始终保留 —— JSON 模式下不消费，仅在 API 模式下作为 query 透传，保证签名一致；
@@ -28,6 +37,7 @@ export async function useDataSource<TRaw = unknown, T = TRaw>(
 
   const apiBase = (cfg.public.apiBase as string) ?? '';
   const mockBase = (cfg.public.mockBase as string) ?? '/mock';
+  const userDataBase = (cfg.public.userDataBase as string) ?? '/user-data';
 
   const url = mode === 'api'
     ? `${apiBase}${opts.apiPath}`
@@ -36,13 +46,26 @@ export async function useDataSource<TRaw = unknown, T = TRaw>(
   const { data, error, pending, refresh } = await useAsyncData<TRaw>(
     opts.key,
     async () => {
-      const resp = await $fetch<unknown>(
-        url,
-        mode === 'api' && opts.params ? { query: opts.params } : undefined,
-      );
-      // api 模式下后端统一信封 { code, message, trace_id, data } 自动解包；
-      // json 模式直接通过（fixture 顶层就是数据本身）。
-      return mode === 'api' ? unwrapEnvelope<TRaw>(resp) : (resp as TRaw);
+      if (mode === 'api') {
+        const resp = await $fetch<unknown>(
+          url,
+          opts.params ? { query: opts.params } : undefined,
+        );
+        return unwrapEnvelope<TRaw>(resp);
+      }
+
+      // JSON 模式：先试 user-data，落空再读 mock。
+      const userUrl = `${userDataBase}${opts.jsonPath}`;
+      if (!missingUserPaths.has(userUrl)) {
+        try {
+          return (await $fetch<unknown>(userUrl)) as TRaw;
+        }
+        catch {
+          // 标记为缺失，避免本会话内重复打 404（user-data 文件用户也很少在运行时新增）
+          missingUserPaths.add(userUrl);
+        }
+      }
+      return (await $fetch<unknown>(`${mockBase}${opts.jsonPath}`)) as TRaw;
     },
     {
       immediate: opts.immediate ?? true,

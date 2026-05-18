@@ -34,6 +34,12 @@
 |---|---|
 | [deploy-server.md](deploy-server.md) | ubuntu@192.168.0.132 离线 Docker 部署 |
 
+## 数据定制
+
+| 文档 | 用途 |
+|---|---|
+| [USER-DATA-OVERRIDE.md](USER-DATA-OVERRIDE.md) | 用 `apps/web/public/user-data/` 覆盖任意 mock JSON（演示前临时改数字 / 标签 / 下拉项） |
+
 ## 规则 / 约定
 
 | 文档 | 用途 |

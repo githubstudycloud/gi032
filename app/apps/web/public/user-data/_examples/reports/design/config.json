@@ -1,4 +1,5 @@
 {
+  "_NOTE": "示例：完整替换 /reports/design/config.json。本文件改动点 → KPI 第一个卡片 label 由 'AI用户数' 改成 '[CUSTOM] 自定义用户数'。把本文件拷到 public/user-data/reports/design/config.json 即生效。",
   "meta": {
     "report_type": "design",
     "name": "AI辅助测试设计",
@@ -26,7 +27,7 @@
     "footnote": "点击卡片可查看明细数字。",
     "groups": [
       { "key": "user", "label": "用户指标", "items": [
-        { "key": "ai-user-count", "label": "AI用户数", "data_type": "int",
+        { "key": "ai-user-count", "label": "[CUSTOM] 自定义用户数", "data_type": "int",
           "description": "本月使用过 AI 测试设计功能的活跃用户数。" }
       ]},
       { "key": "business", "label": "业务指标", "items": [

@@ -1,0 +1,37 @@
+{
+  "_NOTE": "示例：完整替换 /reports/design/data.json。把本文件拷到 public/user-data/reports/design/data.json 即生效（注意去掉 _examples/ 前缀）。",
+  "kpi": {
+    "groups": [
+      { "key": "user", "items": [
+        { "key": "ai-user-count", "value": "[CUSTOM] 9,999", "mom": "+99.9%", "trend": "up" }
+      ]},
+      { "key": "business", "items": [
+        { "key": "ai-requirements",    "value": "186",   "mom": "+8.1%",  "trend": "up" },
+        { "key": "total-requirements", "value": "412",   "mom": "+3.2%",  "trend": "up" },
+        { "key": "design-coverage",    "value": "62.4%", "mom": "+4.8pp", "trend": "up" },
+        { "key": "valid-ai-cases",     "value": "2,148", "mom": "+18.6%", "trend": "up" },
+        { "key": "total-cases",        "value": "3,560", "mom": "+9.4%",  "trend": "up" },
+        { "key": "ai-case-ratio",      "value": "60.3%", "mom": "+5.2pp", "trend": "up" },
+        { "key": "ai-defect-ratio",    "value": "52.8%", "mom": "+3.1pp", "trend": "up" }
+      ]},
+      { "key": "capability", "items": [
+        { "key": "ai-cases-generated", "value": "3,420", "mom": "+22.5%", "trend": "up" },
+        { "key": "ai-cases-adopted",   "value": "2,148", "mom": "+18.6%", "trend": "up" },
+        { "key": "adoption-rate",      "value": "62.8%", "mom": "-1.2pp", "trend": "down" },
+        { "key": "avg-interactions",   "value": "4.6",   "mom": "-0.3",   "trend": "down" }
+      ]}
+    ]
+  },
+  "tabs": {
+    "design-detail": {
+      "items": [
+        { "rank": 1, "department": "[CUSTOM] 我的测试一部", "req-total": 200, "ai-req-count": 180, "coverage": "90.0%", "ai-cases": 3000, "adopted-cases": 2400, "adoption-rate": "80.0%", "defects": 300, "actions": "详情", "_row_key": { "rank": 1 } },
+        { "rank": 2, "department": "[CUSTOM] 我的测试二部", "req-total": 150, "ai-req-count": 120, "coverage": "80.0%", "ai-cases": 2200, "adopted-cases": 1700, "adoption-rate": "77.3%", "defects": 220, "actions": "详情", "_row_key": { "rank": 2 } },
+        { "rank": 3, "department": "[CUSTOM] 我的测试三部", "req-total": 120, "ai-req-count":  90, "coverage": "75.0%", "ai-cases": 1500, "adopted-cases": 1100, "adoption-rate": "73.3%", "defects": 150, "actions": "详情", "_row_key": { "rank": 3 } }
+      ],
+      "page": 1, "page_size": 10, "total": 3, "has_more": false,
+      "extras": { "totals": {} }
+    }
+  },
+  "drilldowns": {}
+}

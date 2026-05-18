@@ -77,6 +77,10 @@ export default defineNuxtConfig({
       dataSourceMode: 'json' as 'json' | 'api',
       apiBase: '',
       mockBase: '/mock',
+      // 用户自定义覆盖层：JSON 模式下 useDataSource 会先试 ${userDataBase}${path}，
+      // 404 才回落到 ${mockBase}${path}。用户把同名 JSON 放进 public/user-data/ 即可生效。
+      // 详见 apps/web/public/user-data/README.md。
+      userDataBase: '/user-data',
     },
   },
 
