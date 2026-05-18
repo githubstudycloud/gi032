@@ -42,7 +42,10 @@ RUN set -eux; \
 
 WORKDIR /app
 COPY pyproject.toml uv.lock ./
-RUN uv sync --frozen --no-install-project --no-dev
+# 内网 nexus 走 HTTPS + 自签 / 内部 CA，uv 默认不信任 ——
+# 从 PIP_INDEX_URL 里抠出 host 传给 --allow-insecure-host，跳过校验。
+RUN INSECURE_HOST=$(echo "${PIP_INDEX_URL}" | sed -E 's|^https?://([^/:]+).*|\1|') \
+ && uv sync --frozen --no-install-project --no-dev --allow-insecure-host "${INSECURE_HOST}"
 
 FROM python:3.12-slim
 ENV PYTHONDONTWRITEBYTECODE=1 \

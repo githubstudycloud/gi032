@@ -49,7 +49,10 @@ WORKDIR /app
 
 # 利用 docker layer 缓存：先只拷 lock 和 pyproject，装依赖
 COPY pyproject.toml uv.lock ./
-RUN uv sync --frozen --no-install-project --no-dev
+# 内网 nexus 走 HTTPS + 自签 / 内部 CA，uv 默认不信任 ——
+# 从 PIP_INDEX_URL 里抠出 host 传给 --allow-insecure-host，跳过校验。
+RUN INSECURE_HOST=$(echo "${PIP_INDEX_URL}" | sed -E 's|^https?://([^/:]+).*|\1|') \
+ && uv sync --frozen --no-install-project --no-dev --allow-insecure-host "${INSECURE_HOST}"
 
 # ---------- stage 2：运行时 ----------
 FROM python:3.12-slim

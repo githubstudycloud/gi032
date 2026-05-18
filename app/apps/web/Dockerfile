@@ -30,10 +30,17 @@ ARG APK_MIRROR_SCHEME=https
 # COREPACK_NPM_REGISTRY 必须显式设置：
 #   corepack 有自己的 registry 配置，不读 NPM_CONFIG_REGISTRY / .npmrc，
 #   默认走 https://registry.npmjs.org —— 内网会卡在这里超时。
+#
+# NODE_TLS_REJECT_UNAUTHORIZED=0 / NPM_CONFIG_STRICT_SSL=false：
+#   全内网部署关闭 TLS 校验（内部 CA / 自签证书 Node 默认不信任）。
+#   只在 build stage 生效；stage 2 nginx:alpine 不带 Node，运行镜像不受影响。
+#   想"干净修"请改用 COPY 内网 CA + NODE_EXTRA_CA_CERTS。
 ENV PNPM_HOME=/pnpm \
     PATH="/pnpm:$PATH" \
     NPM_CONFIG_REGISTRY=${NPM_REGISTRY} \
-    COREPACK_NPM_REGISTRY=${NPM_REGISTRY}
+    COREPACK_NPM_REGISTRY=${NPM_REGISTRY} \
+    NODE_TLS_REJECT_UNAUTHORIZED=0 \
+    NPM_CONFIG_STRICT_SSL=false
 
 # alpine apk 换源（host + scheme 都可覆盖，方便内网无 HTTPS 的私服）
 RUN set -eux; \
