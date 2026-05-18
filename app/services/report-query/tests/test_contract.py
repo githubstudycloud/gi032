@@ -18,8 +18,8 @@ import pytest
 from fastapi.testclient import TestClient
 from pydantic import ValidationError
 
+from app.framework.schemas import ReportConfig, ReportData
 from app.main import create_app
-from app.schemas import ReportConfig, ReportData
 
 # mock 根目录（从 services/report-query/ 出发向上回到仓库根，再进 apps/web/public/mock）
 _MOCK_ROOT = Path(__file__).resolve().parents[3] / "apps" / "web" / "public" / "mock" / "reports"

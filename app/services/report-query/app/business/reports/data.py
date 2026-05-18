@@ -8,9 +8,9 @@ from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException, status
 
-from app.envelope import ok
-from app.schemas import QueryRequest
-from app.services.repo import get_report_data
+from app.business.reports.repo import get_report_data
+from app.framework.envelope import ok
+from app.framework.schemas import QueryRequest
 
 router = APIRouter(prefix="/reports", tags=["report-data"])
 

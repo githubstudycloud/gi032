@@ -17,17 +17,17 @@ from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from app.db import SessionLocal
-from app.models import DimDropdownOption, ReportSnapshot
-from app.services.fixtures import (
+from app.business.fixtures import (
     load_dropdown as load_dropdown_fixture,
 )
-from app.services.fixtures import (
+from app.business.fixtures import (
     load_report_config as load_report_config_fixture,
 )
-from app.services.fixtures import (
+from app.business.fixtures import (
     load_report_data as load_report_data_fixture,
 )
+from app.framework.db import SessionLocal
+from app.framework.models import DimDropdownOption, ReportSnapshot
 
 log = logging.getLogger(__name__)
 

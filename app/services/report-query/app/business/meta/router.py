@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from fastapi import APIRouter
 
-from app.envelope import ok
-from app.services.repo import get_dropdown
+from app.business.reports.repo import get_dropdown
+from app.framework.envelope import ok
 
 router = APIRouter(tags=["meta"])
 

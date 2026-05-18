@@ -8,14 +8,14 @@ from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException, status
 
-from app.envelope import ok
-from app.services.fixtures import (
+from app.business.fixtures import (
     load_admin_metrics_page,
     load_branding,
     load_fonts,
     load_nav,
     load_themes,
 )
+from app.framework.envelope import ok
 
 router = APIRouter(tags=["chrome"])
 

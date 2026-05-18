@@ -4,9 +4,13 @@
     uv run uvicorn app.main:app --host 127.0.0.1 --port 8001 --reload
 
 约定：
-    - 这里只挂只读路由（config / data / drilldown / meta）。
+    - 这里只挂只读路由（config / data / drilldown / meta / chrome）。
     - 不挂任何 admin / ingest，避免误暴露写权限。
     - 同库不同端口跟 report-generation 协作，详见 docs/api-split-plan.md。
+
+分层（Phase 4 framework/business 拆分后）：
+    - ``app/framework/``: envelope / db / schemas / exceptions —— 业务无关
+    - ``app/business/``:  reports / chrome / meta —— 按域分子模块
 """
 
 from __future__ import annotations
@@ -14,17 +18,15 @@ from __future__ import annotations
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException, Request, status
-from fastapi.exceptions import RequestValidationError
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 
-from app.api import chrome as chrome_router
-from app.api import config as config_router
-from app.api import data as data_router
-from app.api import drilldown as drilldown_router
-from app.api import meta as meta_router
-from app.envelope import fail
+from app.business.chrome import router as chrome_router
+from app.business.meta import router as meta_router
+from app.business.reports import config as config_router
+from app.business.reports import data as data_router
+from app.business.reports import drilldown as drilldown_router
+from app.framework import exceptions as exception_handlers
 from app.settings import get_settings
 
 
@@ -51,32 +53,7 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    @app.exception_handler(HTTPException)
-    async def http_exception_handler(_req: Request, exc: HTTPException) -> JSONResponse:
-        return JSONResponse(
-            status_code=exc.status_code,
-            content=fail(code=exc.status_code, message=str(exc.detail)),
-        )
-
-    @app.exception_handler(RequestValidationError)
-    async def validation_exception_handler(
-        _req: Request, exc: RequestValidationError,
-    ) -> JSONResponse:
-        return JSONResponse(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            content=fail(
-                code=40001,
-                message="请求参数校验失败",
-                data={"issues": exc.errors()},
-            ),
-        )
-
-    @app.exception_handler(Exception)
-    async def unhandled_exception_handler(_req: Request, exc: Exception) -> JSONResponse:
-        return JSONResponse(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content=fail(code=500, message=f"未捕获异常: {exc.__class__.__name__}"),
-        )
+    exception_handlers.register(app)
 
     app.include_router(meta_router.router, prefix=settings.api_prefix)
     app.include_router(chrome_router.router, prefix=settings.api_prefix)

@@ -10,9 +10,9 @@ from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException, status
 
-from app.envelope import Envelope, ok
-from app.schemas import ReportConfig
-from app.services.repo import get_report_config
+from app.business.reports.repo import get_report_config
+from app.framework.envelope import Envelope, ok
+from app.framework.schemas import ReportConfig
 
 router = APIRouter(prefix="/reports", tags=["report-config"])
 

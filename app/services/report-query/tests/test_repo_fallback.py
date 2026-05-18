@@ -15,8 +15,8 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from app.models import DimDropdownOption, ReportSnapshot
-from app.services.repo import get_dropdown, get_report_config, get_report_data
+from app.business.reports.repo import get_dropdown, get_report_config, get_report_data
+from app.framework.models import DimDropdownOption, ReportSnapshot
 
 
 @pytest.fixture
@@ -28,7 +28,7 @@ def empty_db(monkeypatch: pytest.MonkeyPatch) -> Iterator[str]:
     monkeypatch.setenv("DATABASE_URL", url)
 
     # 重新 import db 模块让它读新 env —— 直接替换 SessionLocal 更稳
-    from app import db as db_module
+    from app.framework import db as db_module
 
     new_engine = create_engine(url, future=True)
     monkeypatch.setattr(db_module, "engine", new_engine)
@@ -36,8 +36,8 @@ def empty_db(monkeypatch: pytest.MonkeyPatch) -> Iterator[str]:
         db_module, "SessionLocal",
         sessionmaker(bind=new_engine, autoflush=False, autocommit=False, expire_on_commit=False),
     )
-    # repo 模块里也是 from app.db import SessionLocal —— 需要给 repo.SessionLocal 也换掉
-    from app.services import repo as repo_module
+    # repo 模块里也是 from app.framework.db import SessionLocal —— 需要给 repo.SessionLocal 也换掉
+    from app.business.reports import repo as repo_module
 
     monkeypatch.setattr(repo_module, "SessionLocal", db_module.SessionLocal)
 
@@ -61,7 +61,7 @@ def test_repo_falls_back_to_fixture_when_db_has_no_tables(empty_db: str) -> None
 
 def test_repo_falls_back_when_table_exists_but_empty(empty_db: str) -> None:
     """建空表 → 仍回落 fixture。"""
-    from app.db import Base, engine
+    from app.framework.db import Base, engine
 
     Base.metadata.create_all(engine)
     data = get_report_data("industry")
@@ -71,7 +71,7 @@ def test_repo_falls_back_when_table_exists_but_empty(empty_db: str) -> None:
 
 def test_repo_prefers_db_when_row_present(empty_db: str) -> None:
     """DB 有 row → 拿 DB 的，不读 fixture。"""
-    from app.db import Base, SessionLocal, engine
+    from app.framework.db import Base, SessionLocal, engine
 
     Base.metadata.create_all(engine)
 
@@ -92,7 +92,7 @@ def test_repo_prefers_db_when_row_present(empty_db: str) -> None:
 
 def test_repo_uses_latest_snapshot_when_multiple_days(empty_db: str) -> None:
     """同 report_type 多个 snapshot 时取最新日期。"""
-    from app.db import Base, SessionLocal, engine
+    from app.framework.db import Base, SessionLocal, engine
 
     Base.metadata.create_all(engine)
 
@@ -122,7 +122,7 @@ def test_dropdown_falls_back_to_fixture(empty_db: str) -> None:
 
 def test_dropdown_prefers_db_with_sort(empty_db: str) -> None:
     """DB 有数据时按 sort_order 排序返回。"""
-    from app.db import Base, SessionLocal, engine
+    from app.framework.db import Base, SessionLocal, engine
 
     Base.metadata.create_all(engine)
     with SessionLocal() as session:
