@@ -55,13 +55,20 @@ export async function useDataSource<TRaw = unknown, T = TRaw>(
       }
 
       // JSON 模式：先试 user-data，落空再读 mock。
+      // 坑：Nuxt dev server 对不存在的静态文件不返回 404，而是返回 SPA fallback HTML 200。
+      // 所以这里既要 catch 错误，也要校验响应形状（必须是 object/array），HTML 字符串视为缺失。
       const userUrl = `${userDataBase}${opts.jsonPath}`;
       if (!missingUserPaths.has(userUrl)) {
         try {
-          return (await $fetch<unknown>(userUrl)) as TRaw;
+          const resp = await $fetch<unknown>(userUrl);
+          if (resp && typeof resp === 'object') {
+            return resp as TRaw;
+          }
+          // 拿到的不是 JSON 对象（多半是 SPA fallback HTML）→ 当缺失
+          missingUserPaths.add(userUrl);
         }
         catch {
-          // 标记为缺失，避免本会话内重复打 404（user-data 文件用户也很少在运行时新增）
+          // 标记为缺失，避免本会话内重复探测（user-data 文件用户也很少在运行时新增）
           missingUserPaths.add(userUrl);
         }
       }
