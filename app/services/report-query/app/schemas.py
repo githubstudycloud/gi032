@@ -1,6 +1,14 @@
-"""V2 协议的 Pydantic 模型。
+"""V2 协议的 Pydantic 模型 —— **后端为协议源 (source of truth)**。
 
-跟前端 `app/types/report-config.ts` 一对一镜像 —— 任何字段改动两边同步改。
+与前端 `apps/web/app/types/report-config.ts` 一一对应；任何字段改动以本文件为准，
+前端 Zod schema (`apps/web/app/types/report-schemas.ts`) 应随之同步。
+
+约定：
+- 字段名沿用前端 v2 协议（含 ``goodColor``/``badColor``/``cellType`` 三个 camelCase 字段，
+  通过 ``Field(alias=...)`` 映射）。
+- ``StrictModel`` 默认 ``extra="forbid"``，悄悄多塞字段会直接 422，避免协议漂移再次发生。
+- ``populate_by_name=True`` 允许 alias 与 field name 双形输入；序列化时 FastAPI
+  路由用 ``response_model_by_alias=True`` 输出 camelCase。
 """
 
 from __future__ import annotations
@@ -13,65 +21,134 @@ from pydantic import BaseModel, ConfigDict, Field
 class StrictModel(BaseModel):
     """所有 schema 默认严格 —— 多余字段直接报错，避免悄悄静默错配。"""
 
-    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    model_config = ConfigDict(
+        extra="forbid",
+        str_strip_whitespace=True,
+        populate_by_name=True,
+    )
 
 
-# —— meta / toolbar / filter / kpi / primary_view / drilldown —————————
+# —— meta ——————————————————————————
 
 class ReportMeta(StrictModel):
     report_type: str
     name: str
     subtitle: str | None = None
+    show_subtitle: bool | None = None
     description: str | None = None
-    version: str = "v2"
+    version: int
+    user_pref_endpoint: str | None = None
 
+
+# —— toolbar ——————————————————————————
 
 class ToolbarSpec(StrictModel):
-    refresh: bool = True
-    paging: bool = True
-    compare: bool = False
-    columns: bool = False
-    export: bool = False
+    show_refresh: bool | None = None
+    show_paging_mode: bool | None = None
+    show_compare: bool | None = None
+    show_column_customizer: bool | None = None
+    show_export: bool | None = None
+
+
+# —— filters ——————————————————————————
+
+FilterKind = Literal[
+    "date_single", "date_range",
+    "flat_dropdown", "hierarchy_dropdown", "search_dropdown",
+    "multi_select", "multi_search",
+    "text", "number_range", "boolean",
+    "enum_radio", "enum_chips",
+]
+
+
+class FilterSortSpec(StrictModel):
+    field: str
+    dir: Literal["asc", "desc"]
+
+
+class FilterPaging(StrictModel):
+    enabled: bool
+    page_size: int
 
 
 class FilterSource(StrictModel):
     endpoint: str
-    method: Literal["GET", "POST"] = "GET"
+    method: Literal["GET", "POST"] | None = None
+    paging: FilterPaging | None = None
+    sortable_by: list[str] | None = None
+    default_sort: list[FilterSortSpec] | None = None
+    supports_favorite: bool | None = None
+    supports_filter: bool | None = None
+    params_in: list[str] | None = None
+    max_levels: int | None = None
+    select_at_any_depth: bool | None = None
+    max_picks: int | None = None
+    min_chars: int | None = None
+    debounce_ms: int | None = None
 
 
-FilterKind = Literal[
-    "date_range", "date_single", "flat_dropdown", "search_dropdown",
-    "multi_select", "text", "number_range", "tag", "checkbox_group",
-    "radio_group", "cascade", "tree_select",
-]
+class FilterOption(StrictModel):
+    value: str
+    label: str
 
 
 class FilterSpec(StrictModel):
     code: str
     label: str
     kind: FilterKind
-    required: bool = False
-    placeholder: str | None = None
-    default: Any | None = None
+    required: bool | None = None
+    default: Any = None
+    param: dict[str, str]
+    depends_on: list[str] | None = None
     source: FilterSource | None = None
+    options: list[FilterOption] | None = None
+    placeholder: str | None = None
+    min: float | None = None
+    max: float | None = None
+    step: float | None = None
+    unit: str | None = None
+    multi: bool | None = None
 
+
+# —— threshold（视觉化阈值：min/max + 颜色 token） ——————————————
 
 class Threshold(StrictModel):
-    good: float | None = None
-    warn: float | None = None
-    danger: float | None = None
-    direction: Literal["higher_better", "lower_better"] = "higher_better"
+    min: float | None = None
+    max: float | None = None
+    good_color: str | None = Field(default=None, alias="goodColor")
+    bad_color: str | None = Field(default=None, alias="badColor")
 
+
+# —— table column（N 级递归表头；叶子节点为 column 定义） ——————————
+
+class TableColumn(StrictModel):
+    key: str
+    label: str
+    rowspan: Literal[1, 2] | None = None
+    width: str | None = None
+    children: list[TableColumn] | None = None
+    align: Literal["left", "center", "right"] | None = None
+    sortable: bool | None = None
+    filterable: bool | None = None
+    highlight: bool | None = None
+    threshold: Threshold | None = None
+    cell_type: Literal["value", "action"] | None = Field(default=None, alias="cellType")
+
+
+TableColumn.model_rebuild()
+
+
+# —— kpi ——————————————————————————
 
 class KpiItemDef(StrictModel):
     key: str
     label: str
     unit: str | None = None
-    data_type: Literal["int", "decimal", "percent", "string"] = "decimal"
+    data_type: Literal["int", "decimal", "percent", "string"] | None = None
     description: str | None = None
     threshold: Threshold | None = None
     detail_ref: str | None = None
-    detail: dict[str, Any] | None = None  # 内联图表配置（前端 MetricDetail）
+    detail: dict[str, Any] | None = None  # 内联图表（前端 MetricDetail，结构不在协议内强校验）
 
 
 class KpiGroupDef(StrictModel):
@@ -81,65 +158,75 @@ class KpiGroupDef(StrictModel):
 
 
 class KpiSpec(StrictModel):
-    enabled: bool = True
-    title: str = "核心指标"
-    footnote: str = ""
+    enabled: bool
+    title: str | None = None
     data_endpoint: str | None = None
+    layout_mode_default: Literal["grouped", "flat"] | None = None
+    footnote: str | None = None
     groups: list[KpiGroupDef]
 
 
-class HeaderNode(StrictModel):
-    """递归多级表头节点。叶子节点是 column 定义。"""
+# —— primary view ——————————————————————————
 
+class PagingSpec(StrictModel):
+    enabled: bool | None = None
+    default_mode: Literal["server", "client", "none"] | None = None
+    default_page_size: int | None = None
+
+
+class PrimaryViewTab(StrictModel):
     key: str
     label: str
-    sortable: bool = False
-    filterable: bool = False
-    width: int | None = None
-    align: Literal["left", "center", "right"] | None = None
-    format: str | None = None  # 'int' | 'decimal:2' | 'percent:1' 等
-    drilldown_ref: str | None = None
-    children: list[HeaderNode] = Field(default_factory=list)
+    data_endpoint: str | None = None
+    header_tree_endpoint: str | None = None
+    header_tree: list[TableColumn] | None = None
 
 
-HeaderNode.model_rebuild()
-
-
-class TabDef(StrictModel):
-    key: str
+class RowDimOption(StrictModel):
+    code: str
     label: str
-    header_tree: list[HeaderNode]
+    row_count_hint: int | None = None
 
 
-class PrimaryViewPaging(StrictModel):
-    default_mode: Literal["server", "client", "none"] = "client"
-    default_page_size: int = 20
-    page_size_options: list[int] = Field(default_factory=lambda: [10, 20, 50, 100])
+class RowFavoriteSpec(StrictModel):
+    enabled: bool
+    toggle_endpoint: str | None = None
+    sort_on_top: bool | None = None
 
 
 class PrimaryView(StrictModel):
-    enabled: bool = True
+    enabled: bool
     title: str | None = None
     endpoint: str | None = None
-    paging: PrimaryViewPaging | None = None
-    tabs: list[TabDef]
+    method: Literal["GET", "POST"] | None = None
+    paging: PagingSpec | None = None
+    row_dim_options: list[RowDimOption] | None = None
+    row_dim_default: str | None = None
+    row_favorite: RowFavoriteSpec | None = None
+    tabs: list[PrimaryViewTab]
 
+
+# —— drilldowns ——————————————————————————
 
 class DrilldownDef(StrictModel):
     title: str
     endpoint: str
-    method: Literal["GET", "POST"] = "POST"
-    header_tree_endpoint: str | None = None  # 列也可动态来自后端
-    param_mapping: dict[str, str] = Field(default_factory=dict)
+    method: Literal["GET", "POST"] | None = None
+    param_mapping: dict[str, str]
+    paging: PagingSpec | None = None
+    header_tree_endpoint: str | None = None
+    header_tree: list[TableColumn] | None = None
 
+
+# —— full config ——————————————————————————
 
 class ReportConfig(StrictModel):
     meta: ReportMeta
-    toolbar: ToolbarSpec = Field(default_factory=ToolbarSpec)
+    toolbar: ToolbarSpec | None = None
     filters: list[FilterSpec] = Field(default_factory=list)
     kpi: KpiSpec | None = None
-    primary_view: PrimaryView
-    drilldowns: dict[str, DrilldownDef] = Field(default_factory=dict)
+    primary_view: PrimaryView | None = None
+    drilldowns: dict[str, DrilldownDef] | None = None
 
 
 # —— data 端响应（与 config 配对） —————————————————
@@ -148,7 +235,7 @@ class KpiItemValue(StrictModel):
     key: str
     value: str | float | int | None = None
     mom: str | None = None
-    trend: Literal["up", "down", "flat"] = "flat"
+    trend: Literal["up", "down", "flat"] | None = None
 
 
 class KpiGroupData(StrictModel):
@@ -161,24 +248,36 @@ class KpiData(StrictModel):
 
 
 class TabData(StrictModel):
-    items: list[dict[str, Any]]
-    page: int = 1
-    page_size: int = 20
-    total: int = 0
+    items: list[dict[str, Any]]  # row 项的字段是用户自定义的，不在协议层校验
+    page: int | None = None
+    page_size: int | None = None
+    total: int | None = None
+    has_more: bool | None = None
+    extras: dict[str, Any] | None = None
+
+
+class DrilldownData(StrictModel):
+    default: TabData
 
 
 class ReportData(StrictModel):
     kpi: KpiData | None = None
     tabs: dict[str, TabData]
+    drilldowns: dict[str, DrilldownData] | None = None
 
 
 # —— 入参 ——————————————————————————
+
+class SortSpec(StrictModel):
+    field: str
+    dir: Literal["asc", "desc"]
+
 
 class QueryRequest(StrictModel):
     """通用 data 查询入参。"""
 
     filters: dict[str, Any] = Field(default_factory=dict)
-    page: int = 1
-    page_size: int = 20
-    sort: list[dict[str, str]] = Field(default_factory=list)
+    page: int = Field(default=1, ge=1)
+    page_size: int = Field(default=20, ge=1, le=200)
+    sort: list[SortSpec] = Field(default_factory=list)
     compare: Literal["none", "prev_period", "prev_year", "prev_month"] = "none"

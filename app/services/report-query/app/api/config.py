@@ -2,20 +2,27 @@
 
 GET /api/reports/{report_type}/config
 返回 ReportConfig（meta + filters + kpi + primary_view + drilldowns），
-跟前端 V2 协议一一对应。
+后端 Pydantic 作为协议 source of truth；运行时 ``response_model`` 强制校验，
+任何漂移会直接 500 报错给开发者，避免静默接出脏数据。
 """
 
 from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException, status
 
-from app.envelope import ok
+from app.envelope import Envelope, ok
+from app.schemas import ReportConfig
 from app.services.repo import get_report_config
 
 router = APIRouter(prefix="/reports", tags=["report-config"])
 
 
-@router.get("/{report_type}/config")
+@router.get(
+    "/{report_type}/config",
+    response_model=Envelope[ReportConfig],
+    response_model_by_alias=True,
+    response_model_exclude_none=True,
+)
 def read_report_config(report_type: str) -> dict[str, object]:
     """加载并返回报表配置。
 
@@ -27,6 +34,6 @@ def read_report_config(report_type: str) -> dict[str, object]:
     if cfg is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"report config not found: {report_type}",
+            detail=f"报表配置不存在: {report_type}",
         )
     return ok(cfg)

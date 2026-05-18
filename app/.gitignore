@@ -25,6 +25,9 @@ __pycache__/
 .env.local
 .env.*.local
 
+# deploy.py 临时打包目录（含生成的 .env / source.tar.gz / 部署日志）—— 严禁入库
+scripts/deploy/_build/
+
 # Editor
 .idea
 .vscode/*
