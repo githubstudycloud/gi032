@@ -1,6 +1,6 @@
 {
   "items": [
-    { "value": "all",    "label": "全部部门" },
+    { "value": "all",    "label": "全部" },
     { "value": "dept-1", "label": "智能终端测试部" },
     { "value": "dept-2", "label": "云服务测试部" },
     { "value": "dept-3", "label": "网络产品测试部" },

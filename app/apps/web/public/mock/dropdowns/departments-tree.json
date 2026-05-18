@@ -1,0 +1,27 @@
+{
+  "items": [
+    { "value": "all", "label": "全部" },
+    { "value": "dept-1", "label": "智能终端测试部", "children": [
+      { "value": "dept-1-all", "label": "整部门" },
+      { "value": "dept-1-1",   "label": "智能机测试组" },
+      { "value": "dept-1-2",   "label": "折叠屏测试组" },
+      { "value": "dept-1-3",   "label": "可穿戴测试组" }
+    ]},
+    { "value": "dept-2", "label": "云服务测试部", "children": [
+      { "value": "dept-2-all", "label": "整部门" },
+      { "value": "dept-2-1",   "label": "公有云测试组" },
+      { "value": "dept-2-2",   "label": "私有云测试组" }
+    ]},
+    { "value": "dept-3", "label": "网络产品测试部", "children": [
+      { "value": "dept-3-all", "label": "整部门" },
+      { "value": "dept-3-1",   "label": "路由器测试组" },
+      { "value": "dept-3-2",   "label": "交换机测试组" },
+      { "value": "dept-3-3",   "label": "无线接入测试组" }
+    ]},
+    { "value": "dept-4", "label": "汽车解决方案测试部", "children": [
+      { "value": "dept-4-all", "label": "整部门" },
+      { "value": "dept-4-1",   "label": "智能座舱测试组" },
+      { "value": "dept-4-2",   "label": "自动驾驶测试组" }
+    ]}
+  ]
+}

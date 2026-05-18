@@ -13,7 +13,7 @@
     { "code": "time_range", "label": "时间范围", "kind": "flat_dropdown", "required": true,
       "param": { "value": "time_range" }, "default": { "value": "7d" },
       "source": { "endpoint": "/dropdowns/time-ranges", "params_in": ["q"] } },
-    { "code": "department", "label": "部门", "kind": "flat_dropdown",
+    { "code": "department", "label": "项目", "kind": "flat_dropdown",
       "param": { "value": "department_code" }, "default": { "value": "all" },
       "source": { "endpoint": "/dropdowns/departments", "params_in": ["q", "page"], "supports_favorite": true } }
   ],

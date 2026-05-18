@@ -30,7 +30,7 @@
           {
             "key": "design-coverage",
             "value": "62.4%",
-            "mom": "+4.8pp",
+            "mom": "+4.8%",
             "trend": "up"
           },
           {
@@ -48,13 +48,13 @@
           {
             "key": "ai-case-ratio",
             "value": "60.3%",
-            "mom": "+5.2pp",
+            "mom": "+5.2%",
             "trend": "up"
           },
           {
             "key": "ai-defect-ratio",
             "value": "52.8%",
-            "mom": "+3.1pp",
+            "mom": "+3.1%",
             "trend": "up"
           }
         ]
@@ -77,7 +77,7 @@
           {
             "key": "adoption-rate",
             "value": "62.8%",
-            "mom": "-1.2pp",
+            "mom": "-1.2%",
             "trend": "down"
           },
           {

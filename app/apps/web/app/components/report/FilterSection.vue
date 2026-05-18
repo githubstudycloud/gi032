@@ -21,8 +21,10 @@ function setValue(code: string, value: unknown): void {
   emit('update:modelValue', { ...props.modelValue, [code]: value });
 }
 
-/* —— 下拉选项的本地缓存（每个 filter 一份 source 数据） —— */
-type OptionList = { value: string; label: string }[];
+/* —— 下拉选项的本地缓存（每个 filter 一份 source 数据） ——
+   节点同时兼容 flat 和 tree：children 存在即为分组（optgroup），否则为叶子选项。 */
+type TreeOption = { value: string; label: string; children?: TreeOption[] };
+type OptionList = TreeOption[];
 const dropdownOptions = reactive<Record<string, OptionList>>({});
 const dropdownLoading = reactive<Record<string, boolean>>({});
 
@@ -70,7 +72,7 @@ async function ensureOptions(f: FilterSpec): Promise<void> {
 
 onMounted(() => {
   for (const f of props.filters) {
-    if (f.kind === 'flat_dropdown' || f.kind === 'search_dropdown' || f.kind === 'multi_select') {
+    if (f.kind === 'flat_dropdown' || f.kind === 'search_dropdown' || f.kind === 'multi_select' || f.kind === 'hierarchy_dropdown') {
       void ensureOptions(f);
     }
   }
@@ -111,6 +113,8 @@ function setDateRange(code: string, key: 'from' | 'to', value: string): void {
       <h2 class="font-display text-[15px] font-semibold text-ink-900 tracking-tight">
         {{ $t('filters.title') }}
       </h2>
+      <div class="flex-1" />
+      <slot name="right" />
     </header>
 
     <div class="flex flex-wrap items-end gap-4">
@@ -164,6 +168,31 @@ function setDateRange(code: string, key: 'from' | 'to', value: string): void {
           >
             {{ opt.label }}
           </option>
+        </select>
+
+        <!-- hierarchy_dropdown：两层下拉，native select 用 optgroup 展示树状（一个框）。
+             顶层有 children → 渲染成 optgroup（标题不可选）+ 子节点为 option；
+             顶层无 children → 当成普通叶子（用来放"全部"这种顶层项）。 -->
+        <select
+          v-else-if="f.kind === 'hierarchy_dropdown'"
+          :value="strVal(f.code)"
+          class="w-full h-9 rounded-md border border-ink-200 px-3 text-[13px] bg-surface text-ink-900 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
+          @change="setStrVal(f.code, ($event.target as HTMLSelectElement).value)"
+        >
+          <template v-for="opt in dropdownOptions[f.code] ?? []" :key="opt.value">
+            <option v-if="!opt.children?.length" :value="opt.value">
+              {{ opt.label }}
+            </option>
+            <optgroup v-else :label="opt.label">
+              <option
+                v-for="child in opt.children"
+                :key="child.value"
+                :value="child.value"
+              >
+                {{ child.label }}
+              </option>
+            </optgroup>
+          </template>
         </select>
 
         <!-- text -->

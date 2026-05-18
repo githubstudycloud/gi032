@@ -57,23 +57,8 @@ function onDrillKpi(kpiKey: string): void {
       <ErrorPanel v-if="error" :error="error" @retry="refresh" />
 
       <template v-else-if="config">
-        <PageHeader
-          :name="config.meta.name"
-          :subtitle="config.meta.show_subtitle ? config.meta.subtitle : undefined"
-          :description="config.meta.description"
-        >
-          <template #right>
-            <ToolBar
-              :spec="config.toolbar"
-              :paging-mode="pagingMode"
-              :compare="compare"
-              @refresh="refresh"
-              @update:paging-mode="pagingMode = $event"
-              @update:compare="compare = $event"
-            />
-          </template>
-        </PageHeader>
-
+        <!-- 页面标题已在左侧菜单 + 顶部 tab 显示，这里不再重复；
+             工具栏（刷新/分页模式/对比/列定制/导出）放进 FilterSection 内部 "筛选" 那一行右侧。 -->
         <div class="space-y-6">
           <FilterSection
             v-if="config.filters?.length"
@@ -81,7 +66,18 @@ function onDrillKpi(kpiKey: string): void {
             :filters="config.filters"
             @search="refresh"
             @reset="resetFilters"
-          />
+          >
+            <template #right>
+              <ToolBar
+                :spec="config.toolbar"
+                :paging-mode="pagingMode"
+                :compare="compare"
+                @refresh="refresh"
+                @update:paging-mode="pagingMode = $event"
+                @update:compare="compare = $event"
+              />
+            </template>
+          </FilterSection>
 
           <KpiSection
             :spec="config.kpi"
@@ -106,7 +102,6 @@ function onDrillKpi(kpiKey: string): void {
 
       <template #fallback>
         <div class="space-y-4">
-          <div class="h-12 rounded-xl border border-ink-200/70 bg-surface" />
           <div class="h-20 rounded-xl border border-ink-200/70 bg-surface" />
           <div class="h-96 rounded-xl border border-ink-200/70 bg-surface" />
         </div>

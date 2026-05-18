@@ -7,16 +7,16 @@
       { "key": "business", "items": [
         { "key": "ai-requirements",    "value": "142",   "mom": "+5.3%",  "trend": "up" },
         { "key": "total-requirements", "value": "412",   "mom": "+3.2%",  "trend": "up" },
-        { "key": "design-coverage",    "value": "55.6%", "mom": "+4.2pp", "trend": "up" },
+        { "key": "design-coverage",    "value": "55.6%", "mom": "+4.2%", "trend": "up" },
         { "key": "valid-ai-cases",     "value": "1,968", "mom": "+16.4%", "trend": "up" },
         { "key": "total-cases",        "value": "2,612", "mom": "+10.6%", "trend": "up" },
-        { "key": "ai-case-ratio",      "value": "75.4%", "mom": "+3.8pp", "trend": "up" },
-        { "key": "ai-defect-ratio",    "value": "68.2%", "mom": "+5.4pp", "trend": "up" }
+        { "key": "ai-case-ratio",      "value": "75.4%", "mom": "+3.8%", "trend": "up" },
+        { "key": "ai-defect-ratio",    "value": "68.2%", "mom": "+5.4%", "trend": "up" }
       ]},
       { "key": "capability", "items": [
         { "key": "ai-cases-generated", "value": "2,612", "mom": "+19.5%", "trend": "up" },
         { "key": "ai-cases-adopted",   "value": "2,210", "mom": "+22.8%", "trend": "up" },
-        { "key": "adoption-rate",      "value": "84.6%", "mom": "+1.8pp", "trend": "up" },
+        { "key": "adoption-rate",      "value": "84.6%", "mom": "+1.8%", "trend": "up" },
         { "key": "avg-interactions",   "value": "2.4",   "mom": "-0.2",   "trend": "down" }
       ]}
     ]

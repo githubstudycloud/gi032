@@ -662,7 +662,7 @@
           {
             "key": "design-coverage",
             "label": "AI测试设计需求覆盖率",
-            "description": "公式：AI 需求数 ÷ 需求数 × 100%。\n反映 AI 能力在测试设计阶段的渗透广度。\n参考阈值：≥ 60%为达标，环比 +4.8 pp。",
+            "description": "公式：AI 需求数 ÷ 需求数 × 100%。\n反映 AI 能力在测试设计阶段的渗透广度。\n参考阈值：≥ 60%为达标，环比 +4.8%。",
             "threshold": {
               "min": 60,
               "goodColor": "emerald",

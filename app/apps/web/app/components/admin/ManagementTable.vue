@@ -172,26 +172,7 @@ function formatDatetime(v: unknown): string {
 
 <template>
   <div>
-    <!-- 顶部：标题 + 副标题 + 新增按钮 -->
-    <header class="flex items-end gap-3 mb-4">
-      <div class="min-w-0">
-        <h1 class="font-display text-[20px] font-semibold text-ink-900 tracking-tight">
-          {{ config.title }}
-        </h1>
-        <p v-if="config.subtitle" class="mt-1 text-[12.5px] text-ink-500 leading-snug">
-          {{ config.subtitle }}
-        </p>
-      </div>
-      <div class="flex-1" />
-      <button
-        v-if="config.can_create"
-        type="button"
-        class="h-9 px-4 rounded-md bg-brand-600 text-white text-[13px] font-medium hover:bg-brand-700 active:bg-brand-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
-        @click="openCreate"
-      >
-        + {{ t('common.create') }}
-      </button>
-    </header>
+    <!-- 页面标题已在左侧菜单 + 顶部 tab 显示，这里不再重复渲染；新增按钮挪到筛选条右侧。 -->
 
     <!-- 筛选条 -->
     <section
@@ -243,6 +224,14 @@ function formatDatetime(v: unknown): string {
           @click="filterState = {}"
         >
           {{ t('common.clearFilters') }}
+        </button>
+        <button
+          v-if="config.can_create"
+          type="button"
+          class="h-9 px-4 rounded-md bg-brand-600 text-white text-[13px] font-medium hover:bg-brand-700 active:bg-brand-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
+          @click="openCreate"
+        >
+          + {{ t('common.create') }}
         </button>
       </div>
     </section>
