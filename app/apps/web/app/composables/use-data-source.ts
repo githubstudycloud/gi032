@@ -4,8 +4,29 @@ import { unwrapEnvelope } from '~/utils/envelope';
 /**
  * 用户覆盖路径的会话级"已确认缺失"集合：第一次试探 /user-data/<path> 返回 404 后记一笔，
  * 同会话里同一路径不再重复试探。详见 README：apps/web/public/user-data/README.md。
+ *
+ * 测试钩子：暴露 _clearUserDataMissCache 只在测试 / 调试场景里清掉缓存。
+ * 生产路径不要调用 —— 频繁清空会触发反复 SPA fallback 抓取（dev 模式 16+ 个无效请求）。
  */
 const missingUserPaths = new Set<string>();
+
+/** 仅供测试 / 开发面板使用，清空"已确认缺失"集合 */
+export function _clearUserDataMissCache(): void {
+  missingUserPaths.clear();
+}
+
+/**
+ * 判断 `$fetch(/user-data/X)` 拿到的响应是否是"真正的 user-data JSON"。
+ *
+ * Nuxt dev 静态文件不存在时会返回 SPA fallback HTML（content-type text/html, 状态 200），
+ * ofetch 按 content-type 解析后得到的是字符串而不是对象 —— 所以这里用 typeof === 'object' 把
+ * 字符串 / 数字 / null 全部当成"覆盖文件缺失"处理，正常 JSON object/array 才算命中。
+ *
+ * 抽成独立小函数纯粹是为了能在 vitest 里直接覆盖；不依赖 Vue / Nuxt。
+ */
+export function looksLikeOverlayJson(resp: unknown): boolean {
+  return !!resp && typeof resp === 'object';
+}
 
 /**
  * 统一数据入口：现在读 public/mock 下的 JSON，未来切到后端只需改 runtimeConfig.public.dataSourceMode。
@@ -61,7 +82,7 @@ export async function useDataSource<TRaw = unknown, T = TRaw>(
       if (!missingUserPaths.has(userUrl)) {
         try {
           const resp = await $fetch<unknown>(userUrl);
-          if (resp && typeof resp === 'object') {
+          if (looksLikeOverlayJson(resp)) {
             return resp as TRaw;
           }
           // 拿到的不是 JSON 对象（多半是 SPA fallback HTML）→ 当缺失

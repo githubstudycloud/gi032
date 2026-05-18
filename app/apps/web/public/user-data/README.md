@@ -41,13 +41,25 @@ public/mock/reports/design/data.json
 public/user-data/reports/design/data.json
 ```
 
+> ⚠️ 目录不会自动创建。第一次覆盖 `reports/design/` 时记得先 `mkdir -p user-data/reports/design`，
+> 否则 `cp` 会报 "No such file or directory"。
+
 ### 第三步：改完保存，浏览器刷新即生效
 
 不用重启 `pnpm dev`。本目录在 Nuxt 静态资源根下，文件改动会立即可访问。
 
 > **会话级缓存**：useDataSource 会记住"本会话里哪些 user-data 路径已经 404 过"，
-> 避免重复 404 噪音。所以**新增**一个 user-data 文件时，**刷新整页**才会让它被试探到。
+> 避免重复 404 噪音。所以**新增**一个 user-data 文件时，**整页刷新**（Ctrl+F5 / Cmd+Shift+R）
+> 才会让它被试探到 —— HMR 热更新不会清空这个缓存。
 > 修改已有的 user-data 文件不受影响。
+
+### 拷过去发现没生效？三个常见坑
+
+1. **路径还在 `_examples/` 里** —— `_examples/reports/design/data.json` 不会被加载，
+   必须拷到 `reports/design/data.json`（去掉 `_examples/` 前缀）。
+2. **没有整页刷新** —— 浏览器只走了 HMR。Ctrl+F5 / Cmd+Shift+R 强刷一次。
+3. **JSON schema 漏了字段** —— 必须保留 mock 原文件的全部顶层 key，不能只贴半截。
+   schema 不全的话 UI 会显示空表格 / 缺列。改前先 `cp mock/X.json user-data/X.json`，再编辑。
 
 ## 示例
 
