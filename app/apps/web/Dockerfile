@@ -27,18 +27,11 @@ ARG NPM_REGISTRY=https://registry.npmmirror.com
 ARG APK_MIRROR=mirrors.tuna.tsinghua.edu.cn
 ARG APK_MIRROR_SCHEME=https
 
-# COREPACK_NPM_REGISTRY 必须显式设置：
-#   corepack 有自己的 registry 配置，不读 NPM_CONFIG_REGISTRY / .npmrc，
-#   默认走 https://registry.npmjs.org —— 内网会卡在这里超时。
-#
 # NODE_TLS_REJECT_UNAUTHORIZED=0 / NPM_CONFIG_STRICT_SSL=false：
 #   全内网部署关闭 TLS 校验（内部 CA / 自签证书 Node 默认不信任）。
 #   只在 build stage 生效；stage 2 nginx:alpine 不带 Node，运行镜像不受影响。
 #   想"干净修"请改用 COPY 内网 CA + NODE_EXTRA_CA_CERTS。
-ENV PNPM_HOME=/pnpm \
-    PATH="/pnpm:$PATH" \
-    NPM_CONFIG_REGISTRY=${NPM_REGISTRY} \
-    COREPACK_NPM_REGISTRY=${NPM_REGISTRY} \
+ENV NPM_CONFIG_REGISTRY=${NPM_REGISTRY} \
     NODE_TLS_REJECT_UNAUTHORIZED=0 \
     NPM_CONFIG_STRICT_SSL=false
 
@@ -46,9 +39,12 @@ ENV PNPM_HOME=/pnpm \
 RUN set -eux; \
     sed -i "s|https\?://dl-cdn.alpinelinux.org|${APK_MIRROR_SCHEME}://${APK_MIRROR}|g" /etc/apk/repositories || true
 
-RUN corepack enable && corepack prepare pnpm@9.12.0 --activate
+# 直接用 npm 装 pnpm（绕开 corepack）—— corepack 的 tarball 路径解析
+# 跟 nexus npm proxy 兼容性差，常报 "pnpm@X.X.X not have a valid tarball"。
+# npm install 走标准协议，nexus 都认。
+RUN npm install -g pnpm@9.12.0 --registry="${NPM_REGISTRY}"
 
-# pnpm registry（双保险 —— corepack 装 pnpm 时也走环境变量，但 pnpm 运行时配置在 ~/.npmrc）
+# pnpm 自身运行时再读 ~/.npmrc，写一次保险
 RUN pnpm config set registry "${NPM_REGISTRY}"
 
 WORKDIR /app
