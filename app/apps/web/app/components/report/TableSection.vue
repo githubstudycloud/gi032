@@ -5,8 +5,9 @@
  * 单 tab 时不显 tab 条；多 tab 时用 TabStrip。
  * tab.header_tree 直接喂给 MultiLevelTable，rows 从 data.tabs[<tab.key>].items 取。
  */
-import type { PrimaryView, ReportData } from '~/types/report-config';
+import type { PrimaryView, PrimaryViewTab, ReportData } from '~/types/report-config';
 import type { PilotTable, TableColumn, TableRow } from '~/types/overview-summary';
+import { tabToColumns } from '~/utils/header-modules';
 
 const props = defineProps<{
   view?: PrimaryView;
@@ -26,7 +27,9 @@ watch(tabs, (ts) => {
   }
 }, { immediate: true });
 
-const activeTab = computed(() => tabs.value.find(t => t.key === activeKey.value) ?? null);
+const activeTab = computed<PrimaryViewTab | null>(
+  () => tabs.value.find(t => t.key === activeKey.value) ?? null,
+);
 
 const activeTable = computed<PilotTable | null>(() => {
   const t = activeTab.value;
@@ -35,7 +38,7 @@ const activeTable = computed<PilotTable | null>(() => {
   return {
     key: t.key,
     label: t.label,
-    columns: (t.header_tree ?? []) as TableColumn[],
+    columns: tabToColumns(t) as TableColumn[],
     rows: (tabData?.items ?? []) as TableRow[],
     pagination: {
       page: tabData?.page ?? 1,

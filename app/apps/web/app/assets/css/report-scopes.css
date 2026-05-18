@@ -1,0 +1,48 @@
+/**
+ * 报表样式 scope —— 局部 OKLCH token 覆盖，跟全局主题 html.theme-* 正交。
+ *
+ * 用法：
+ *   在 config.json 里给 meta.style_scope 起一个 key，例如 'ai-test'。
+ *   ReportPage 会把 key 绑到 [data-report-scope="ai-test"] 属性。
+ *
+ * 怎么覆盖：
+ *   只覆盖少量 token（color-brand / color-accent / font-display），
+ *   保留 ink 阶 / radius / shadow 等跟全局主题一致 —— 避免每个 scope 都是一套
+ *   完整 design system 的笛卡儿积。
+ *
+ * 优先级：
+ *   @layer report-scopes 放在 main.css 最后导入，规则按层序晚于 html.theme-*；
+ *   即在 ReportPage 子树内 scope 覆盖全局主题。
+ *
+ * 添加新 scope：
+ *   复制下方一个 block，改 key 与几行 OKLCH 值即可。
+ *
+ * Phase 4 重构后这部分会拆到 business/reports/<type>/style.css，
+ * 当前阶段保持单文件方便集中调校。
+ */
+
+@layer report-scopes {
+  /* —— AI 测试相关报表：紫色调，匹配 brand 暖意 —— */
+  [data-report-scope="ai-test"] {
+    --color-brand-500: oklch(0.62 0.19 285);
+    --color-brand-600: oklch(0.53 0.20 285);
+    --color-brand-700: oklch(0.44 0.18 285);
+    --color-accent-500: oklch(0.72 0.14 45);
+    --font-display: "Playfair Display", "Noto Serif SC", serif;
+  }
+
+  /* —— 产业（industry）报表：自然绿调，跟"产业落地"主题相呼应 —— */
+  [data-report-scope="industry"] {
+    --color-brand-500: oklch(0.62 0.14 155);
+    --color-brand-600: oklch(0.53 0.15 155);
+    --color-brand-700: oklch(0.44 0.13 155);
+    --color-accent-500: oklch(0.72 0.14 35);
+  }
+
+  /* —— 监控 / 总览：偏冷青蓝，提示"鸟瞰" —— */
+  [data-report-scope="summary"] {
+    --color-brand-500: oklch(0.62 0.14 210);
+    --color-brand-600: oklch(0.53 0.15 210);
+    --color-accent-500: oklch(0.72 0.14 65);
+  }
+}

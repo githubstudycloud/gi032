@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./report-scopes.css";
 
 @theme {
   /* —— 主色：克制的钢蓝（OKLCH 235°，保证暗色和强调色感知一致）—— */

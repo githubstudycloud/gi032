@@ -38,6 +38,7 @@ class ReportMeta(StrictModel):
     description: str | None = None
     version: int
     user_pref_endpoint: str | None = None
+    style_scope: str | None = None  # 关联前端 [data-report-scope=<key>] 局部样式覆盖
 
 
 # —— toolbar ——————————————————————————
@@ -174,12 +175,28 @@ class PagingSpec(StrictModel):
     default_page_size: int | None = None
 
 
+class HeaderModule(StrictModel):
+    """表头按模块分类（v2.1 新增）。详见前端 ``HeaderModule`` TS interface。
+
+    协议层 ``PrimaryViewTab`` 同时保留 ``header_tree``；两者择一，优先 ``header_modules``。
+    """
+
+    key: str
+    label: str
+    description: str | None = None
+    columns: list[TableColumn]
+    default_visible: bool | None = None
+    collapsible: bool | None = None
+    style_scope: str | None = None
+
+
 class PrimaryViewTab(StrictModel):
     key: str
     label: str
     data_endpoint: str | None = None
     header_tree_endpoint: str | None = None
     header_tree: list[TableColumn] | None = None
+    header_modules: list[HeaderModule] | None = None
 
 
 class RowDimOption(StrictModel):

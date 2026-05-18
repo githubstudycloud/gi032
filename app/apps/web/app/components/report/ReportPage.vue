@@ -49,10 +49,15 @@ function onDrillKpi(kpiKey: string): void {
   if (!ref) return;
   drilldownLayer.value?.open({ ref, row: { _kpi: kpiKey } });
 }
+
+/** 样式 scope —— 见 apps/web/app/assets/css/report-scopes.css */
+const styleScope = computed<string>(
+  () => config.value?.meta?.style_scope ?? 'default',
+);
 </script>
 
 <template>
-  <div>
+  <div :data-report-scope="styleScope">
     <ClientOnly>
       <ErrorPanel v-if="error" :error="error" @retry="refresh" />
 

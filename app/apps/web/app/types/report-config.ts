@@ -20,6 +20,12 @@ export interface ReportMeta {
   description?: string;
   version: number;
   user_pref_endpoint?: string;
+  /**
+   * 样式 scope —— 关联 [data-report-scope=<key>] 的 CSS 局部 override。
+   * 缺省 → 跟随全局主题（html.theme-*）；置 'industry' / 'ai-test' 等会被
+   * apps/web/app/assets/css/report-scopes.css 里的对应规则局部覆盖。
+   */
+  style_scope?: string;
 }
 
 /* —— Toolbar 开关 —— */
@@ -112,12 +118,34 @@ export interface KpiSpec {
 
 /* —— Primary view —— */
 
+/**
+ * 表头按模块分类（v2.1 新增）—— 让多产业 / 多业务域的列在视觉上有顶层分组，
+ * 同时为未来的"按 module 隐藏 / 折叠 / 切换样式 scope"等能力留出协议位。
+ *
+ * - `columns`: 该 module 内的多级表头（沿用现有 TableColumn 递归结构）
+ * - `default_visible / collapsible`: 渲染层按需开启；阶段一可忽略
+ * - `style_scope`: 关联 [data-report-scope] 隔离样式（Phase 7）
+ *
+ * 协议层 PrimaryViewTab 同时保留 `header_tree`，两者择一：优先 `header_modules`。
+ * 老 mock 还在用 `header_tree` —— 不强制迁移。
+ */
+export interface HeaderModule {
+  key: string;
+  label: string;
+  description?: string;
+  columns: TableColumn[];
+  default_visible?: boolean;
+  collapsible?: boolean;
+  style_scope?: string;
+}
+
 export interface PrimaryViewTab {
   key: string;
   label: string;
   data_endpoint?: string;
   header_tree_endpoint?: string | null;
   header_tree?: TableColumn[]; // 复用 overview-summary 的 TableColumn（已有 N 级支持）
+  header_modules?: HeaderModule[];
 }
 
 export interface PagingSpec {

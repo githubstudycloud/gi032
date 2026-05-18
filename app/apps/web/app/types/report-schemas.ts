@@ -25,6 +25,7 @@ export const ReportMetaSchema = z.object({
   description: z.string().optional(),
   version: z.number().int(),
   user_pref_endpoint: z.string().optional(),
+  style_scope: z.string().optional(),
 }).strict();
 
 /* —— Toolbar —— */
@@ -173,12 +174,23 @@ export const PagingSpecSchema = z.object({
   default_page_size: z.number().int().optional(),
 }).strict();
 
+export const HeaderModuleSchema = z.object({
+  key: z.string(),
+  label: z.string(),
+  description: z.string().optional(),
+  columns: z.array(ReportTableColumnSchema),
+  default_visible: z.boolean().optional(),
+  collapsible: z.boolean().optional(),
+  style_scope: z.string().optional(),
+}).strict();
+
 export const PrimaryViewTabSchema = z.object({
   key: z.string(),
   label: z.string(),
   data_endpoint: z.string().optional(),
   header_tree_endpoint: z.string().nullable().optional(),
   header_tree: z.array(ReportTableColumnSchema).optional(),
+  header_modules: z.array(HeaderModuleSchema).optional(),
 }).strict();
 
 export const RowDimOptionSchema = z.object({
