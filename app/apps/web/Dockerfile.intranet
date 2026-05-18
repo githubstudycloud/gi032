@@ -41,10 +41,19 @@ ARG NPM_REGISTRY=https://registry.npmmirror.com
 # COREPACK_NPM_REGISTRY 必须显式设置：
 #   corepack 有自己的 registry 配置，不读 NPM_CONFIG_REGISTRY / .npmrc，
 #   默认走 https://registry.npmjs.org —— 内网会卡在这里超时。
+#
+# NODE_TLS_REJECT_UNAUTHORIZED=0 / NPM_CONFIG_STRICT_SSL=false：
+#   内网 HTTPS 一般是自签 / 内部 CA，Node 默认信任链不认 —— corepack 会
+#   报 SELF_SIGNED_CERT_IN_CHAIN 或 UNABLE_TO_VERIFY_LEAF_SIGNATURE。
+#   这两个 ENV 只在 build stage 生效；stage 2 的 nginx:alpine 不带 Node，
+#   生成的运行镜像里没有这两个变量，不会泄漏到生产。
+#   想"干净修"请改用 COPY 内网 CA 证书 + NODE_EXTRA_CA_CERTS（见 README）。
 ENV PNPM_HOME=/pnpm \
     PATH="/pnpm:$PATH" \
     NPM_CONFIG_REGISTRY=${NPM_REGISTRY} \
-    COREPACK_NPM_REGISTRY=${NPM_REGISTRY}
+    COREPACK_NPM_REGISTRY=${NPM_REGISTRY} \
+    NODE_TLS_REJECT_UNAUTHORIZED=0 \
+    NPM_CONFIG_STRICT_SSL=false
 
 RUN corepack enable && corepack prepare pnpm@9.12.0 --activate
 
