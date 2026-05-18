@@ -1,0 +1,94 @@
+{
+  "meta": {
+    "report_type": "e2e-api",
+    "name": "API E2E测试",
+    "subtitle": "各部门 API E2E 自动化覆盖排行",
+    "version": 1,
+    "user_pref_endpoint": "/api/users/me/columns/e2e-api"
+  },
+
+  "toolbar": { "show_refresh": true },
+
+  "filters": [
+    { "code": "time_range", "label": "时间范围", "kind": "flat_dropdown", "required": true,
+      "param": { "value": "time_range" }, "default": { "value": "7d" },
+      "source": { "endpoint": "/dropdowns/time-ranges", "params_in": ["q"] } },
+    { "code": "department", "label": "领域", "kind": "flat_dropdown",
+      "param": { "value": "department_code" }, "default": { "value": "all" },
+      "source": { "endpoint": "/dropdowns/departments", "params_in": ["q", "page"], "supports_favorite": true } }
+  ],
+
+  "kpi": {
+    "enabled": true,
+    "title": "核心指标",
+    "data_endpoint": "/api/reports/e2e-api/kpi",
+    "layout_mode_default": "grouped",
+    "footnote": "点击卡片可查看明细数字。",
+    "groups": [
+      { "key": "user", "label": "用户指标", "items": [
+        { "key": "ai-user-count", "label": "AI用户数", "data_type": "int",
+          "description": "本月使用过 API E2E AI 工具的活跃用户数。" }
+      ]},
+      { "key": "business", "label": "业务指标", "items": [
+        { "key": "ai-requirements",    "label": "AI API需求数", "data_type": "int",
+          "description": "本月接入 AI 的 API E2E 测试需求数。" },
+        { "key": "total-requirements", "label": "API需求数",   "data_type": "int",
+          "description": "本月所有进入 API E2E 测试环节的需求总数。" },
+        { "key": "design-coverage",    "label": "API E2E AI覆盖率", "unit": "%", "data_type": "percent",
+          "description": "公式：AI API 需求数 ÷ API 需求数 × 100%。\n参考阈值：≥ 50% 为达标。",
+          "threshold": { "min": 50, "goodColor": "emerald", "badColor": "rose" } },
+        { "key": "valid-ai-cases",     "label": "AI生成API用例数", "data_type": "int",
+          "description": "AI 生成且被采纳的 API E2E 用例总数。" },
+        { "key": "total-cases",        "label": "API用例数", "data_type": "int",
+          "description": "本月新增的 API E2E 测试用例总数。" },
+        { "key": "ai-case-ratio",      "label": "AI生成API用例占比", "unit": "%", "data_type": "percent",
+          "description": "AI 生成 API 用例数 / API 用例总数。",
+          "threshold": { "min": 45, "goodColor": "emerald", "badColor": "amber" } },
+        { "key": "ai-defect-ratio",    "label": "API用例发现缺陷占比", "unit": "%", "data_type": "percent",
+          "description": "AI 生成 API 用例发现缺陷数 / 全部 API 用例发现缺陷数。" }
+      ]},
+      { "key": "capability", "label": "能力指标", "items": [
+        { "key": "ai-cases-generated", "label": "AI生成API用例数", "data_type": "int",
+          "description": "AI 系统本月生成的全部候选 API 用例（含未采纳）。" },
+        { "key": "ai-cases-adopted",   "label": "AI采纳API用例数", "data_type": "int",
+          "description": "AI 生成且落入正式 API 用例库的数量。" },
+        { "key": "adoption-rate",      "label": "API用例采纳率", "unit": "%", "data_type": "percent",
+          "description": "公式：AI 采纳 API 用例数 ÷ AI 生成 API 用例数。",
+          "threshold": { "min": 60, "goodColor": "emerald", "badColor": "rose" } },
+        { "key": "avg-interactions",   "label": "平均每接口交互次数", "data_type": "decimal",
+          "description": "每个 API 端点的 AI 平均交互轮数。" }
+      ]}
+    ]
+  },
+
+  "primary_view": {
+    "enabled": true,
+    "title": "API E2E测试明细",
+    "endpoint": "/api/reports/e2e-api/summary",
+    "method": "POST",
+    "paging": { "default_mode": "client", "default_page_size": 10 },
+    "tabs": [
+      {
+        "key": "e2e-api-detail",
+        "label": "API E2E测试明细",
+        "data_endpoint": "/api/reports/e2e-api/summary?tab=e2e-api-detail",
+        "header_tree": [
+          { "key": "rank",          "label": "排名",            "width": "70px",  "sortable": true },
+          { "key": "department",    "label": "部门",            "width": "200px", "filterable": true, "align": "left" },
+          { "key": "req-total",     "label": "API需求总数",     "sortable": true },
+          { "key": "ai-req-count",  "label": "Ai API需求数",    "sortable": true },
+          { "key": "coverage",      "label": "AI覆盖率",        "sortable": true, "highlight": true,
+            "threshold": { "min": 50, "goodColor": "emerald", "badColor": "rose" } },
+          { "key": "ai-cases",      "label": "Ai生成API用例数", "sortable": true },
+          { "key": "adopted-cases", "label": "采纳API用例数",   "sortable": true },
+          { "key": "adoption-rate", "label": "API采纳率",       "sortable": true, "highlight": true,
+            "threshold": { "min": 60, "goodColor": "emerald", "badColor": "amber" } },
+          { "key": "defects",       "label": "API缺陷数",       "sortable": true },
+          { "key": "actions",       "label": "操作",            "width": "90px", "cellType": "action" }
+        ]
+      }
+    ]
+  },
+
+  "drilldowns": {}
+}

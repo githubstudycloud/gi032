@@ -50,7 +50,7 @@
           "label_i18n": { "zh-CN": "E2E测试Agent", "en-US": "E2E Test Agent" },
           "icon": "flow",
           "children": [
-            { "key": "ai-test-e2e-app",        "label": "APP E2E测试",     "label_i18n": { "zh-CN": "APP E2E测试",     "en-US": "App E2E Test" },          "icon": "smartphone", "path": "/ai-test/e2e/app" },
+            { "key": "ai-test-e2e-api",        "label": "API E2E测试",     "label_i18n": { "zh-CN": "API E2E测试",     "en-US": "API E2E Test" },          "icon": "server",     "path": "/ai-test/e2e/api" },
             { "key": "ai-test-e2e-thirdparty", "label": "三方应用E2E测试", "label_i18n": { "zh-CN": "三方应用E2E测试", "en-US": "Third-party E2E Test" },  "icon": "puzzle",     "path": "/ai-test/e2e/thirdparty" },
             { "key": "ai-test-e2e-ai",         "label": "AI特性E2E测试",   "label_i18n": { "zh-CN": "AI特性E2E测试",   "en-US": "AI Feature E2E Test" },   "icon": "sparkles",   "path": "/ai-test/e2e/ai" }
           ]
