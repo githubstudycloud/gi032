@@ -16,7 +16,7 @@ const props = withDefaults(
     title?: string;
     /**
      * panel = 带边框 / URL header / 警示条的卡片式（用在 section 子页里，比如系统管理-搜索页面）
-     * full  = 铺满父容器的 iframe（用在顶部一级 single+embed 页，比如"首页1"）
+     * full  = 铺满父容器的 iframe（用在顶部一级 single+embed 页，比如"首页"）
      */
     variant?: 'panel' | 'full';
     /**

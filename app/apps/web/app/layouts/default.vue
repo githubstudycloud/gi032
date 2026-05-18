@@ -2,7 +2,7 @@
 const { branding } = await useBranding();
 const { items, activeTop, activeTopKey, showSidebar } = await useNav();
 
-/* 顶部一级 single + embed 的页（"首页1"等）需要去掉外边距 + 让 iframe 铺满。
+/* 顶部一级 single + embed 的页（"首页"等）需要去掉外边距 + 让 iframe 铺满。
    主区域改为 flex column + h-full，让 page 里的 EmbedFrame variant="full" 能用 h-full 撑开。 */
 const isFullBleed = computed<boolean>(
   () => !!(activeTop.value?.single && activeTop.value?.embed),

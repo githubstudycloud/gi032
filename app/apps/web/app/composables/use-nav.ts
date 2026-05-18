@@ -90,7 +90,7 @@ export function localizedLabel(item: { label: string; label_i18n?: Record<string
 
 /**
  * 把一个菜单节点解析为「点击它应该跳的路径」。
- * - single（顶部独立页，如首页1）：用自身 path
+ * - single（顶部独立页，如首页）：用自身 path
  * - 叶子：用自身 path
  * - 中间节点（有 children）：递归找第一个未 disabled 的叶子；找不到再回退到自身 path
  *

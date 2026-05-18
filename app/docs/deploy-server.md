@@ -170,7 +170,7 @@ web:
 
 - 默认 `system` 字体零外部依赖 ✅
 - Noto / LXGW / Playfair 字体需先跑 `vendor-fonts.mjs` 镜像化（1.2 节）
-- `首页1` 嵌入 `https://www.google.com/` 是示例，在离线环境会显示空白 iframe；改 `nav.json` 里 `embed` 字段或换成内部地址即可
+- `首页` 嵌入 `https://www.google.com/` 是示例，在离线环境会显示空白 iframe；改 `nav.json` 里 `embed` 字段或换成内部地址即可
 
 ## 6. 重建 / 升级
 
