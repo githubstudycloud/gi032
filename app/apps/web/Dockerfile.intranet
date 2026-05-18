@@ -28,19 +28,28 @@
 #     --build-arg NPM_REGISTRY=http://nexus.intra.corp/repository/npm-group/ \
 #     -t ops-web:dev
 
-# ---------- stage 1：Node 24 构建（debian-based，不需要 apk）----------
+# 全局 ARG —— 必须在所有 FROM 之前声明，否则后续 stage 的 FROM 看不到它。
+# 每个 stage 内还需要重新 `ARG` 一次才能在 RUN/ENV 里展开（这里只在 FROM 用，无需重声明）。
 ARG BASE_NODE=node:24
+ARG BASE_NGINX=nginx:alpine
+
+# ---------- stage 1：Node 24 构建（debian-based，不需要 apk）----------
 FROM ${BASE_NODE} AS build
 
 ARG NPM_REGISTRY=https://registry.npmmirror.com
 
+# COREPACK_NPM_REGISTRY 必须显式设置：
+#   corepack 有自己的 registry 配置，不读 NPM_CONFIG_REGISTRY / .npmrc，
+#   默认走 https://registry.npmjs.org —— 内网会卡在这里超时。
 ENV PNPM_HOME=/pnpm \
     PATH="/pnpm:$PATH" \
-    NPM_CONFIG_REGISTRY=${NPM_REGISTRY}
+    NPM_CONFIG_REGISTRY=${NPM_REGISTRY} \
+    COREPACK_NPM_REGISTRY=${NPM_REGISTRY}
 
 RUN corepack enable && corepack prepare pnpm@9.12.0 --activate
 
-# pnpm registry（双保险 —— corepack 装 pnpm 时也走环境变量，但 pnpm 运行时配置在 ~/.npmrc）
+# pnpm registry（三保险 —— corepack 已走 COREPACK_NPM_REGISTRY 装 pnpm，
+# pnpm 运行时再读这里写到 ~/.npmrc）
 RUN pnpm config set registry "${NPM_REGISTRY}"
 
 WORKDIR /app
@@ -66,7 +75,6 @@ ENV NUXT_PUBLIC_DATA_SOURCE_MODE=${NUXT_PUBLIC_DATA_SOURCE_MODE} \
 RUN pnpm generate
 
 # ---------- stage 2：Nginx 静态服务（alpine 镜像直接用，不跑 apk）----------
-ARG BASE_NGINX=nginx:alpine
 FROM ${BASE_NGINX}
 
 COPY --from=build /app/.output/public /usr/share/nginx/html

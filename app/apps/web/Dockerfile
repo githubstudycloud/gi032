@@ -27,9 +27,13 @@ ARG NPM_REGISTRY=https://registry.npmmirror.com
 ARG APK_MIRROR=mirrors.tuna.tsinghua.edu.cn
 ARG APK_MIRROR_SCHEME=https
 
+# COREPACK_NPM_REGISTRY 必须显式设置：
+#   corepack 有自己的 registry 配置，不读 NPM_CONFIG_REGISTRY / .npmrc，
+#   默认走 https://registry.npmjs.org —— 内网会卡在这里超时。
 ENV PNPM_HOME=/pnpm \
     PATH="/pnpm:$PATH" \
-    NPM_CONFIG_REGISTRY=${NPM_REGISTRY}
+    NPM_CONFIG_REGISTRY=${NPM_REGISTRY} \
+    COREPACK_NPM_REGISTRY=${NPM_REGISTRY}
 
 # alpine apk 换源（host + scheme 都可覆盖，方便内网无 HTTPS 的私服）
 RUN set -eux; \
