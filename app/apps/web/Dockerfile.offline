@@ -50,10 +50,17 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 
 # 关键差异：默认 json 模式，bundle 里写死走 /mock/*.json
+#
+# NUXT_APP_BASE_URL：挂在外层 nginx 子路径下时必须设置（带斜杠），
+#   例：--build-arg NUXT_APP_BASE_URL=/webService/
+#   同时 MOCK_BASE / API_BASE 也要带前缀（NUXT_APP_BASE_URL 只影响 Nuxt 自身的资源 URL，
+#   runtimeConfig.public.* 不会自动加前缀，要手动带）。
+ARG NUXT_APP_BASE_URL=/
 ARG NUXT_PUBLIC_DATA_SOURCE_MODE=json
 ARG NUXT_PUBLIC_API_BASE=/api
 ARG NUXT_PUBLIC_MOCK_BASE=/mock
-ENV NUXT_PUBLIC_DATA_SOURCE_MODE=${NUXT_PUBLIC_DATA_SOURCE_MODE} \
+ENV NUXT_APP_BASE_URL=${NUXT_APP_BASE_URL} \
+    NUXT_PUBLIC_DATA_SOURCE_MODE=${NUXT_PUBLIC_DATA_SOURCE_MODE} \
     NUXT_PUBLIC_API_BASE=${NUXT_PUBLIC_API_BASE} \
     NUXT_PUBLIC_MOCK_BASE=${NUXT_PUBLIC_MOCK_BASE}
 
