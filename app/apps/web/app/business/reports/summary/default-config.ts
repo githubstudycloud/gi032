@@ -1,7 +1,7 @@
 /**
  * summary 报表 —— 内置默认配置（Layer 1 of 3）。详见 `industry/default-config.ts` 说明。
  */
-import type { ReportConfig } from '~/types/report-config';
+import type { ReportConfig } from '~/framework/types/report-config';
 
 export const defaultConfig: Partial<ReportConfig> = {
   meta: {

@@ -4,7 +4,7 @@
  * 业务定义全部在 `/mock/reports/industry/{config,data}.json`。
  * 本文件保留是为了维持 URL `/ai-test/overview/industry`；菜单链接不动。
  */
-import { flattenNav } from '~/utils/nav-flat';
+import { flattenNav } from '~/framework/utils/nav-flat';
 
 const route = useRoute();
 const { items: navItems } = await useNav();

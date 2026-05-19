@@ -13,7 +13,7 @@ import { join } from 'node:path';
 import {
   ReportConfigSchema,
   ReportDataSchema,
-} from '../app/types/report-schemas';
+} from '../app/framework/types/report-schemas';
 
 const REPORTS_DIR = join(process.cwd(), 'public', 'mock', 'reports');
 

@@ -8,7 +8,7 @@
  *
  * 不在注册表里的 report type，默认层为 `null`（即三层合并退化为 user + API 两层）。
  */
-import type { ReportConfig } from '~/types/report-config';
+import type { ReportConfig } from '~/framework/types/report-config';
 import { defaultConfig as industryDefault } from './industry/default-config';
 import { defaultConfig as summaryDefault } from './summary/default-config';
 

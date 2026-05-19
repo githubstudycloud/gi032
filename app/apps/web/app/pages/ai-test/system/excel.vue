@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { flattenNav } from '~/utils/nav-flat';
-import { parsePageCsv, SAMPLE_CSV, SAMPLE_CSV_4L, type ImportedPage, type ParseIssue } from '~/utils/csv-page-parser';
+import { flattenNav } from '~/framework/utils/nav-flat';
+import { parsePageCsv, SAMPLE_CSV, SAMPLE_CSV_4L, type ImportedPage, type ParseIssue } from '~/framework/utils/csv-page-parser';
 
 const route = useRoute();
 const { items: navItems } = await useNav();

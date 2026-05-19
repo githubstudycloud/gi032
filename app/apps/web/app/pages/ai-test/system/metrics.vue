@@ -2,8 +2,8 @@
 /**
  * 指标管理（一份 ManagementTable + mock 数据；接 API 时把 fetch 换成对应 endpoint 即可）。
  */
-import { flattenNav } from '~/utils/nav-flat';
-import type { ManagementPageConfig } from '~/types/management';
+import { flattenNav } from '~/framework/utils/nav-flat';
+import type { ManagementPageConfig } from '~/framework/types/management';
 
 interface MetricsMock {
   page_config: ManagementPageConfig;

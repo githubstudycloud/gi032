@@ -11,11 +11,24 @@ export default defineNuxtConfig({
     // SSR payload plugin 会炸 obj.hasOwnProperty。等真用 store 再升级到 0.11+ 再加回。
   ],
 
-  // 让 components/layout/AppTopBar.vue 直接以 <AppTopBar /> 引用，
+  // 让 framework/components/layout/AppTopBar.vue 直接以 <AppTopBar /> 引用，
   // 默认 Nuxt 4 会带目录前缀（LayoutAppTopBar），我们用扁平命名。
+  // Phase 4 拆分后所有共享组件都搬到 framework/components/，业务页面只在
+  // pages/ 直写或用 framework 里的复用组件；后续 business/<type>/ 想出业务私有
+  // 组件可以再加一条 { path: '~/business/components', pathPrefix: false }。
   components: [
-    { path: '~/components', pathPrefix: false },
+    { path: '~/framework/components', pathPrefix: false },
   ],
+
+  // 同样让 composables / utils 的 auto-import 跟上 framework/business 拆分。
+  imports: {
+    dirs: [
+      'framework/composables',
+      'framework/composables/**',
+      'framework/utils',
+      'framework/utils/**',
+    ],
+  },
 
   devtools: { enabled: true },
 

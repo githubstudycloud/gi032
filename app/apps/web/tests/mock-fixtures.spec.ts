@@ -12,7 +12,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { NavResponseSchema } from '../app/types/schemas';
+import { NavResponseSchema } from '../app/framework/types/schemas';
 
 const REPORTS_DIR = join(process.cwd(), 'public', 'mock', 'reports');
 const ADMIN_DIR = join(process.cwd(), 'public', 'mock', 'admin');

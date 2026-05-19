@@ -14,7 +14,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { join, relative } from 'node:path';
-import { looksLikeOverlayJson } from '../app/composables/use-data-source';
+import { looksLikeOverlayJson } from '../app/framework/composables/use-data-source';
 
 describe('looksLikeOverlayJson — SPA fallback 识别', () => {
   it('真正的 JSON object 应当命中', () => {

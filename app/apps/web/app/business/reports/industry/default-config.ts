@@ -11,7 +11,7 @@
  *
  * 完整字段（kpi / primary_view / drilldowns）由 API 或 mock 提供。
  */
-import type { ReportConfig } from '~/types/report-config';
+import type { ReportConfig } from '~/framework/types/report-config';
 
 export const defaultConfig: Partial<ReportConfig> = {
   meta: {

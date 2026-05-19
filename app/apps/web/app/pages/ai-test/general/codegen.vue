@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { flattenNav } from '~/utils/nav-flat';
+import { flattenNav } from '~/framework/utils/nav-flat';
 
 const route = useRoute();
 const { items: navItems } = await useNav();
